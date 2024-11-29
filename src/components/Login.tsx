@@ -76,7 +76,7 @@ function Login() {
 					/>
 					<div className="mt-5 flex flex-col justify-center items-center gap-x-2">
 						{fetching
-						? <ClipLoader size={30} color={"white"} loading={true} />
+						? <ClipLoader size={30} color={"black"} loading={true} />
 						: <ButtonPrimary label="Log in" type="submit" />
 						}
 					</div>
