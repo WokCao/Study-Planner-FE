@@ -5,10 +5,12 @@ interface FormInputProps {
   type: string;
   register: UseFormRegisterReturn;
   errors: FieldErrors;
-  error: string;
+	errorKey?: string;
+  error?: string;
 }
 
-const FormInput: React.FC<FormInputProps> = ({label, type, register, errors, error}) => {
+const FormInput: React.FC<FormInputProps> = ({label, type, register, errors, errorKey, error}) => {
+	const field = errorKey || label;
 	return (
 		<>
 			<div className="group relative border-b border-violet-900 w-80 mt-4 px-3 pb-1.5 pt-2.5">
@@ -18,7 +20,7 @@ const FormInput: React.FC<FormInputProps> = ({label, type, register, errors, err
 				<input type={type} autoComplete="off" {...register}
 					className="block w-full border-0 bg-transparent p-0 text-sm file:my-1 file:rounded-full file:border-0 file:bg-accent file:px-4 file:py-2 file:font-medium placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 sm:leading-7 text-foreground" />
 			</div>
-			{errors[label] ? <p className="pt-2 text-sm text-red-600">{`${errors[label].message}`}</p>
+			{errors[field] ? <p className="pt-2 text-sm text-red-600">{`${errors[field].message}`}</p>
 			: error && <p className="pt-2 text-sm text-red-600">{error}</p>}
 		</>
 	)
