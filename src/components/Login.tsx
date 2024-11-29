@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
+
 import UserLogin from '../interface/UserLogin';
+import FormInput from './elements/FormInput';
 
 const API = import.meta.env.DEV ? import.meta.env.VITE_REACT_APP_API_LOCAL : import.meta.env.VITE_REACT_APP_API;
 
@@ -50,31 +52,26 @@ function Login() {
 
   return (
 		<>
-			<div className="flex flex-col justify-center items-center p-6">
+			<div className="flex flex-col justify-center items-center p-3">
 				<h3 className="text-xl font-semibold leading-6 tracking-tighter">Login</h3>
 				<p className="mt-1.5 text-sm font-medium">Welcome back, enter your credentials to continue.</p>
 			</div>
 			<div className="p-6 pt-0">
 				<form className="flex flex-col justify-center items-center" onSubmit={handleSubmit(onSubmit)}>
-					<div className="group relative border-b border-violet-900 w-80 px-3 pb-1.5 pt-2.5 duration-200">
-						<div className="flex justify-between">
-							<label className="text-xs font-medium text-muted-foreground">Username</label>
-						</div>
-						<input type="text" autoComplete="off" {...register('username', { required: 'Username is required' })}
-							className="block w-full border-0 bg-transparent p-0 text-sm file:my-1 file:rounded-full file:border-0 file:bg-accent file:px-4 file:py-2 file:font-medium placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 sm:leading-7 text-foreground" />
-					</div>
-					{errors.username ? <p className="pt-2 text-red-600">{errors.username.message}</p>
-					: errorUsername && <p className="pt-2 text-red-600">{errorUsername}</p>}
-
-					<div className="mt-4 group relative border-b border-violet-900 w-80 px-3 pb-1.5 pt-2.5 duration-200">
-						<div className="flex justify-between">
-							<label className="text-xs font-medium text-muted-foreground">Password</label>
-						</div>
-						<input type="password" {...register('password', { required: 'Password is required' })}
-							className="block w-full border-0 bg-transparent p-0 text-sm file:my-1 placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 focus:ring-teal-500 sm:leading-7 text-foreground" />
-					</div>
-					{errors.password ? <p className="pt-2 text-red-600">{errors.password.message}</p>
-					: errorPassword && <p className="pt-2 text-red-600">{errorPassword}</p>}
+					<FormInput
+						label='username'
+						type='text'
+						register={register('username', { required: 'Username is required' })}
+						errors={errors}
+						error={errorUsername}
+					/>
+					<FormInput
+						label='password'
+						type='password'
+						register={register('password', { required: 'Password is required' })}
+						errors={errors}
+						error={errorPassword}
+					/>
 
 					<div className="mt-5 flex flex-col justify-center items-center gap-x-2">
 						{fetching
