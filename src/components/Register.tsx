@@ -5,9 +5,9 @@ import { ClipLoader } from 'react-spinners';
 
 import { useMutation } from '@tanstack/react-query';
 import { fetcher } from './clients/apiClient';
-import useAuthStore from '../hooks/useAuthStore';
 
 import UserRegister from '../interface/UserRegister';
+import FormTitle from './elements/FormTitle';
 import FormInput from './elements/FormInput';
 import ButtonPrimary from './elements/ButtonPrimary';
 import Anchor from './elements/Anchor';
@@ -50,10 +50,7 @@ function Register() {
 
   return (
 		<>
-			<div className="flex flex-col justify-center items-center p-3">
-				<h3 className="text-xl font-semibold leading-6 tracking-tighter">Sign Up</h3>
-				<p className="mt-1.5 text-sm font-medium">Manage your study schedules effectively.</p>
-			</div>
+			<FormTitle title='Sign Up' description='Manage your study schedules effectively.' />
 			<div className="p-6 pt-0">
 				<form className="flex flex-col justify-center items-center" onSubmit={handleSubmit(onSubmit)}>
 					<FormInput
