@@ -35,17 +35,17 @@ function Register() {
         navigate('/login');
       }
       else {
-			const errorData = await response.json();
-			const message = errorData.message;
-			if (message.toLowerCase().includes('username')) {
-				setErrorUsername(message);
-			}
-			else if (message.toLowerCase().includes('email')) {
-				setErrorEmail(message);
-			}
-			else {
-				setErrorPassword(message);
-			}
+				const errorData = await response.json();
+				const message = errorData.message;
+				if (message.toLowerCase().includes('username')) {
+					setErrorUsername(message);
+				}
+				else if (message.toLowerCase().includes('email')) {
+					setErrorEmail(message);
+				}
+				else {
+					setErrorPassword(message);
+				}
       }
 
 			setFetching(false);
