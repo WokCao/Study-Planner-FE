@@ -11,7 +11,7 @@ import UserLogin from '../interface/UserLogin';
 import FormTitle from './elements/FormTitle';
 import FormInput from './elements/FormInput';
 import ButtonPrimary from './elements/ButtonPrimary';
-import Anchor from './elements/Anchor';
+import ButtonLink from './elements/ButtonLink';
 
 interface LoginResponse {
   token: string;
@@ -77,8 +77,8 @@ function Login() {
 						}
 					</div>
 					<div className="mt-16 w-2/3 flex flex-col justify-center items-center gap-x-2">
-						<Anchor label="Sign up with Email" href="./register" />
-						<Anchor label="Sign up with Google" href="./register" />
+						<ButtonLink label="Sign up with Email" path="/register" />
+						<ButtonLink label="Sign up with Google" path="/register" />
 					</div>
 				</form>
 			</div>

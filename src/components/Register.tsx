@@ -10,7 +10,7 @@ import UserRegister from '../interface/UserRegister';
 import FormTitle from './elements/FormTitle';
 import FormInput from './elements/FormInput';
 import ButtonPrimary from './elements/ButtonPrimary';
-import Anchor from './elements/Anchor';
+import ButtonLink from './elements/ButtonLink';
 
 function Register() {
   const { register, handleSubmit, watch, formState: { errors } } = useForm<UserRegister>();
@@ -102,8 +102,8 @@ function Register() {
 						}
 					</div>
 					<div className="mt-16 w-2/3 flex flex-col justify-center items-center gap-x-2">
-						<Anchor label="Login with Email" href="./login" />
-						<Anchor label="Login with Google" href="./login" />
+						<ButtonLink label="Login with Email" path="/login" />
+						<ButtonLink label="Login with Google" path="/login" />
 					</div>
 				</form>
 			</div>
