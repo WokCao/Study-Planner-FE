@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import Logout from './Logout';
 
 function Profile() {
   const username = "mike";
@@ -8,9 +8,7 @@ function Profile() {
     <>
       <h1 className='text-2xl'>Username: {username}</h1>
       <h1 className='text-2xl'>Email: {email}</h1>
-      <Link className="text-lg hover:underline leading-10" to='/login'>
-        Logout
-      </Link>
+      <Logout />
     </>
   );
 }
