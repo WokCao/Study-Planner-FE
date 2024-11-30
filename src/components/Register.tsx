@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
 
 import { useMutation } from '@tanstack/react-query';
-import { fetcher } from './clients/apiClient';
+import { fetcher } from '../clients/apiClient';
 
 import UserRegister from '../interface/UserRegister';
 import FormTitle from './elements/FormTitle';
