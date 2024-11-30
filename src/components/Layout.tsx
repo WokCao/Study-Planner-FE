@@ -1,21 +1,21 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Props from '../interface/Props';
 
 const Layout: React.FC<Props> = ({ children }) => {
-  const isAuthenticated = true; const logout = () => {};
+  const isAuthenticated = true;
 
   return (
     <div className="bg-violet-50 min-h-screen flex flex-col">
       {/* Header */}
       <header className="bg-white py-4 border-b-2">
         <div className="container mx-auto px-4 flex justify-between items-center">
-					<div className='flex justify-center items-center'>
+					<Link to="/" className='flex justify-center items-center'>
 						<img src='/gem.ico'/>
 						<h1 className="text-2xl text-violet-700 font-bold ms-2">
-            	<Link to="./">StudyGem</Link>
+            	StudyGem
           	</h1>
-					</div>
+					</Link>
           <nav className='flex justify-center items-center'>
             {!isAuthenticated
             ?
