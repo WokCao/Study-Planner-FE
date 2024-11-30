@@ -3,5 +3,5 @@ export default interface UserRegister {
 	fullname: string;
 	email: string;
 	password: string;
-	cpassword: string;
+	confirmPassword: string;
 }

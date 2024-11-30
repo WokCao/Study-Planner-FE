@@ -40,10 +40,10 @@ function Login() {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 			}),
-			onSuccess: (data) => {
-				setToken(data.token);
+			onSuccess: (data: any) => {
+				setToken(data.access_token);
 				setData(data);
-				navigate('/home');
+				navigate('/');
 			},
 			onError: (error) => {
 				setFetching(false);

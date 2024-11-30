@@ -85,7 +85,7 @@ function Register() {
 					<FormInput
 						label='confirm password'
 						type='password'
-						register={register('cpassword', { required: 'Please confirm password',
+						register={register('confirmPassword', { required: 'Please confirm password',
 							validate: (value: string) => {
 								if (watch('password') !== value) {
 									return "Your passwords do not match";
@@ -93,7 +93,7 @@ function Register() {
 							}})
 						}
 						errors={errors}
-						errorKey='cpassword'
+						errorKey='confirmPassword'
 					/>
 					<div className="mt-5 w-2/3 flex flex-col justify-center items-center gap-x-2">
 						{fetching
