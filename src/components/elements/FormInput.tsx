@@ -14,15 +14,15 @@ const FormInput: React.FC<FormInputProps> = ({label, type, register, errors, err
 	const field = errorKey || label;
 	return (
 		<>
-			<div className="group relative border-b border-violet-900 w-80 mt-4 px-3 pb-1.5 pt-2.5">
+			<div className={`group relative border-b w-80 mt-4 px-3 pb-1.5 pt-2.5 ${(errors[field] || error) ? "border-red-600" : "border-violet-900"}`}>
 				<div className="flex justify-between">
 					<label className="text-xs font-medium text-muted-foreground capitalize">{label}</label>
 				</div>
 				<input type={type} autoComplete="off" {...register} onChange={(e) => onInputChange(e)}
 					className="block w-full border-0 bg-transparent p-0 text-sm file:my-1 file:rounded-full file:border-0 file:bg-accent file:px-4 file:py-2 file:font-medium placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 sm:leading-7 text-foreground" />
 			</div>
-			{errors[field] ? <p className="pt-2 text-sm text-red-600">{`${errors[field].message}`}</p>
-			: error && <p className="pt-2 text-sm text-red-600">{error}</p>}
+			{errors[field] ? <p className="px-3 pt-2 text-xs text-red-600 self-start">{`${errors[field].message}`}</p>
+			: error && <p className="px-3 pt-2 text-xs text-red-600 self-start">{error}</p>}
 		</>
 	)
 }
