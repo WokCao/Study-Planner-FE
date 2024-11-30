@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
 
 import { useMutation } from '@tanstack/react-query';
@@ -95,15 +95,17 @@ function Register() {
 						errors={errors}
 						errorKey='cpassword'
 					/>
-					<div className="mt-5 flex flex-col justify-center items-center gap-x-2">
+					<div className="mt-5 w-2/3 flex flex-col justify-center items-center gap-x-2">
 						{fetching
 						? <ClipLoader size={30} color={"black"} loading={true} />
-						: <ButtonPrimary label="Sign up" type="submit" />
+						: <>
+								<ButtonPrimary label="Sign up" type="submit" />
+								<ButtonLink label="Sign up with Google" path="/login" />
+							</>
 						}
 					</div>
-					<div className="mt-16 w-2/3 flex flex-col justify-center items-center gap-x-2">
-						<ButtonLink label="Login with Email" path="/login" />
-						<ButtonLink label="Login with Google" path="/login" />
+					<div className="mt-5 w-2/3 text-center text-sm">
+						Already have an account? <Link className="underline" to="/login">Login</Link>
 					</div>
 				</form>
 			</div>
