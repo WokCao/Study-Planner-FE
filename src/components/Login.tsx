@@ -6,6 +6,7 @@ import { ClipLoader } from 'react-spinners';
 import { useMutation } from '@tanstack/react-query';
 import { fetcher } from '../clients/apiClient';
 import useAuthStore from '../hooks/useAuthStore';
+import useUserStore from '../hooks/useUserStore';
 
 import UserLogin from '../interface/UserLogin';
 import FormTitle from './elements/FormTitle';
@@ -15,6 +16,10 @@ import ButtonLink from './elements/ButtonLink';
 
 interface LoginResponse {
   token: string;
+	username: string;
+	email: string;
+	fullname: string;
+	avatarUrl: string;
 }
 
 function Login() {
@@ -25,6 +30,8 @@ function Login() {
 
 	const [fetching, setFetching] = useState(false);
   const setToken = useAuthStore((state) => state.setToken);
+	const setData = useUserStore((state) => state.setData);
+
 	const navigate = useNavigate();
 
 	const mutation = useMutation<LoginResponse, Error, UserLogin>(
@@ -35,6 +42,7 @@ function Login() {
 			}),
 			onSuccess: (data) => {
 				setToken(data.token);
+				setData(data);
 				navigate('/home');
 			},
 			onError: (error) => {
