@@ -25,7 +25,7 @@ function Register() {
 
 	const mutation = useMutation<null, Error, UserRegister>(
 		{
-			mutationFn: async (formData) => await fetcher('/user/register', formData, {
+			mutationFn: async (formData) => await fetcher('/users', formData, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 			}),

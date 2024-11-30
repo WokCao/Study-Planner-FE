@@ -11,7 +11,7 @@ function Logout() {
   const navigate = useNavigate();
 
   const mutation = useMutation({
-    mutationFn: async () => await fetcher('/user/logout', {
+    mutationFn: async () => await fetcher('/auth/logout', {
       method: 'GET',
     }),
     onSuccess: () => {

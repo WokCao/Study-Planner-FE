@@ -36,7 +36,7 @@ function Login() {
 
 	const mutation = useMutation<LoginResponse, Error, UserLogin>(
 		{
-			mutationFn: async (formData) => await fetcher('/user/login', formData, {
+			mutationFn: async (formData) => await fetcher('/auth/login', formData, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 			}),
