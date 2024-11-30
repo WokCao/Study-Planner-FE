@@ -4,44 +4,40 @@ import Props from '../interface/Props';
 
 const Layout: React.FC<Props> = ({ children }) => {
   const isAuthenticated = true; const logout = () => {};
-  const navigate = useNavigate();
 
   return (
-    <div className="bg-black min-h-screen flex flex-col">
+    <div className="bg-violet-50 min-h-screen flex flex-col">
       {/* Header */}
-      <header className="bg-zinc-900 text-white py-4 shadow-lg">
+      <header className="bg-white py-4 border-b-2">
         <div className="container mx-auto px-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">
-            <Link to="./">StudyGem</Link>
-          </h1>
+					<div className='flex justify-center items-center'>
+						<img src='/gem.ico'/>
+						<h1 className="text-2xl text-violet-700 font-bold ms-2">
+            	<Link to="./">StudyGem</Link>
+          	</h1>
+					</div>
           <nav>
             {!isAuthenticated
             ?
-            <button className="text-lg hover:underline mr-5" onClick={() => navigate('/login')}>
+            <Link className="text-lg hover:underline mr-3" to='/login'>
               Login
-            </button>
+            </Link>
             :
             <>
-              <button className="text-lg hover:underline mr-5" onClick={() => navigate('/profile')}>
+              <Link className="text-lg hover:underline mr-3" to='/profile'>
                 Profile
-              </button>
-              <button className="text-lg hover:underline mr-5" onClick={logout}>
+              </Link>
+              <button className="text-lg hover:underline mr-3" onClick={logout}>
                 Logout
               </button>
             </>}
           </nav>
         </div>
       </header>
-
       {/* Main content */}
-      <main className="flex-grow container mx-auto p-4">{children}</main>
-
-      {/* Footer */}
-      <footer className="bg-zinc-900 text-white py-4 mt-8">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-sm">21127561 - Nguyen Quang Tuan</p>
-        </div>
-      </footer>
+      <main className="flex-grow container mx-auto p-4">
+				{children}
+			</main>
     </div>
   );
 };
