@@ -8,6 +8,7 @@ import Home from './components/Home';
 import Login from './components/Login';
 import Register from './components/Register';
 import Profile from './components/Profile';
+import ProtectedRoute from './components/ProtectedRoute';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -17,11 +18,13 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Routes>
-        <Route path="/" element={
-          <Layout>
-            <Home />
-          </Layout>
-        } />
+        <Route element={<ProtectedRoute />}>
+            <Route path="/" element={
+            <Layout>
+                <Home />
+            </Layout>
+            } />
+        </Route>
         <Route path="/login" element={
           <FormLayout>
             <Login />
@@ -32,11 +35,13 @@ export default function App() {
             <Register />
           </FormLayout>
         } />
-        <Route path="/profile" element={
-          <Layout>
-            <Profile />
-          </Layout>
-        } />
+        <Route element={<ProtectedRoute />}>
+            <Route path="/profile" element={
+            <Layout>
+                <Profile />
+            </Layout>
+            } />
+            </Route>
       </Routes>
       <Outlet />
     </QueryClientProvider>
