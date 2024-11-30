@@ -8,13 +8,13 @@ import FormInput from './elements/FormInput';
 import ButtonPrimary from './elements/ButtonPrimary';
 import Anchor from './elements/Anchor';
 
-const API = import.meta.env.DEV ? import.meta.env.VITE_REACT_APP_API_LOCAL : import.meta.env.VITE_REACT_APP_API;
-
 function Register() {
   const { register, handleSubmit, watch, formState: { errors } } = useForm<UserRegister>();
+
 	const [errorUsername, setErrorUsername] = useState('');
 	const [errorEmail, setErrorEmail] = useState('');
 	const [errorPassword, setErrorPassword] = useState('');
+
 	const [fetching, setFetching] = useState(false);
 	const navigate = useNavigate();
 

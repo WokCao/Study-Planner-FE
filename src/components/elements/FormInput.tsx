@@ -7,10 +7,9 @@ interface FormInputProps {
   errors: FieldErrors;
 	errorKey?: string;
   error?: string;
-	onInputChange: React.ChangeEventHandler<HTMLInputElement>;
 }
 
-const FormInput: React.FC<FormInputProps> = ({label, type, register, errors, errorKey, error, onInputChange}) => {
+const FormInput: React.FC<FormInputProps> = ({label, type, register, errors, errorKey, error}) => {
 	const field = errorKey || label;
 	return (
 		<>
@@ -18,7 +17,7 @@ const FormInput: React.FC<FormInputProps> = ({label, type, register, errors, err
 				<div className="flex justify-between">
 					<label className="text-xs font-medium text-muted-foreground capitalize">{label}</label>
 				</div>
-				<input type={type} autoComplete="off" {...register} onChange={(e) => onInputChange(e)}
+				<input type={type} autoComplete="off" {...register}
 					className="block w-full border-0 bg-transparent p-0 text-sm file:my-1 file:rounded-full file:border-0 file:bg-accent file:px-4 file:py-2 file:font-medium placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 sm:leading-7 text-foreground" />
 			</div>
 			{errors[field] ? <p className="px-3 pt-2 text-xs text-red-600 self-start">{`${errors[field].message}`}</p>

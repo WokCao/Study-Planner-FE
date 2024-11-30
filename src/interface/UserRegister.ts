@@ -1,5 +1,6 @@
 export default interface UserLogin {
-	username: string;
+	fname: string;
+    lname: string;
 	email: string;
 	password: string;
 	cpassword: string;

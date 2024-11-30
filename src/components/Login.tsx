@@ -12,11 +12,6 @@ import FormInput from './elements/FormInput';
 import ButtonPrimary from './elements/ButtonPrimary';
 import Anchor from './elements/Anchor';
 
-interface LoginInput {
-  email: string;
-  password: string;
-}
-
 interface LoginResponse {
   token: string;
 }
@@ -24,8 +19,6 @@ interface LoginResponse {
 function Login() {
   const { register, handleSubmit, formState: { errors } } = useForm<UserLogin>();
 
-	const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
 	const [errorEmail, setErrorEmail] = useState('');
 	const [errorPassword, setErrorPassword] = useState('');
 
@@ -33,29 +26,28 @@ function Login() {
   const setToken = useAuthStore((state) => state.setToken);
 	const navigate = useNavigate();
 
-  const onSubmit: SubmitHandler<UserLogin> = async data => {
+	const mutation = useMutation<LoginResponse, Error, UserLogin>(
+		{
+			mutationFn: async (formData) => await fetcher('/user/login', formData, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+			}),
+			onSuccess: (data) => {
+				setToken(data.token);
+				navigate('/home');
+			},
+			onError: (error) => {
+				setFetching(false);
+				console.error('Login failed:', error.message);
+			},
+		}
+	);
+
+  const onSubmit: SubmitHandler<UserLogin> = async formData => {
 		setFetching(true);
 		setErrorEmail('');
 		setErrorPassword('');
-
-		const mutation = useMutation<LoginResponse, Error, LoginInput>(
-			{
-				mutationFn: await fetcher('/user/login', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify(data),
-				}),
-				onSuccess: (data) => {
-					setToken(data.token);
-					navigate('/home');
-				},
-				onError: (error) => {
-					console.error('Login failed:', error.message);
-				},
-			}
-		);
-
-		mutation.mutate({ email, password });
+		mutation.mutate(formData);
   };
 
   return (
@@ -72,7 +64,6 @@ function Login() {
 						register={register('email', { required: 'Email is required' })}
 						errors={errors}
 						error={errorEmail}
-						onInputChange={(e) => setEmail(e.target.value)}
 					/>
 					<FormInput
 						label='password'
@@ -80,7 +71,6 @@ function Login() {
 						register={register('password', { required: 'Password is required' })}
 						errors={errors}
 						error={errorPassword}
-						onInputChange={(e) => setPassword(e.target.value)}
 					/>
 					<div className="mt-5 flex flex-col justify-center items-center gap-x-2">
 						{fetching

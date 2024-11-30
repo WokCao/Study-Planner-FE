@@ -9,9 +9,13 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Profile from './components/Profile';
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
+
 export default function App() {
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <Routes>
         <Route path="/" element={
           <Layout>
@@ -35,6 +39,6 @@ export default function App() {
         } />
       </Routes>
       <Outlet />
-    </>
+    </QueryClientProvider>
   );
 }
