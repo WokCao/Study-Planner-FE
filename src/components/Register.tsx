@@ -3,6 +3,10 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
 
+import { useMutation } from '@tanstack/react-query';
+import { fetcher } from './clients/apiClient';
+import useAuthStore from '../hooks/useAuthStore';
+
 import UserRegister from '../interface/UserRegister';
 import FormInput from './elements/FormInput';
 import ButtonPrimary from './elements/ButtonPrimary';
@@ -12,46 +16,36 @@ function Register() {
   const { register, handleSubmit, watch, formState: { errors } } = useForm<UserRegister>();
 
 	const [errorUsername, setErrorUsername] = useState('');
+	const [errorFullname, setErrorFullname] = useState('');
 	const [errorEmail, setErrorEmail] = useState('');
 	const [errorPassword, setErrorPassword] = useState('');
 
 	const [fetching, setFetching] = useState(false);
 	const navigate = useNavigate();
 
-  const onSubmit: SubmitHandler<UserRegister> = async data => {
+	const mutation = useMutation<null, Error, UserRegister>(
+		{
+			mutationFn: async (formData) => await fetcher('/user/register', formData, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+			}),
+			onSuccess: (_data) => {
+				navigate('/login');
+			},
+			onError: (error) => {
+				setFetching(false);
+				console.error('Register failed:', error.message);
+			},
+		}
+	);
+
+  const onSubmit: SubmitHandler<UserRegister> = async formData => {
 		setFetching(true);
 		setErrorUsername('');
+		setErrorFullname('');
 		setErrorEmail('');
 		setErrorPassword('');
-
-    try {
-      const response = await fetch(`${API}/user/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        navigate('/login');
-      }
-      else {
-				const errorData = await response.json();
-				const message = errorData.message;
-				if (message.toLowerCase().includes('username')) {
-					setErrorUsername(message);
-				}
-				else if (message.toLowerCase().includes('email')) {
-					setErrorEmail(message);
-				}
-				else {
-					setErrorPassword(message);
-				}
-      }
-
-			setFetching(false);
-    } catch (error) {
-      console.error('An error occurred: ', error);
-    }
+		mutation.mutate(formData);
   };
 
   return (
@@ -68,6 +62,14 @@ function Register() {
 						register={register('username', { required: 'Username is required' })}
 						errors={errors}
 						error={errorUsername}
+					/>
+					<FormInput
+						label='full name'
+						type='text'
+						register={register('fullname', { required: 'Full name is required' })}
+						errors={errors}
+						error={errorFullname}
+						errorKey='fullname'
 					/>
 					<FormInput
 						label='email'
