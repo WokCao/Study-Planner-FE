@@ -11,7 +11,7 @@ const Layout: React.FC<Props> = ({ children }) => {
       <header className="bg-white py-4 border-b-2">
         <div className="container mx-auto px-4 flex justify-between items-center">
 					<Link to="/" className='flex justify-center items-center'>
-						<img src='/gem.ico'/>
+						<img src='./gem.ico'/>
 						<h1 className="text-2xl text-violet-500 font-bold ms-2">
             	StudyGem
           	</h1>
