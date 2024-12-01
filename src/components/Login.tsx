@@ -15,7 +15,7 @@ import ButtonPrimary from './elements/ButtonPrimary';
 import ButtonLink from './elements/ButtonLink';
 
 interface LoginResponse {
-  token: string;
+  access_token: string;
 	username: string;
 	email: string;
 	fullname: string;
@@ -40,14 +40,20 @@ function Login() {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 			}),
-			onSuccess: (data: any) => {
+			onSuccess: (data) => {
 				setToken(data.access_token);
 				setData(data);
 				navigate('/');
 			},
 			onError: (error) => {
 				setFetching(false);
-				console.error('Login failed:', error.message);
+				const message = error.message.toLowerCase();
+				if (message.includes("email")) {
+					setErrorEmail(error.message);
+				}
+				else {
+					setErrorPassword(error.message);
+				}
 			},
 		}
 	);

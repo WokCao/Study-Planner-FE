@@ -12,6 +12,12 @@ import FormInput from './elements/FormInput';
 import ButtonPrimary from './elements/ButtonPrimary';
 import ButtonLink from './elements/ButtonLink';
 
+interface RegisterResponse {
+  data: UserRegister;
+	statusCode: number;
+	message: string;
+}
+
 function Register() {
   const { register, handleSubmit, watch, formState: { errors } } = useForm<UserRegister>();
 
@@ -23,14 +29,23 @@ function Register() {
 	const [fetching, setFetching] = useState(false);
 	const navigate = useNavigate();
 
-	const mutation = useMutation<null, Error, UserRegister>(
+	const mutation = useMutation<RegisterResponse, Error, UserRegister>(
 		{
 			mutationFn: async (formData) => await fetcher('/users', formData, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 			}),
-			onSuccess: (_data) => {
-				navigate('/login');
+			onSuccess: (data) => {
+				setFetching(false);
+				if (!data) return;
+				if (data.statusCode === 201) {
+					alert("Account created. You'll now be redirected to the Login page.");
+					navigate('/login');
+				}
+				else {
+					const message = data.message;
+					setErrorUsername(message);
+				}
 			},
 			onError: (error) => {
 				setFetching(false);
