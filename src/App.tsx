@@ -1,4 +1,4 @@
-import './app.css';
+import './App.css';
 import { Outlet, Route, Routes } from 'react-router-dom';
 
 import Layout from './components/Layout';
