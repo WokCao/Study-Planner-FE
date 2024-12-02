@@ -15,11 +15,18 @@ import ButtonPrimary from './elements/ButtonPrimary';
 import ButtonLink from './elements/ButtonLink';
 
 interface LoginResponse {
-  access_token: string;
-	username: string;
-	email: string;
-	fullname: string;
-	avatarUrl: string;
+	data: {
+		userInfo: {
+			username: string;
+			email: string;
+			fullname: string;
+			avatarUrl: string;
+		}
+		token: string;
+		ref: string;
+	};
+	statusCode: number;
+	message: string;
 }
 
 function Login() {
@@ -41,8 +48,8 @@ function Login() {
 				headers: { 'Content-Type': 'application/json' },
 			}),
 			onSuccess: (data) => {
-				setToken(data.access_token);
-				setData(data);
+				setToken(data.data.token);
+				setData(data.data.userInfo);
 				navigate('/');
 			},
 			onError: (error) => {
