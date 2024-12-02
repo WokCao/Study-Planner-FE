@@ -43,8 +43,9 @@ function Register() {
 					navigate('/login');
 				}
 				else {
-					const message = data.message;
-					setErrorUsername(message);
+					const message: string = data.message;
+					if (message.startsWith('Email')) setErrorEmail(message);
+					else if (message.startsWith('Username')) setErrorUsername(message);
 				}
 			},
 			onError: (error) => {
