@@ -14,7 +14,7 @@ import FormInput from './elements/FormInput';
 import ButtonPrimary from './elements/ButtonPrimary';
 // import ButtonLink from './elements/ButtonLink';
 
-import { GoogleLogin } from '@react-oauth/google';
+import { useGoogleLogin } from '@react-oauth/google';
 
 interface LoginResponse {
 	data: {
@@ -30,6 +30,7 @@ interface LoginResponse {
 	statusCode: number;
 	message: string;
 }
+
 
 function Login() {
 	const { register, handleSubmit, formState: { errors } } = useForm<UserLogin>();
@@ -74,13 +75,25 @@ function Login() {
 		mutation.mutate(formData);
 	};
 
-	const handleGoogleLogin = async (response: any) => {
-		setGoogleFetching(true);
-		const token = response.credential;
+	const handleGoogleLogin = useGoogleLogin({
+		onSuccess: (response: any) => {
+			console.log(response)
+			setGoogleFetching(true);
+			const token = response.access_token;
 
-		window.location.href = `http://localhost:3000/api/v1/auth/google?token=${token}`;
-		navigate('/')
-	};
+			fetcher('/auth/googleInfo', { token }, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' }
+			}).then((data) => {
+				console.log(data)
+			}).catch((error) => {
+				console.log(error);
+			}).finally(() => setGoogleFetching(false));
+		},
+		onError: (error: any) => {
+			alert('Failed to login with Google. Please try again')
+		}
+	})
 
 	return (
 		<>
@@ -106,10 +119,7 @@ function Login() {
 							? <ClipLoader size={30} color={"black"} loading={true} />
 							: <>
 								<ButtonPrimary label="Log in" type="submit" />
-								<GoogleLogin
-									onSuccess={handleGoogleLogin}
-									onError={() => console.error('Login Failed')}
-								/>
+								<ButtonPrimary label="Log in with Google" type="button" handleGoogleLogin={handleGoogleLogin} />
 							</>
 						}
 					</div>
