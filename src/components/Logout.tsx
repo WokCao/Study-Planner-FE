@@ -9,10 +9,12 @@ function Logout() {
 	const [fetching, setFetching] = useState(false);
   const clearToken = useAuthStore((state) => state.clearToken);
   const navigate = useNavigate();
+  const token = useAuthStore((state) => state.token);
 
   const mutation = useMutation({
     mutationFn: async () => await fetcher('/auth/logout', {
-      method: 'GET',
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` }
     }),
     onSuccess: () => {
       clearToken();
