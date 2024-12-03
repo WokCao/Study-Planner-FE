@@ -86,12 +86,22 @@ function Login() {
 				headers: { 'Content-Type': 'application/json' }
 			}).then((data) => {
 				console.log(data)
+				// setToken(data.data.token);
+				// setData(data.data.userInfo);
+				// navigate('/');
 			}).catch((error) => {
-				console.log(error);
+				setGoogleFetching(false);
+				const message: string = error.message.toLowerCase();
+				if (message.includes("email")) {
+					setErrorEmail(error.message);
+				} else if (message.includes("password")) {
+					setErrorPassword(error.message);
+				}
 			}).finally(() => setGoogleFetching(false));
 		},
 		onError: (error: any) => {
-			alert('Failed to login with Google. Please try again')
+			setGoogleFetching(false);
+			alert('Please try again!');
 		}
 	})
 
