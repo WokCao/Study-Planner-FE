@@ -11,17 +11,17 @@ import FormTitle from './elements/FormTitle';
 import FormInput from './elements/FormInput';
 import ButtonPrimary from './elements/ButtonPrimary';
 import ButtonLink from './elements/ButtonLink';
+import { useGoogleLogin } from '@react-oauth/google';
 
 interface RegisterResponse {
-  data: UserRegister;
+	data: UserRegister;
 	statusCode: number;
 	message: string;
 }
 
 function Register() {
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<UserRegister>();
+	const { register, handleSubmit, watch, formState: { errors } } = useForm<UserRegister>();
 
-	const [errorUsername, setErrorUsername] = useState('');
 	const [errorFullname, setErrorFullname] = useState('');
 	const [errorEmail, setErrorEmail] = useState('');
 	const [errorPassword, setErrorPassword] = useState('');
@@ -45,7 +45,6 @@ function Register() {
 				else {
 					const message: string = data.message;
 					if (message.startsWith('Email')) setErrorEmail(message);
-					else if (message.startsWith('Username')) setErrorUsername(message);
 				}
 			},
 			onError: (error) => {
@@ -55,26 +54,50 @@ function Register() {
 		}
 	);
 
-  const onSubmit: SubmitHandler<UserRegister> = async formData => {
+	const onSubmit: SubmitHandler<UserRegister> = async formData => {
 		setFetching(true);
-		setErrorUsername('');
 		setErrorFullname('');
 		setErrorEmail('');
 		setErrorPassword('');
 		mutation.mutate(formData);
-  };
+	};
 
-  return (
+	const handleGoogleSignup = useGoogleLogin({
+		onSuccess: (response: any) => {
+			const token = response.access_token;
+
+			fetcher('/auth/createGoogleAccount', { token }, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' }
+			}).then((data) => {
+				if (!data) return;
+				if (data.statusCode === 201) {
+					alert("Account created. You'll now be redirected to the Login page.");
+					navigate('/login');
+				}
+			}).catch((error) => {
+				const message: string = error.message.toLowerCase();
+				if (message.includes("email")) {
+					setErrorEmail(error.message);
+				}
+			})
+		},
+		onError: (error: any) => {
+			alert('Please try again!');
+		}
+	})
+
+	return (
 		<>
 			<FormTitle title='Sign Up' description='Manage your study schedules effectively.' />
 			<div className="p-6 pt-0">
 				<form className="flex flex-col justify-center items-center" onSubmit={handleSubmit(onSubmit)}>
 					<FormInput
-						label='username'
-						type='text'
-						register={register('username', { required: 'Username is required' })}
+						label='email'
+						type='email'
+						register={register('email', { required: 'Email is required' })}
 						errors={errors}
-						error={errorUsername}
+						error={errorEmail}
 					/>
 					<FormInput
 						label='full name'
@@ -83,13 +106,6 @@ function Register() {
 						errors={errors}
 						error={errorFullname}
 						errorKey='fullname'
-					/>
-					<FormInput
-						label='email'
-						type='email'
-						register={register('email', { required: 'Email is required' })}
-						errors={errors}
-						error={errorEmail}
 					/>
 					<FormInput
 						label='password'
@@ -101,22 +117,24 @@ function Register() {
 					<FormInput
 						label='confirm password'
 						type='password'
-						register={register('confirmPassword', { required: 'Please confirm password',
+						register={register('confirmPassword', {
+							required: 'Please confirm password',
 							validate: (value: string) => {
 								if (watch('password') !== value) {
 									return "Your passwords do not match";
 								}
-							}})
+							}
+						})
 						}
 						errors={errors}
 						errorKey='confirmPassword'
 					/>
 					<div className="mt-5 w-2/3 flex flex-col justify-center items-center gap-x-2">
 						{fetching
-						? <ClipLoader size={30} color={"black"} loading={true} />
-						: <>
+							? <ClipLoader size={30} color={"black"} loading={true} />
+							: <>
 								<ButtonPrimary label="Sign up" type="submit" />
-								<ButtonLink label="Sign up with Google" path="/login" />
+								<ButtonLink label="Sign up with Google" googleHandler={handleGoogleSignup} />
 							</>
 						}
 					</div>
@@ -126,7 +144,7 @@ function Register() {
 				</form>
 			</div>
 		</>
-  );
+	);
 }
 
 export default Register;
