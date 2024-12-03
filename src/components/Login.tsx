@@ -15,11 +15,11 @@ import ButtonPrimary from './elements/ButtonPrimary';
 // import ButtonLink from './elements/ButtonLink';
 
 import { useGoogleLogin } from '@react-oauth/google';
+import ButtonLink from './elements/ButtonLink';
 
 interface LoginResponse {
 	data: {
 		userInfo: {
-			username: string;
 			email: string;
 			fullname: string;
 			avatarUrl: string;
@@ -86,9 +86,9 @@ function Login() {
 				headers: { 'Content-Type': 'application/json' }
 			}).then((data) => {
 				console.log(data)
-				// setToken(data.data.token);
-				// setData(data.data.userInfo);
-				// navigate('/');
+				setToken(data.data.token);
+				setData(data.data.userInfo);
+				navigate('/');
 			}).catch((error) => {
 				setGoogleFetching(false);
 				const message: string = error.message.toLowerCase();
@@ -129,7 +129,7 @@ function Login() {
 							? <ClipLoader size={30} color={"black"} loading={true} />
 							: <>
 								<ButtonPrimary label="Log in" type="submit" />
-								<ButtonPrimary label="Log in with Google" type="button" handleGoogleLogin={handleGoogleLogin} />
+								<ButtonLink label="Log in with Google" googleHandler={handleGoogleLogin} />
 							</>
 						}
 					</div>
