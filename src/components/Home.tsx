@@ -35,7 +35,7 @@ function Home() {
         </div>
       </section>
 
-      <section className="w-5/6 absolute top-0 right-0">
+      <section className="w-5/6 h-full absolute top-0 right-0">
           <Dashboard />
       </section>
     </div>
