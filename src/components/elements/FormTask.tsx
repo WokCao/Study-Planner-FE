@@ -1,7 +1,7 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import FormInput from "./FormInput";
 import FormTitle from "./FormTitle";
-import AddTask from "../../interface/AddTask";
+import AddTask from "../../interface/Task";
 import ButtonPrimary from "./ButtonPrimary";
 import { ClipLoader } from "react-spinners";
 import { useState } from "react";
@@ -26,19 +26,10 @@ const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask }) => {
     return (
         <div>
             <FormTitle title="Add a new task" description="Fill in the required fields to add a task" />
-            <div className="p-6 pt-0 mt-10">
+            <div className="p-6 pt-0 mt-7">
                 <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
-                    <div className="flex flex-wrap justify-between">
-                        <div>
-                            <FormInput
-                                label='subject'
-                                type='text'
-                                register={register('subject', { required: 'Subject is required' })}
-                                errors={errors}
-                            />
-                        </div>
-
-                        <div>
+                    <div className="grid desktop:grid-cols-3 laptop:grid-cols-2 tablet:grid-cols-1 gap-4">
+                        <div className="flex flex-col items-center">
                             <FormInput
                                 label='name'
                                 type='text'
@@ -47,23 +38,53 @@ const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask }) => {
                             />
                         </div>
 
-                        <div>
+                        <div className="flex flex-col items-center">
                             <FormInput
-                                label='deadline'
-                                type='date'
-                                register={register('deadline', { required: 'Deadline is required' })}
+                                label='description'
+                                type='text'
+                                register={register('description')}
                                 errors={errors}
                             />
                         </div>
 
-                        <div>
+                        <div className="flex flex-col items-center">
                             <FormInput
-                                label='time'
-                                type='time'
-                                register={register('time', { required: 'Time is required' })}
+                                label='priority level'
+                                type='text'
+                                register={register('priorityLevel')}
                                 errors={errors}
                             />
                         </div>
+
+                        <div className="flex flex-col items-center">
+                            <FormInput
+                                label='Estimated time'
+                                type='text'
+                                register={register('estimatedTime', { required: 'Estimated time is required' })}
+                                errors={errors}
+                            />
+                        </div>
+
+
+                        <div className="flex flex-col items-center">
+                            <FormInput
+                                label='deadline'
+                                type='date'
+                                register={register('deadline')}
+                                errors={errors}
+                            />
+                        </div>
+
+                        <div className="flex flex-col items-center">
+                            <FormInput
+                                label='status'
+                                type='text'
+                                register={register('status', { required: 'Status is required' })}
+                                errors={errors}
+                            />
+                        </div>
+
+                        
                     </div>
 
                     <div className="mt-10 flex flex-col justify-center items-center gap-x-2">
