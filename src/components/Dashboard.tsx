@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ButtonTimer from "./elements/ButtonTimer";
 import { faAngleRight, faGripLinesVertical, faPlay, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import FormTask from "./elements/FormTask";
@@ -9,6 +9,7 @@ const Dashboard = ({ }) => {
     const [label, setLabel] = useState('Start');
     const [icon, setIcon] = useState<IconDefinition>(faPlay);
     const [tasks, setTasks] = useState<AddTask[]>([]);
+    const [currentTime, setCurrentTime] = useState<string>('Morning');
 
     const handleSetComponents = () => {
         if (label === 'Start') {
@@ -24,13 +25,35 @@ const Dashboard = ({ }) => {
         setTasks([...tasks, task]);
     }
 
+    useEffect(() => {
+        const updateTime = () => {
+            const now = new Date();
+            const formattedTime = now.toLocaleTimeString();
+            const hour = parseInt(formattedTime.split(':')[0]);
+            if (hour >= 0 && hour <= 11) {
+                setCurrentTime('Morning');
+            } else if (hour >= 12 && hour <= 17) {
+                setCurrentTime('Afternoon');
+            } else if (hour >= 18 && hour <= 20) {
+                setCurrentTime('Evening');
+            } else {
+                setCurrentTime('Night');
+            }
+        }
+
+        updateTime();
+        const intervalId = setInterval(updateTime, 1000 * 30);
+
+        return () => clearInterval(intervalId);
+    }, []);
+
     return (
         <div className="p-4 flex items-start h-full overflow-auto gap-4 scroll-smooth">
             <div className="w-9/12 space-y-4">
                 <div className="p-4 bg-white rounded-3xl">
                     <section className="bg-gradient-to-b from-fuchsia-400 to-violet-300 p-4 rounded-3xl text-white">
-                        <h1 className="font-bold text-4xl mb-3">Good Morning!</h1>
-                        <p>You have 0 task(s) due today</p>
+                        <h1 className="font-bold text-4xl mb-3">Good {currentTime}!</h1>
+                        <p>You have {tasks.length} task(s) due today</p>
                     </section>
                 </div>
 
