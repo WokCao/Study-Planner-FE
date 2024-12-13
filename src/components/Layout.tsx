@@ -32,7 +32,7 @@ const Layout: React.FC<Props> = ({ children }) => {
         </div>
       </header>
       {/* Main content */}
-      <main className="flex-grow container">
+      <main className="flex-grow">
 				{children}
 			</main>
     </div>
