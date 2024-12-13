@@ -6,13 +6,20 @@ import ButtonPrimary from "./ButtonPrimary";
 import { ClipLoader } from "react-spinners";
 import { useState } from "react";
 
-const FormTask = () => {
+interface FormTaskInterface {
+    handleAddTask: (task: AddTask) => void; 
+}
+
+const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask }) => {
     const { register, handleSubmit, formState: { errors } } = useForm<AddTask>();
     const [fetching, setFetching] = useState(false);
 
     const onSubmit: SubmitHandler<AddTask> = async formData => {
         setFetching(true);
-        console.log(formData)
+        handleAddTask(formData);
+        setTimeout(() => {
+            setFetching(false);
+        }, 2000)
 
         // mutation.mutate(formData);
     };
@@ -21,12 +28,21 @@ const FormTask = () => {
             <FormTitle title="Add a new task" description="Fill in the required fields to add a task" />
             <div className="p-6 pt-0 mt-10">
                 <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
-                    <div className="flex justify-around">
+                    <div className="flex flex-wrap justify-between">
                         <div>
                             <FormInput
                                 label='subject'
                                 type='text'
                                 register={register('subject', { required: 'Subject is required' })}
+                                errors={errors}
+                            />
+                        </div>
+
+                        <div>
+                            <FormInput
+                                label='name'
+                                type='text'
+                                register={register('name', { required: 'Task name is required' })}
                                 errors={errors}
                             />
                         </div>
