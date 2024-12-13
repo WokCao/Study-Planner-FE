@@ -6,12 +6,12 @@ const Layout: React.FC<Props> = ({ children }) => {
   const isAuthenticated = true;
 
   return (
-    <div className="bg-violet-50 min-h-screen flex flex-col">
+    <div className="bg-violet-50 h-screen flex flex-col">
       {/* Header */}
       <header className="bg-white py-4 border-b-2">
         <div className="container mx-auto px-4 flex justify-between items-center">
 					<Link to="/" className='flex justify-center items-center'>
-						<img src='./gem.ico'/>
+						<img src='/Study-Planner-FE/gem.ico'/>
 						<h1 className="text-2xl text-violet-500 font-bold ms-2">
             	StudyGem
           	</h1>
@@ -32,7 +32,7 @@ const Layout: React.FC<Props> = ({ children }) => {
         </div>
       </header>
       {/* Main content */}
-      <main className="flex-grow container mx-auto p-4">
+      <main className="flex-grow container">
 				{children}
 			</main>
     </div>
