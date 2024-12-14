@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import ButtonTimer from "./elements/ButtonTimer";
-import { faAngleRight, faGripLinesVertical, faPlay, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { faGripLinesVertical, faPlay, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import FormTask from "./elements/FormTask";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Task from "../interface/Task";
 import { format } from "date-fns";
 import { tasksData } from "../data/tasksData";
+import SingleTask from "./elements/Task";
 
 interface DashboardInterface {
     setCurrentOption: React.Dispatch<React.SetStateAction<number>>
@@ -87,39 +87,13 @@ const Dashboard: React.FC<DashboardInterface> = ({ setCurrentOption }) => {
                 {todayTasks.length > 0 && <p className="text-xl !mt-20">Today's tasks</p>}
 
                 {todayTasks.map((task: Task) => (
-                    <div className="px-16 py-4 bg-white rounded-3xl flex items-center hover:cursor-pointer">
-                        <section className="flex flex-col w-10/12">
-                            <p className="text-xl mb-2 font-semibold">{task.name}</p>
-                            <div className="flex">
-                                <p className="w-1/4 truncate me-3">Priority: {task.priorityLevel || 'None'}</p>
-                                <p className="w-1/4 truncate me-3">Status: {task.status || 'None'}</p>
-                                <p className="truncate">Estimated time: {task.estimatedTime} {task.estimatedTimeUnit}</p>
-                            </div>
-                        </section>
-                        <section className="ms-auto flex items-center">
-                            <span className="mx-2 truncate">{task.deadline}</span>
-                            <FontAwesomeIcon icon={faAngleRight} />
-                        </section>
-                    </div>
+                    <SingleTask task={task} />
                 ))}
 
                 {tasks.length > 0 && <p className="text-xl !mt-5">Remain tasks</p>}
 
                 {tasks.slice(0, 5).map((task: Task) => (
-                    <div className="px-16 py-4 bg-white rounded-3xl flex items-center hover:cursor-pointer">
-                        <section className="flex flex-col w-10/12">
-                            <p className="text-xl mb-2 font-semibold">{task.name}</p>
-                            <div className="flex">
-                                <p className="w-1/4 truncate me-3">Priority: {task.priorityLevel || 'None'}</p>
-                                <p className="w-1/4 truncate me-3">Status: {task.status || 'None'}</p>
-                                <p className="truncate">Estimated time: {task.estimatedTime} {task.estimatedTimeUnit}</p>
-                            </div>
-                        </section>
-                        <section className="ms-auto flex items-center">
-                            <span className="mx-2 truncate">{task.deadline}</span>
-                            <FontAwesomeIcon icon={faAngleRight} />
-                        </section>
-                    </div>
+                    <SingleTask task={task} />
                 ))}
 
                 {tasks.length > 5 &&
