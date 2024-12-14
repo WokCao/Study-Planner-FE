@@ -5,6 +5,7 @@ import FormTask from "./elements/FormTask";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Task from "../interface/Task";
 import { format } from "date-fns";
+import { tasksData } from "../data/tasksData";
 
 interface DashboardInterface {
     setCurrentOption: React.Dispatch<React.SetStateAction<number>>
@@ -61,7 +62,7 @@ const Dashboard: React.FC<DashboardInterface> = ({ setCurrentOption }) => {
         }
 
         const loadTasks = () => {
-
+            setTasks(tasksData);
         }
 
         updateTime();
@@ -70,7 +71,7 @@ const Dashboard: React.FC<DashboardInterface> = ({ setCurrentOption }) => {
     }, [tasks]);
 
     return (
-        <div className="p-4 flex items-start h-full overflow-auto gap-4 scroll-smooth">
+        <div className="p-4 flex items-start h-full overflow-y-auto overflow-x-hidden gap-4 scroll-smooth">
             <div className="w-9/12 space-y-4 mb-32">
                 <div className="p-4 bg-white rounded-3xl">
                     <section className="bg-gradient-to-b from-fuchsia-400 to-violet-300 p-4 rounded-3xl text-white">
@@ -87,16 +88,16 @@ const Dashboard: React.FC<DashboardInterface> = ({ setCurrentOption }) => {
 
                 {todayTasks.map((task: Task) => (
                     <div className="px-16 py-4 bg-white rounded-3xl flex items-center hover:cursor-pointer">
-                        <section className="flex flex-col">
+                        <section className="flex flex-col w-10/12">
                             <p className="text-xl mb-2 font-semibold">{task.name}</p>
-                            <div className="flex justify-around">
-                                <p className="me-10">Priority: {task.priorityLevel || 'None'}</p>
-                                <p className="me-10">Status: {task.status || 'None'}</p>
-                                <p className="me-10">Estimated time: {task.estimatedTime} {task.estimatedTimeUnit}</p>
+                            <div className="flex">
+                                <p className="w-1/4 truncate me-3">Priority: {task.priorityLevel || 'None'}</p>
+                                <p className="w-1/4 truncate me-3">Status: {task.status || 'None'}</p>
+                                <p className="truncate">Estimated time: {task.estimatedTime} {task.estimatedTimeUnit}</p>
                             </div>
                         </section>
                         <section className="ms-auto flex items-center">
-                            <span className="me-4">{task.deadline}</span>
+                            <span className="mx-2 truncate">{task.deadline}</span>
                             <FontAwesomeIcon icon={faAngleRight} />
                         </section>
                     </div>
@@ -104,24 +105,24 @@ const Dashboard: React.FC<DashboardInterface> = ({ setCurrentOption }) => {
 
                 {tasks.length > 0 && <p className="text-xl !mt-5">Remain tasks</p>}
 
-                {tasks.map((task: Task) => (
+                {tasks.slice(0, 5).map((task: Task) => (
                     <div className="px-16 py-4 bg-white rounded-3xl flex items-center hover:cursor-pointer">
-                        <section className="flex flex-col">
+                        <section className="flex flex-col w-10/12">
                             <p className="text-xl mb-2 font-semibold">{task.name}</p>
-                            <div className="flex justify-around">
-                                <p className="me-10">Priority: {task.priorityLevel || 'None'}</p>
-                                <p className="me-10">Status: {task.status || 'None'}</p>
-                                <p>Estimated time: {task.estimatedTime} {task.estimatedTimeUnit}</p>
+                            <div className="flex">
+                                <p className="w-1/4 truncate me-3">Priority: {task.priorityLevel || 'None'}</p>
+                                <p className="w-1/4 truncate me-3">Status: {task.status || 'None'}</p>
+                                <p className="truncate">Estimated time: {task.estimatedTime} {task.estimatedTimeUnit}</p>
                             </div>
                         </section>
                         <section className="ms-auto flex items-center">
-                            <span className="me-4">{task.deadline}</span>
+                            <span className="mx-2 truncate">{task.deadline}</span>
                             <FontAwesomeIcon icon={faAngleRight} />
                         </section>
                     </div>
                 ))}
 
-                {tasks.length > 2 &&
+                {tasks.length > 5 &&
                     <div className="flex items-center">
                         <hr className="flex-grow border-t border-gray-300" />
                         <span className="mx-4 text-sm font-medium text-slate-500 hover:cursor-pointer" onClick={() => setCurrentOption(3)}>See all</span>

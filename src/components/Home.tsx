@@ -22,7 +22,7 @@ function Home() {
 
   return (
     <div className="h-full relative">
-      <section className="bg-white w-1/6 py-3 h-full flex flex-col justify-between absolute top-0 left-0">
+      <section className="bg-white w-1/6 py-3 h-full flex flex-col justify-between absolute top-0 left-0 overflow-auto">
         <div>
           {dataTop?.map((option: MenuOptionsInterface) => (
             <MenuOption label={option.label} svg={option.svg} id={option.id} currentOption={currentOption} setCurrentOption={setCurrentOption} />
