@@ -4,7 +4,7 @@ import Task from "../../interface/Task";
 
 const SingleTask = ({ task }: { task: Task}) => {
     return (
-        <div className="px-16 py-4 bg-white rounded-3xl flex items-center hover:cursor-pointer">
+        <div className="px-16 py-4 bg-white rounded-3xl flex items-center hover:cursor-pointer hover:shadow-xl">
             <section className="flex flex-col w-10/12">
                 <p className="text-xl mb-2 font-semibold">{task.name}</p>
                 <div className="flex">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Task from "../interface/Task";
 import { tasksData } from "../data/tasksData";
 import SingleTask from "./elements/Task";
@@ -6,6 +6,8 @@ import ReactPaginate from 'react-paginate';
 
 const Tasks = () => {
     const tasksPerPage = 5;
+    const thisMonthRef = useRef<HTMLParagraphElement>(null);
+    const otherMonthsRef = useRef<HTMLParagraphElement>(null);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [thisMonthTasks, setThisMonthsTasks] = useState<Task[]>([]);
     const [otherMonthsTasks, setOtherMonthsTasks] = useState<Task[]>([]);
@@ -22,10 +24,12 @@ const Tasks = () => {
 
     const handlePageClickThisMonth = (event: { selected: number }) => {
         setThisMonthCurrentPage(event.selected);
+        thisMonthRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
     const handlePageClickOtherMonths = (event: { selected: number }) => {
         setOtherMonthsCurrentPage(event.selected);
+        otherMonthsRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
     useEffect(() => {
@@ -54,7 +58,7 @@ const Tasks = () => {
             <h1 className="text-2xl font-bold select-none">All Tasks ({tasks.length})</h1>
             <hr className="border-2 rounded-full" />
 
-            <p className="font-semibold ms-5 text-lg">This month ({thisMonthTasks.length})</p>
+            <p ref={thisMonthRef} className="font-semibold ms-5 text-lg select-none">This month ({thisMonthTasks.length})</p>
             {thisMonthCurrentTasks.length > 0 ? thisMonthCurrentTasks.map((task: Task) => (
                 <SingleTask task={task} />
             )) : (
@@ -76,7 +80,7 @@ const Tasks = () => {
                 activeClassName={'bg-purple-400 text-white'}
             />
 
-            <p className="font-semibold ms-5 text-lg">Other months ({otherMonthsTasks.length})</p>
+            <p ref={otherMonthsRef} className="font-semibold ms-5 text-lg select-none">Other months ({otherMonthsTasks.length})</p>
             {otherMonthsCurrentTasks.length > 0 ? otherMonthsCurrentTasks.map((task: Task) => (
                 <SingleTask task={task} />
             )) : (
