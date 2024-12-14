@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import ButtonTimer from "./elements/ButtonTimer";
 import { faAngleRight, faGripLinesVertical, faPlay, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import FormTask from "./elements/FormTask";
-import AddTask from "../interface/Task";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Task from "../interface/Task";
 import { format } from "date-fns";
@@ -14,8 +13,8 @@ interface DashboardInterface {
 const Dashboard: React.FC<DashboardInterface> = ({ setCurrentOption }) => {
     const [label, setLabel] = useState('Start');
     const [icon, setIcon] = useState<IconDefinition>(faPlay);
-    const [tasks, setTasks] = useState<AddTask[]>([]);
-    const [todayTasks, setTodayTasks] = useState<AddTask[]>([]);
+    const [tasks, setTasks] = useState<Task[]>([]);
+    const [todayTasks, setTodayTasks] = useState<Task[]>([]);
     const [currentTime, setCurrentTime] = useState<string>('Morning');
 
     const handleSetComponents = () => {
@@ -28,7 +27,7 @@ const Dashboard: React.FC<DashboardInterface> = ({ setCurrentOption }) => {
         }
     }
 
-    const handleAddTask = (task: AddTask) => {
+    const handleAddTask = (task: Task) => {
         console.log(task)
         setTasks([...tasks, task]);
     }
@@ -86,7 +85,7 @@ const Dashboard: React.FC<DashboardInterface> = ({ setCurrentOption }) => {
 
                 {todayTasks.length > 0 && <p className="text-xl !mt-20">Today's tasks</p>}
 
-                {todayTasks.map((task: AddTask) => (
+                {todayTasks.map((task: Task) => (
                     <div className="px-16 py-4 bg-white rounded-3xl flex items-center hover:cursor-pointer">
                         <section className="flex flex-col">
                             <p className="text-xl mb-2 font-semibold">{task.name}</p>
@@ -105,7 +104,7 @@ const Dashboard: React.FC<DashboardInterface> = ({ setCurrentOption }) => {
 
                 {tasks.length > 0 && <p className="text-xl !mt-5">Remain tasks</p>}
 
-                {tasks.map((task: AddTask) => (
+                {tasks.map((task: Task) => (
                     <div className="px-16 py-4 bg-white rounded-3xl flex items-center hover:cursor-pointer">
                         <section className="flex flex-col">
                             <p className="text-xl mb-2 font-semibold">{task.name}</p>
