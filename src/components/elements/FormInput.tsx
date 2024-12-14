@@ -11,9 +11,9 @@ interface FormInputProps {
 
 const FormInput: React.FC<FormInputProps> = ({ label, type, register, errors, errorKey, error }) => {
 	let field = errorKey || label;
-	const priorityLevel = ['High', 'Medium', 'Low'];
+	const priorityLevel = ['High', 'Medium', 'Low', 'None'];
 	const estimatedTimeUnit = ['second(s)', 'minute(s)', 'hour(s)', 'day(s)', 'week(s)', 'month(s)', 'year(s)'];
-	const status = ['Todo', 'In Progress', 'Completed', 'Expired'];
+	const status = ['Todo', 'In Progress', 'Completed', 'Expired', 'None'];
 	const additionalRegister = register.length === 2 ? register[1] : register[0];
 
 	const valuesToUse =

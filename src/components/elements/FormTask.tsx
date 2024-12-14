@@ -11,7 +11,7 @@ interface FormTaskInterface {
 }
 
 const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask }) => {
-    const { register, handleSubmit, formState: { errors } } = useForm<Task>();
+    const { register, handleSubmit, reset, formState: { errors } } = useForm<Task>();
     const [fetching, setFetching] = useState(false);
 
     const simpleDateValidation = (dateData: string) => {
@@ -26,6 +26,7 @@ const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask }) => {
         handleAddTask(formData);
         setTimeout(() => {
             setFetching(false);
+            reset();
         }, 1000)
 
         // mutation.mutate(formData);

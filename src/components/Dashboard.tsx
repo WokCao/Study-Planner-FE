@@ -2,13 +2,20 @@ import { useEffect, useState } from "react";
 import ButtonTimer from "./elements/ButtonTimer";
 import { faAngleRight, faGripLinesVertical, faPlay, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import FormTask from "./elements/FormTask";
-import AddTask from "../interface/AddTask";
+import AddTask from "../interface/Task";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Task from "../interface/Task";
+import { format } from "date-fns";
 
-const Dashboard = ({ }) => {
+interface DashboardInterface {
+    setCurrentOption: React.Dispatch<React.SetStateAction<number>>
+}
+
+const Dashboard: React.FC<DashboardInterface> = ({ setCurrentOption }) => {
     const [label, setLabel] = useState('Start');
     const [icon, setIcon] = useState<IconDefinition>(faPlay);
     const [tasks, setTasks] = useState<AddTask[]>([]);
+    const [todayTasks, setTodayTasks] = useState<AddTask[]>([]);
     const [currentTime, setCurrentTime] = useState<string>('Morning');
 
     const handleSetComponents = () => {
@@ -22,6 +29,7 @@ const Dashboard = ({ }) => {
     }
 
     const handleAddTask = (task: AddTask) => {
+        console.log(task)
         setTasks([...tasks, task]);
     }
 
@@ -41,19 +49,34 @@ const Dashboard = ({ }) => {
             }
         }
 
-        updateTime();
-        const intervalId = setInterval(updateTime, 1000 * 30);
+        const dueTodayTask = () => {
+            const now = new Date();
+            const formattedDate = format(now, 'yyyy-MM-dd');
+            const todayTasksData: Task[] = [];
 
-        return () => clearInterval(intervalId);
-    }, []);
+            tasks.map((task: Task) => {
+                if (task.deadline === formattedDate) todayTasksData.push(task);
+            })
+
+            setTodayTasks(todayTasksData);
+        }
+
+        const loadTasks = () => {
+
+        }
+
+        updateTime();
+        dueTodayTask();
+        loadTasks();
+    }, [tasks]);
 
     return (
         <div className="p-4 flex items-start h-full overflow-auto gap-4 scroll-smooth">
-            <div className="w-9/12 space-y-4">
+            <div className="w-9/12 space-y-4 mb-32">
                 <div className="p-4 bg-white rounded-3xl">
                     <section className="bg-gradient-to-b from-fuchsia-400 to-violet-300 p-4 rounded-3xl text-white">
                         <h1 className="font-bold text-4xl mb-3">Good {currentTime}!</h1>
-                        <p>You have {tasks.length} task(s) due today</p>
+                        <p>You have {todayTasks.length} task(s) due today</p>
                     </section>
                 </div>
 
@@ -61,23 +84,50 @@ const Dashboard = ({ }) => {
                     <FormTask handleAddTask={handleAddTask} />
                 </div>
 
-                <p className="text-xl !mt-10">Upcoming tasks</p>
+                {todayTasks.length > 0 && <p className="text-xl !mt-20">Today's tasks</p>}
+
+                {todayTasks.map((task: AddTask) => (
+                    <div className="px-16 py-4 bg-white rounded-3xl flex items-center hover:cursor-pointer">
+                        <section className="flex flex-col">
+                            <p className="text-xl mb-2 font-semibold">{task.name}</p>
+                            <div className="flex justify-around">
+                                <p className="me-10">Priority: {task.priorityLevel || 'None'}</p>
+                                <p className="me-10">Status: {task.status || 'None'}</p>
+                                <p className="me-10">Estimated time: {task.estimatedTime} {task.estimatedTimeUnit}</p>
+                            </div>
+                        </section>
+                        <section className="ms-auto flex items-center">
+                            <span className="me-4">{task.deadline}</span>
+                            <FontAwesomeIcon icon={faAngleRight} />
+                        </section>
+                    </div>
+                ))}
+
+                {tasks.length > 0 && <p className="text-xl !mt-5">Remain tasks</p>}
 
                 {tasks.map((task: AddTask) => (
                     <div className="px-16 py-4 bg-white rounded-3xl flex items-center hover:cursor-pointer">
                         <section className="flex flex-col">
                             <p className="text-xl mb-2 font-semibold">{task.name}</p>
                             <div className="flex justify-around">
-                                <p className="me-10">{task.subject}</p>
-                                <p>Progress: 0%</p>
+                                <p className="me-10">Priority: {task.priorityLevel || 'None'}</p>
+                                <p className="me-10">Status: {task.status || 'None'}</p>
+                                <p>Estimated time: {task.estimatedTime} {task.estimatedTimeUnit}</p>
                             </div>
                         </section>
                         <section className="ms-auto flex items-center">
-                            <span className="me-4">{task.deadline + '  ' + task.time}</span>
+                            <span className="me-4">{task.deadline}</span>
                             <FontAwesomeIcon icon={faAngleRight} />
                         </section>
                     </div>
                 ))}
+
+                {tasks.length > 2 &&
+                    <div className="flex items-center">
+                        <hr className="flex-grow border-t border-gray-300" />
+                        <span className="mx-4 text-sm font-medium text-slate-500 hover:cursor-pointer" onClick={() => setCurrentOption(3)}>See all</span>
+                        <hr className="flex-grow border-t border-gray-300" />
+                    </div>}
             </div>
 
             <div className="p-4 bg-white rounded-3xl w-3/12">

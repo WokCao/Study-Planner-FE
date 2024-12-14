@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { mockUpDataTop, mockUpDataBottom } from "../data/menuData"
 import MenuOption from "./elements/MenuOption";
 import Dashboard from "./Dashboard";
+import Tasks from "./Tasks";
 
 interface MenuOptionsInterface {
   id: number;
@@ -36,7 +37,8 @@ function Home() {
       </section>
 
       <section className="w-5/6 h-full absolute top-0 right-0">
-          <Dashboard />
+          {currentOption === 1 && <Dashboard setCurrentOption={setCurrentOption} />}
+          {currentOption === 3 && <Tasks />}
       </section>
     </div>
   );
