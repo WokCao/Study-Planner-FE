@@ -7,26 +7,55 @@ import ReactPaginate from 'react-paginate';
 const Tasks = () => {
     const tasksPerPage = 5;
     const [tasks, setTasks] = useState<Task[]>([]);
-    const [currentPage, setCurrentPage] = useState(0);
+    const [thisMonthTasks, setThisMonthsTasks] = useState<Task[]>([]);
+    const [otherMonthsTasks, setOtherMonthsTasks] = useState<Task[]>([]);
+    const [thisMonthCurrentPage, setThisMonthCurrentPage] = useState(0);
+    const [otherMonthsCurrentPage, setOtherMonthsCurrentPage] = useState(0);
 
-    const offset = currentPage * tasksPerPage;
-    const currentTasks = tasks.slice(offset, offset + tasksPerPage);
-    const pageCount = Math.ceil(tasks.length / tasksPerPage);
+    const thisMonthOffset = thisMonthCurrentPage * tasksPerPage;
+    const thisMonthCurrentTasks = thisMonthTasks.slice(thisMonthOffset, thisMonthOffset + tasksPerPage);
+    const thisMonthPageCount = Math.ceil(thisMonthTasks.length / tasksPerPage);
 
-    const handlePageClick = (event: { selected: number }) => {
-        setCurrentPage(event.selected);
+    const otherMonthsOffset = otherMonthsCurrentPage * tasksPerPage;
+    const otherMonthsCurrentTasks = otherMonthsTasks.slice(otherMonthsOffset, otherMonthsOffset + tasksPerPage);
+    const otherMonthsPageCount = Math.ceil(otherMonthsTasks.length / tasksPerPage);
+
+    const handlePageClickThisMonth = (event: { selected: number }) => {
+        setThisMonthCurrentPage(event.selected);
+    };
+
+    const handlePageClickOtherMonths = (event: { selected: number }) => {
+        setOtherMonthsCurrentPage(event.selected);
     };
 
     useEffect(() => {
+        // call API here to get tasks (total tasks, total this month tasks, total other months tasks, 1 page of this month tasks + other months tasks)
         setTasks(tasksData);
+        const now = new Date();
+        const month = now.getMonth() + 1;
+        const year = now.getFullYear();
+
+        const thisMonthTasksData: Task[] = [];
+        const otherMonthsTasksData: Task[] = [];
+        tasksData.map((singleTask: Task) => {
+            const dateArray = singleTask.deadline.split('-').map(Number);
+            if (dateArray[0] === year && dateArray[1] === month) {
+                thisMonthTasksData.push(singleTask);
+            } else {
+                otherMonthsTasksData.push(singleTask);
+            }
+        })
+
+        setThisMonthsTasks(thisMonthTasksData);
+        setOtherMonthsTasks(otherMonthsTasksData);
     }, [])
     return (
         <div className="p-4 flex flex-col h-full overflow-y-auto overflow-x-hidden gap-4 scroll-smooth">
             <h1 className="text-2xl font-bold select-none">All Tasks ({tasks.length})</h1>
             <hr className="border-2 rounded-full" />
 
-            <p className="font-semibold ms-5 text-lg">This month</p>
-            {currentTasks.length > 0 ? currentTasks.map((task: Task) => (
+            <p className="font-semibold ms-5 text-lg">This month ({thisMonthTasks.length})</p>
+            {thisMonthCurrentTasks.length > 0 ? thisMonthCurrentTasks.map((task: Task) => (
                 <SingleTask task={task} />
             )) : (
                 <h1 className="text-lg text-slate-400 h-full flex items-center justify-center select-none">No tasks</h1>
@@ -35,9 +64,31 @@ const Tasks = () => {
             <ReactPaginate
                 breakLabel="..."
                 nextLabel="Next"
-                onPageChange={handlePageClick}
+                onPageChange={handlePageClickThisMonth}
                 pageRangeDisplayed={5}
-                pageCount={pageCount}
+                pageCount={thisMonthPageCount}
+                previousLabel="Previous"
+                renderOnZeroPageCount={null}
+                containerClassName={'pagination flex justify-center my-4'}
+                pageClassName={'page-item px-3 py-1 border rounded-full mx-1 select-none'}
+                previousClassName={'px-3 py-1 rounded-lg select-none'}
+                nextClassName={'px-3 py-1 rounded-lg select-none'}
+                activeClassName={'bg-purple-400 text-white'}
+            />
+
+            <p className="font-semibold ms-5 text-lg">Other months ({otherMonthsTasks.length})</p>
+            {otherMonthsCurrentTasks.length > 0 ? otherMonthsCurrentTasks.map((task: Task) => (
+                <SingleTask task={task} />
+            )) : (
+                <h1 className="text-lg text-slate-400 h-full flex items-center justify-center select-none">No tasks</h1>
+            )}
+
+            <ReactPaginate
+                breakLabel="..."
+                nextLabel="Next"
+                onPageChange={handlePageClickOtherMonths}
+                pageRangeDisplayed={5}
+                pageCount={otherMonthsPageCount}
                 previousLabel="Previous"
                 renderOnZeroPageCount={null}
                 containerClassName={'pagination flex justify-center my-4'}
