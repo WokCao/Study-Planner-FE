@@ -83,6 +83,7 @@ function Register() {
 			})
 		},
 		onError: (error: any) => {
+			console.error(error);
 			alert('Please try again!');
 		}
 	})

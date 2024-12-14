@@ -75,8 +75,10 @@ const Tasks = () => {
                 renderOnZeroPageCount={null}
                 containerClassName={'pagination flex justify-center my-4'}
                 pageClassName={'page-item px-3 py-1 border rounded-full mx-1 select-none'}
-                previousClassName={'px-3 py-1 rounded-lg select-none'}
+                previousClassName={`px-3 py-1 rounded-lg select-none ${thisMonthCurrentPage === 0 ? 'text-slate-300' : ''}`}
+                previousLinkClassName={`${thisMonthCurrentPage === 0 ? 'text-slate-300 !cursor-not-allowed' : ''}`}
                 nextClassName={'px-3 py-1 rounded-lg select-none'}
+                nextLinkClassName={`${thisMonthCurrentPage === thisMonthPageCount - 1 ? 'text-slate-300 !cursor-not-allowed' : ''}`}
                 activeClassName={'bg-purple-400 text-white'}
             />
 
@@ -98,7 +100,9 @@ const Tasks = () => {
                 containerClassName={'pagination flex justify-center my-4'}
                 pageClassName={'page-item px-3 py-1 border rounded-full mx-1 select-none'}
                 previousClassName={'px-3 py-1 rounded-lg select-none'}
+                previousLinkClassName={`${otherMonthsCurrentPage === 0 ? 'text-slate-300 !cursor-not-allowed' : ''}`}
                 nextClassName={'px-3 py-1 rounded-lg select-none'}
+                nextLinkClassName={`${otherMonthsCurrentPage === otherMonthsPageCount - 1 ? 'text-slate-300 !cursor-not-allowed' : ''}`}
                 activeClassName={'bg-purple-400 text-white'}
             />
         </div>
