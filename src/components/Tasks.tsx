@@ -9,7 +9,7 @@ import useAuthStore from "../hooks/useAuthStore";
 import { format } from "date-fns";
 
 const Tasks = () => {
-    const tasksPerPage = 5;
+    // const tasksPerPage = 5;
     const thisMonthRef = useRef<HTMLParagraphElement>(null);
     const otherMonthsRef = useRef<HTMLParagraphElement>(null);
     const [numberOfTasks, setNumberOfTasks] = useState(0);
@@ -32,12 +32,6 @@ const Tasks = () => {
 
     const token = useAuthStore((state) => state.token);
     const navigate = useNavigate();
-
-    const thisMonthOffset = thisMonthCurrentPage * tasksPerPage;
-    const thisMonthCurrentTasks = thisMonthTasks.slice(thisMonthOffset, thisMonthOffset + tasksPerPage);
-
-    const otherMonthsOffset = otherMonthsCurrentPage * tasksPerPage;
-    const otherMonthsCurrentTasks = otherMonthsTasks.slice(otherMonthsOffset, otherMonthsOffset + tasksPerPage);
 
     const identifyEstimatedTime = (timeObject: any) => {
         let timeValue = 0;
@@ -85,7 +79,6 @@ const Tasks = () => {
             }
         },
         onError: (error) => {
-            console.log(error.message);
             if (error.message.startsWith('Unauthorized')) {
                 navigate('Login');
             }
@@ -119,7 +112,6 @@ const Tasks = () => {
                 task.deadline = formattedDate;
 
             })
-
             setThisMonthsTasks(tasks);
 
             if (data.statusCode === 200) {
@@ -178,11 +170,13 @@ const Tasks = () => {
     });
 
     const handlePageClickThisMonth = (event: { selected: number }) => {
+        mutationGetThisMonthTask.mutate(event.selected + 1);
         setThisMonthCurrentPage(event.selected);
         thisMonthRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
     const handlePageClickOtherMonths = (event: { selected: number }) => {
+        mutationGetThisMonthTask.mutate(event.selected + 1);
         setOtherMonthsCurrentPage(event.selected);
         otherMonthsRef.current?.scrollIntoView({ behavior: "smooth" });
     };
@@ -199,7 +193,7 @@ const Tasks = () => {
             <hr className="border-2 rounded-full" />
 
             <p ref={thisMonthRef} className="font-semibold ms-5 text-lg select-none">This month ({totalThisMonthTasks})</p>
-            {thisMonthCurrentTasks.length > 0 ? thisMonthCurrentTasks.map((task: Task) => (
+            {thisMonthTasks.length > 0 ? thisMonthTasks.map((task: Task) => (
                 <SingleTask task={task} />
             )) : (
                 <h1 className="text-lg text-slate-400 h-full flex items-center justify-center select-none">No tasks</h1>
@@ -223,7 +217,7 @@ const Tasks = () => {
             />
 
             <p ref={otherMonthsRef} className="font-semibold ms-5 text-lg select-none">Other months ({totalOtherMonthsTasks})</p>
-            {otherMonthsCurrentTasks.length > 0 ? otherMonthsCurrentTasks.map((task: Task) => (
+            {otherMonthsTasks.length > 0 ? otherMonthsTasks.map((task: Task) => (
                 <SingleTask task={task} />
             )) : (
                 <h1 className="text-lg text-slate-400 h-full flex items-center justify-center select-none">No tasks</h1>
