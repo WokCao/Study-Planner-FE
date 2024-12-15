@@ -3,7 +3,7 @@ import Task from "../interface/Task";
 import SingleTask from "./elements/Task";
 import ReactPaginate from 'react-paginate';
 import { useMutation } from "@tanstack/react-query";
-import { fetcherGet } from "../clients/apiClientGet";
+import { fetcherGet } from "../clients/apiClientAny";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../hooks/useAuthStore";
 import { format } from "date-fns";

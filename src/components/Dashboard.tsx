@@ -8,7 +8,7 @@ import { format } from "date-fns";
 import SingleTask from "./elements/Task";
 import { useMutation } from "@tanstack/react-query";
 import { fetcher } from "../clients/apiClient";
-import { fetcherGet } from "../clients/apiClientGet";
+import { fetcherGet } from "../clients/apiClientAny";
 import AddTask from "../interface/AddTask";
 import useAuthStore from "../hooks/useAuthStore";
 import { useNavigate } from "react-router-dom";
