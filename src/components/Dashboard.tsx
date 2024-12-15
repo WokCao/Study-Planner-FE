@@ -70,6 +70,7 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
                 task.deadline = formattedDate;
 
                 setTasks((prevTasks) => [task, ...prevTasks]);
+                dueTodayTask([task, ...tasks]);
             } else {
                 
             }
