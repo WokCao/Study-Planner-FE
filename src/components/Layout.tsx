@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Props from '../interface/Props';
+import useAuthStore from '../hooks/useAuthStore';
 
 const Layout: React.FC<Props> = ({ children }) => {
-  const isAuthenticated = true;
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   return (
     <div className="bg-violet-50 h-screen flex flex-col">
