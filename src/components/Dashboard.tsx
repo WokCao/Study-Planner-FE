@@ -27,6 +27,7 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
     const [label, setLabel] = useState('Start');
     const [icon, setIcon] = useState<IconDefinition>(faPlay);
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [totalTasks, setTotalTasks] = useState(0);
     const [todayTasks, setTodayTasks] = useState<Task[]>([]);
     const [currentTime, setCurrentTime] = useState<string>('Morning');
     const token = useAuthStore((state) => state.token);
@@ -119,6 +120,7 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
             if (!data) return;
 
             const tasks = data.data;
+            setTotalTasks(data.total);
             tasks.map((task: any) => {
                 delete task['updatedAt'];
                 delete task['createdAt'];
@@ -213,7 +215,7 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
                     <SingleTask task={task} />
                 ))}
 
-                {tasks.length > 5 &&
+                {totalTasks > 5 &&
                     <div className="flex items-center">
                         <hr className="flex-grow border-t border-gray-300" />
                         <span className="mx-4 text-sm font-medium text-slate-500 hover:cursor-pointer" onClick={() => setCurrentOption(3)}>See all</span>
