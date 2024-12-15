@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { fetcherGet } from '../clients/apiClientGet';
+import { fetcherGet } from '../clients/apiClientAny';
 import useAuthStore from '../hooks/useAuthStore';
 import { useNavigate } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
