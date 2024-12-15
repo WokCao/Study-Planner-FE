@@ -43,13 +43,13 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
         }
     }
 
-    const dueTodayTask = () => {
+    const dueTodayTask = (tasks: Task[]) => {
         const now = new Date();
-        const formattedDate = format(now, 'yyyy-MM-dd');
+        const formattedDate = format(now, 'dd-MM-yyyy');
         const todayTasksData: Task[] = [];
 
         tasks.map((task: Task) => {
-            if (task.deadline === formattedDate) todayTasksData.push(task);
+            if (task.deadline.split(' ')[0] === formattedDate) todayTasksData.push(task);
         })
 
         setTodayTasks(todayTasksData);
@@ -135,10 +135,10 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
                 task.deadline = formattedDate;
             })
             setTasks(tasks);
-            dueTodayTask();
+            dueTodayTask(tasks);
 
             if (data.statusCode === 200) {
-                // dueTodayTask();
+
             } else {
                 
             }
