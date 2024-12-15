@@ -6,4 +6,7 @@ export default defineConfig({
   plugins: [react()],
   base: '/Study-Planner-FE/',
   appType: 'spa',
+  optimizeDeps: {
+    exclude: ['sweetalert2']
+  }
 })
