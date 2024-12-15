@@ -30,6 +30,10 @@ const Tasks = () => {
     const [thisMonthPageCount, setThisMonthPageCount] = useState(0);
     const [otherMonthsPageCount, setOtherMonthsPageCount] = useState(0);
 
+    // Error
+    const [thisMonthError, setThisMonthError] = useState('');
+    const [otherMonthsError, setOtherMonthsError] = useState('');
+
     const token = useAuthStore((state) => state.token);
     const navigate = useNavigate();
 
@@ -94,35 +98,37 @@ const Tasks = () => {
         onSuccess: (data) => {
             if (!data) return;
 
-            const tasks = data.data;
-            setThisMonthPageCount(Math.ceil(data.total / 5));
-            setTotalThisMonthTasks(data.total);
-
-            tasks.map((task: any) => {
-                delete task['updatedAt'];
-                delete task['createdAt'];
-
-                const timeObject = identifyEstimatedTime(task.estimatedTime);
-                delete task['estimatedTime'];
-                task.estimatedTime = timeObject.timeValue;
-                task.estimatedTimeUnit = timeObject.timeUnit;
-
-                const date = new Date(task.deadline);
-                const formattedDate = format(date, 'dd-MM-yyyy H:m');
-                task.deadline = formattedDate;
-
-            })
-            setThisMonthsTasks(tasks);
-
             if (data.statusCode === 200) {
+                const response = data.data.response;
+                const tasks = response.data;
+                setThisMonthPageCount(Math.ceil(response.total / 5));
+                setTotalThisMonthTasks(response.total);
 
+                tasks.map((task: any) => {
+                    delete task['updatedAt'];
+                    delete task['createdAt'];
+
+                    const timeObject = identifyEstimatedTime(task.estimatedTime);
+                    delete task['estimatedTime'];
+                    task.estimatedTime = timeObject.timeValue;
+                    task.estimatedTimeUnit = timeObject.timeUnit;
+
+                    const date = new Date(task.deadline);
+                    const formattedDate = format(date, 'dd-MM-yyyy H:m');
+                    task.deadline = formattedDate;
+
+                })
+                setThisMonthsTasks(tasks);
+                setThisMonthError('');
             } else {
-
+                throw new Error(data.message);
             }
         },
         onError: (error) => {
             if (error.message.startsWith('Unauthorized')) {
                 navigate('Login');
+            } else {
+                setThisMonthError(error.message);
             }
         },
     });
@@ -135,36 +141,38 @@ const Tasks = () => {
             }),
         onSuccess: (data) => {
             if (!data) return;
-
-            const tasks = data.data;
-            setOtherMonthsPageCount(Math.ceil(data.total / 5));
-            setTotalOtherMonthsTasks(data.total);
-
-            tasks.map((task: any) => {
-                delete task['updatedAt'];
-                delete task['createdAt'];
-
-                const timeObject = identifyEstimatedTime(task.estimatedTime);
-                delete task['estimatedTime'];
-                task.estimatedTime = timeObject.timeValue;
-                task.estimatedTimeUnit = timeObject.timeUnit;
-
-                const date = new Date(task.deadline);
-                const formattedDate = format(date, 'dd-MM-yyyy H:m');
-                task.deadline = formattedDate;
-            })
-
-            setOtherMonthsTasks(tasks);
-
+            
             if (data.statusCode === 200) {
-
+                const response = data.data.response;
+                const tasks = response.data;
+                setOtherMonthsPageCount(Math.ceil(response.total / 5));
+                setTotalOtherMonthsTasks(response.total);
+    
+                tasks.map((task: any) => {
+                    delete task['updatedAt'];
+                    delete task['createdAt'];
+    
+                    const timeObject = identifyEstimatedTime(task.estimatedTime);
+                    delete task['estimatedTime'];
+                    task.estimatedTime = timeObject.timeValue;
+                    task.estimatedTimeUnit = timeObject.timeUnit;
+    
+                    const date = new Date(task.deadline);
+                    const formattedDate = format(date, 'dd-MM-yyyy H:m');
+                    task.deadline = formattedDate;
+                })
+    
+                setOtherMonthsTasks(tasks);
+                setOtherMonthsError('');
             } else {
-
+                throw new Error(data.message);
             }
         },
         onError: (error) => {
             if (error.message.startsWith('Unauthorized')) {
                 navigate('Login');
+            } else {
+                setOtherMonthsError(error.message);
             }
         },
     });
@@ -196,7 +204,7 @@ const Tasks = () => {
             {thisMonthTasks.length > 0 ? thisMonthTasks.map((task: Task) => (
                 <SingleTask task={task} />
             )) : (
-                <h1 className="text-lg text-slate-400 h-full flex items-center justify-center select-none">No tasks</h1>
+                <h1 className={`text-lg ${thisMonthError ? 'text-red-600' : 'text-slate-400'} h-full flex items-center justify-center select-none`}>{thisMonthError || 'No tasks'}</h1>
             )}
 
             <ReactPaginate
@@ -220,7 +228,7 @@ const Tasks = () => {
             {otherMonthsTasks.length > 0 ? otherMonthsTasks.map((task: Task) => (
                 <SingleTask task={task} />
             )) : (
-                <h1 className="text-lg text-slate-400 h-full flex items-center justify-center select-none">No tasks</h1>
+                <h1 className={`text-lg ${otherMonthsError ? 'text-red-600' : 'text-slate-400'} h-full flex items-center justify-center select-none`}>{otherMonthsError || 'No tasks'}</h1>
             )}
 
             <ReactPaginate
