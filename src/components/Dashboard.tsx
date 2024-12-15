@@ -4,12 +4,14 @@ import { faGripLinesVertical, faPlay, IconDefinition } from "@fortawesome/free-s
 import FormTask from "./elements/FormTask";
 import Task from "../interface/Task";
 import { format } from "date-fns";
-import { tasksData } from "../data/tasksData";
+// import { tasksData } from "../data/tasksData";
 import SingleTask from "./elements/Task";
 import { useMutation } from "@tanstack/react-query";
 import { fetcher } from "../clients/apiClient";
+import { fetcherGet } from "../clients/apiClientGet";
 import AddTask from "../interface/AddTask";
 import useAuthStore from "../hooks/useAuthStore";
+import { useNavigate } from "react-router-dom";
 
 interface DashboardInterface {
     setCurrentOption: React.Dispatch<React.SetStateAction<number>>
@@ -28,6 +30,7 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
     const [todayTasks, setTodayTasks] = useState<Task[]>([]);
     const [currentTime, setCurrentTime] = useState<string>('Morning');
     const token = useAuthStore((state) => state.token);
+    const navigate = useNavigate();
 
     const handleSetComponents = () => {
         if (label === 'Start') {
@@ -39,6 +42,18 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
         }
     }
 
+    const dueTodayTask = () => {
+        const now = new Date();
+        const formattedDate = format(now, 'yyyy-MM-dd');
+        const todayTasksData: Task[] = [];
+
+        tasks.map((task: Task) => {
+            if (task.deadline === formattedDate) todayTasksData.push(task);
+        })
+
+        setTodayTasks(todayTasksData);
+    }
+
     const mutation = useMutation<AddTaskResponse, Error, AddTask>({
         mutationFn: async (formData) =>
             await fetcher('/tasks', formData, {
@@ -48,13 +63,81 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
         onSuccess: (data) => {
             if (!data) return;
             if (data.statusCode === 201) {
-                console.log(data.data);
+                const task = data.data.response;
+                setTasks((prevTasks) => [...prevTasks, task]);
             } else {
-                console.log(data.message);
+                
             }
         },
         onError: (error) => {
-            console.error('Adding tasks failed:', error.message);
+            if (error.message.startsWith('Unauthorized')) {
+                navigate('Login');
+            }
+        },
+    });
+
+    const identifyEstimatedTime = (timeObject: any) => {
+        let timeValue = 0;
+        let timeUnit = '';
+        if (timeObject.seconds) {
+            timeValue = timeObject.seconds;
+            timeUnit = 'second(s)'
+        } else if (timeObject.minutes) {
+            timeValue = timeObject.minutes;
+            timeUnit = 'minute(s)'
+        } else if (timeObject.hours) {
+            timeValue = timeObject.hours;
+            timeUnit = 'hour(s)'
+        } else if (timeObject.days) {
+            timeValue = timeObject.days;
+            timeUnit = 'day(s)'
+        } else if (timeObject.weeks) {
+            timeValue = timeObject.weeks;
+            timeUnit = 'week(s)'
+        } else if (timeObject.months) {
+            timeValue = timeObject.months;
+            timeUnit = 'month(s)'
+        } else if (timeObject.years) {
+            timeValue = timeObject.years;
+            timeUnit = 'year(s)'
+        }
+
+        return { timeValue, timeUnit };
+    }
+
+    const mutationGetTask = useMutation({
+        mutationFn: async () =>
+            await fetcherGet('/tasks/recent', {
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + token },
+            }),
+        onSuccess: (data) => {
+            if (!data) return;
+
+            const tasks = data.data;
+            tasks.map((task: any) => {
+                delete task['updatedAt'];
+                delete task['createdAt'];
+
+                const timeObject = identifyEstimatedTime(task.estimatedTime);
+                delete task['estimatedTime'];
+                task.estimatedTime = timeObject.timeValue;
+                task.estimatedTimeUnit = timeObject.timeUnit;
+            })
+            setTasks(tasks);
+            dueTodayTask();
+
+            if (data.statusCode === 200) {
+                // dueTodayTask();
+            } else {
+                
+            }
+        },
+        onError: (error) => {
+            console.log(error.message);
+            if (error.message.startsWith('Unauthorized')) {
+                navigate('Login');
+            }
         },
     });
 
@@ -69,10 +152,7 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
             ...(task.status && { status: task.status })
         }
 
-        console.log(taskObj)
-
         mutation.mutate(taskObj);
-        setTasks([...tasks, task]);
     }
 
     useEffect(() => {
@@ -91,26 +171,13 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
             }
         }
 
-        const dueTodayTask = () => {
-            const now = new Date();
-            const formattedDate = format(now, 'yyyy-MM-dd');
-            const todayTasksData: Task[] = [];
-
-            tasks.map((task: Task) => {
-                if (task.deadline === formattedDate) todayTasksData.push(task);
-            })
-
-            setTodayTasks(todayTasksData);
-        }
-
-        const loadTasks = () => {
-            setTasks(tasksData);
+        const loadTasks = async () => {
+            mutationGetTask.mutate();
         }
 
         updateTime();
-        dueTodayTask();
         loadTasks();
-    }, [tasks]);
+    }, []);
 
     return (
         <div className="p-4 flex items-start h-full overflow-y-auto overflow-x-hidden gap-4 scroll-smooth">
