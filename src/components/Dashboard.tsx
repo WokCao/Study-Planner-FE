@@ -64,7 +64,11 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
             if (!data) return;
             if (data.statusCode === 201) {
                 const task = data.data.response;
-                setTasks((prevTasks) => [...prevTasks, task]);
+                const date = new Date(task.deadline);
+                const formattedDate = format(date, 'dd-MM-yyyy H:m');
+                task.deadline = formattedDate;
+
+                setTasks((prevTasks) => [task, ...prevTasks]);
             } else {
                 
             }
@@ -123,6 +127,10 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
                 delete task['estimatedTime'];
                 task.estimatedTime = timeObject.timeValue;
                 task.estimatedTimeUnit = timeObject.timeUnit;
+
+                const date = new Date(task.deadline);
+                const formattedDate = format(date, 'dd-MM-yyyy H:m');
+                task.deadline = formattedDate;
             })
             setTasks(tasks);
             dueTodayTask();

@@ -129,7 +129,6 @@ const Tasks = () => {
             }
         },
         onError: (error) => {
-            console.log(error.message);
             if (error.message.startsWith('Unauthorized')) {
                 navigate('Login');
             }
@@ -172,7 +171,6 @@ const Tasks = () => {
             }
         },
         onError: (error) => {
-            console.log(error.message);
             if (error.message.startsWith('Unauthorized')) {
                 navigate('Login');
             }
