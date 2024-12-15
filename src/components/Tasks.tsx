@@ -102,7 +102,7 @@ const Tasks = () => {
             if (!data) return;
 
             const tasks = data.data;
-            setThisMonthPageCount(data.page);
+            setThisMonthPageCount(Math.ceil(data.total / 5));
             setTotalThisMonthTasks(data.total);
 
             tasks.map((task: any) => {
@@ -145,7 +145,7 @@ const Tasks = () => {
             if (!data) return;
 
             const tasks = data.data;
-            setOtherMonthsPageCount(data.page);
+            setOtherMonthsPageCount(Math.ceil(data.total / 5));
             setTotalOtherMonthsTasks(data.total);
 
             tasks.map((task: any) => {
