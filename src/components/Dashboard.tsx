@@ -12,6 +12,7 @@ import { fetcherGet } from "../clients/apiClientGet";
 import AddTask from "../interface/AddTask";
 import useAuthStore from "../hooks/useAuthStore";
 import { useNavigate } from "react-router-dom";
+import { UseFormReset } from "react-hook-form";
 
 interface DashboardInterface {
     setCurrentOption: React.Dispatch<React.SetStateAction<number>>
@@ -30,6 +31,7 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
     const [totalTasks, setTotalTasks] = useState(0);
     const [todayTasks, setTodayTasks] = useState<Task[]>([]);
     const [currentTime, setCurrentTime] = useState<string>('Morning');
+    const [loadTaskError, setLoadTaskError] = useState('');
     const token = useAuthStore((state) => state.token);
     const navigate = useNavigate();
 
@@ -55,13 +57,13 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
         setTodayTasks(todayTasksData);
     }
 
-    const mutation = useMutation<AddTaskResponse, Error, AddTask>({
+    const mutation = useMutation<AddTaskResponse, Error, { addTask: AddTask, setFetching: any, reset: any, setTaskError: any }>({
         mutationFn: async (formData) =>
-            await fetcher('/tasks', formData, {
+            await fetcher('/tasks', formData.addTask, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
             }),
-        onSuccess: (data) => {
+        onSuccess: (data, { setFetching, reset, setTaskError }) => {
             if (!data) return;
             if (data.statusCode === 201) {
                 const task = data.data.response;
@@ -71,13 +73,19 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
 
                 setTasks((prevTasks) => [task, ...prevTasks]);
                 dueTodayTask([task, ...tasks]);
+                setFetching(false);
+                reset();
+                setTaskError('');
             } else {
-                
+                setFetching(false);
+                throw new Error(data.message);
             }
         },
-        onError: (error) => {
+        onError: (error, { setTaskError }) => {
             if (error.message.startsWith('Unauthorized')) {
                 navigate('Login');
+            } else {
+                setTaskError(error.message);
             }
         },
     });
@@ -120,40 +128,41 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
         onSuccess: (data) => {
             if (!data) return;
 
-            const tasks = data.data;
-            setTotalTasks(data.total);
-            tasks.map((task: any) => {
-                delete task['updatedAt'];
-                delete task['createdAt'];
-
-                const timeObject = identifyEstimatedTime(task.estimatedTime);
-                delete task['estimatedTime'];
-                task.estimatedTime = timeObject.timeValue;
-                task.estimatedTimeUnit = timeObject.timeUnit;
-
-                const date = new Date(task.deadline);
-                const formattedDate = format(date, 'dd-MM-yyyy H:m');
-                task.deadline = formattedDate;
-            })
-            setTasks(tasks);
-            dueTodayTask(tasks);
-
             if (data.statusCode === 200) {
+                const response = data.data.response;
+                const tasks = response.data;
+                setTotalTasks(response.total);
+                tasks.map((task: any) => {
+                    delete task['updatedAt'];
+                    delete task['createdAt'];
 
+                    const timeObject = identifyEstimatedTime(task.estimatedTime);
+                    delete task['estimatedTime'];
+                    task.estimatedTime = timeObject.timeValue;
+                    task.estimatedTimeUnit = timeObject.timeUnit;
+
+                    const date = new Date(task.deadline);
+                    const formattedDate = format(date, 'dd-MM-yyyy H:m');
+                    task.deadline = formattedDate;
+                })
+                setTasks(tasks);
+                dueTodayTask(tasks);
+                setLoadTaskError('');
             } else {
-                
+                throw new Error(data.message);
             }
         },
         onError: (error) => {
-            console.log(error.message);
             if (error.message.startsWith('Unauthorized')) {
                 navigate('Login');
+            } else {
+                setLoadTaskError(error.message);
             }
         },
     });
 
 
-    const handleAddTask = async (task: Task) => {
+    const handleAddTask = async (task: Task, setFetching: React.Dispatch<React.SetStateAction<boolean>>, reset: UseFormReset<Task>, setTaskError: React.Dispatch<React.SetStateAction<string>>) => {
         const taskObj = {
             name: task.name,
             description: task.description,
@@ -163,7 +172,7 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
             ...(task.status && { status: task.status })
         }
 
-        mutation.mutate(taskObj);
+        mutation.mutate({ addTask: taskObj, setFetching, reset, setTaskError });
     }
 
     useEffect(() => {
@@ -203,6 +212,8 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
                 <div className="p-4 bg-white rounded-3xl">
                     <FormTask handleAddTask={handleAddTask} />
                 </div>
+
+                <p className="text-center text-red-600">{loadTaskError}</p>
 
                 {todayTasks.length > 0 && <p className="text-xl !mt-20">Today's tasks</p>}
 

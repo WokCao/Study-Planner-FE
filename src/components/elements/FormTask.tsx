@@ -1,4 +1,4 @@
-import { SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm, UseFormReset } from "react-hook-form";
 import FormInput from "./FormInput";
 import FormTitle from "./FormTitle";
 import Task from "../../interface/Task";
@@ -8,13 +8,14 @@ import { useState } from "react";
 import { day, hour, minute, month, week, year } from "../../data/timeUnit";
 
 interface FormTaskInterface {
-    handleAddTask: (task: Task) => void;
+    handleAddTask: (task: Task, setFetching: React.Dispatch<React.SetStateAction<boolean>>, reset: UseFormReset<Task>, setTaskError: React.Dispatch<React.SetStateAction<string>>) => void;
 }
 
 const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask }) => {
     const { register, handleSubmit, reset, formState: { errors } } = useForm<Task>();
     const [fetching, setFetching] = useState(false);
     const [timeError, setTimeError] = useState('');
+    const [taskError, setTaskError] = useState('');
 
     const calculateFactor = (timeUnit: string | undefined) => {
         switch (timeUnit) {
@@ -61,11 +62,7 @@ const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask }) => {
         } else {
             setTimeError('');
             setFetching(true);
-            handleAddTask(formData);
-            setTimeout(() => {
-                setFetching(false);
-            }, 1000)
-            reset();
+            handleAddTask(formData, setFetching, reset, setTaskError);
         }
     };
     return (
@@ -130,7 +127,7 @@ const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask }) => {
                         </div>
 
                     </div>
-                    <p className="text-center mt-10 text-red-700">{timeError}</p>
+                    <p className="text-center mt-10 text-red-700">{timeError || taskError}</p>
 
                     <div className="mt-5 flex flex-col justify-center items-center gap-x-2">
                         {fetching
