@@ -6,17 +6,28 @@ import Task from "../interface/Task";
 import { format } from "date-fns";
 import { tasksData } from "../data/tasksData";
 import SingleTask from "./elements/Task";
+import { useMutation } from "@tanstack/react-query";
+import { fetcher } from "../clients/apiClient";
+import AddTask from "../interface/AddTask";
+import useAuthStore from "../hooks/useAuthStore";
 
 interface DashboardInterface {
     setCurrentOption: React.Dispatch<React.SetStateAction<number>>
 }
 
-const Dashboard: React.FC<DashboardInterface> = ({ setCurrentOption }) => {
+interface AddTaskResponse {
+    data: any;
+    statusCode: number;
+    message: string;
+}
+
+function Dashboard({ setCurrentOption }: DashboardInterface) {
     const [label, setLabel] = useState('Start');
     const [icon, setIcon] = useState<IconDefinition>(faPlay);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [todayTasks, setTodayTasks] = useState<Task[]>([]);
     const [currentTime, setCurrentTime] = useState<string>('Morning');
+    const token = useAuthStore((state) => state.token);
 
     const handleSetComponents = () => {
         if (label === 'Start') {
@@ -28,8 +39,39 @@ const Dashboard: React.FC<DashboardInterface> = ({ setCurrentOption }) => {
         }
     }
 
-    const handleAddTask = (task: Task) => {
-        console.log(task)
+    const mutation = useMutation<AddTaskResponse, Error, AddTask>({
+        mutationFn: async (formData) =>
+            await fetcher('/tasks', formData, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            }),
+        onSuccess: (data) => {
+            if (!data) return;
+            if (data.statusCode === 201) {
+                console.log(data.data);
+            } else {
+                console.log(data.message);
+            }
+        },
+        onError: (error) => {
+            console.error('Adding tasks failed:', error.message);
+        },
+    });
+
+
+    const handleAddTask = async (task: Task) => {
+        const taskObj = {
+            name: task.name,
+            description: task.description,
+            estimatedTime: task.estimatedTime + ' ' + task.estimatedTimeUnit,
+            deadline: task.deadline,
+            ...(task.priorityLevel && { priorityLevel: task.priorityLevel }),
+            ...(task.status && { status: task.status })
+        }
+
+        console.log(taskObj)
+
+        mutation.mutate(taskObj);
         setTasks([...tasks, task]);
     }
 
