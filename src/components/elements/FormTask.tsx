@@ -5,6 +5,7 @@ import Task from "../../interface/Task";
 import ButtonPrimary from "./ButtonPrimary";
 import { ClipLoader } from "react-spinners";
 import { useState } from "react";
+import { day, hour, minute, month, week, year } from "../../data/timeUnit";
 
 interface FormTaskInterface {
     handleAddTask: (task: Task) => void;
@@ -13,23 +14,59 @@ interface FormTaskInterface {
 const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask }) => {
     const { register, handleSubmit, reset, formState: { errors } } = useForm<Task>();
     const [fetching, setFetching] = useState(false);
+    const [timeError, setTimeError] = useState('');
+
+    const calculateFactor = (timeUnit: string | undefined) => {
+        switch (timeUnit) {
+            case 'second(s)': {
+                return 1;
+            }
+            case 'minute(s)': {
+                return minute;
+            }
+            case 'hour(s)': {
+                return hour;
+            }
+            case 'day(s)': {
+                return day;
+            }
+            case 'week(s)': {
+                return week;
+            }
+            case 'month(s)': {
+                return month;
+            }
+            case 'year(s)': {
+                return year;
+            }
+            default: {
+                return 0;
+            }
+        }
+    }
 
     const simpleDateValidation = (dateData: string) => {
         const today = new Date();
         const selectedDate = new Date(dateData);
-
-        return selectedDate.getDate() >= today.getDate() || "Deadline must be a future date";
+        return selectedDate >= today || "Deadline must be a future datetime";
     }
 
     const onSubmit: SubmitHandler<Task> = async formData => {
-        setFetching(true);
-        handleAddTask(formData);
-        setTimeout(() => {
-            setFetching(false);
+        const timeValue = formData.estimatedTime;
+        const timeUnit = formData.estimatedTimeUnit;
+        const timeAfterEstimated = new Date((new Date()).getTime() + timeValue * calculateFactor(timeUnit) * 1000);
+        const deadlineTime = new Date(formData.deadline);
+        if (deadlineTime < timeAfterEstimated) {
+            setTimeError('The Estimated Time calculated from Now exceeds Deadline!');
+        } else {
+            setTimeError('');
+            setFetching(true);
+            handleAddTask(formData);
+            setTimeout(() => {
+                setFetching(false);
+            }, 1000)
             reset();
-        }, 1000)
-
-        // mutation.mutate(formData);
+        }
     };
     return (
         <div>
@@ -77,7 +114,7 @@ const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask }) => {
                         <div className="flex flex-col items-center">
                             <FormInput
                                 label='deadline'
-                                type='date'
+                                type='datetime-local'
                                 register={[register('deadline', { validate: simpleDateValidation })]}
                                 errors={errors}
                             />
@@ -92,10 +129,10 @@ const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask }) => {
                             />
                         </div>
 
-
                     </div>
+                    <p className="text-center mt-10 text-red-700">{timeError}</p>
 
-                    <div className="mt-10 flex flex-col justify-center items-center gap-x-2">
+                    <div className="mt-5 flex flex-col justify-center items-center gap-x-2">
                         {fetching
                             ? <ClipLoader size={30} color={"black"} loading={true} />
                             : <>
