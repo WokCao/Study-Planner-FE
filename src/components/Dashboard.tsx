@@ -13,9 +13,11 @@ import AddTask from "../interface/AddTask";
 import useAuthStore from "../hooks/useAuthStore";
 import { useNavigate } from "react-router-dom";
 import { UseFormReset } from "react-hook-form";
+import UpdateFormInterface from "../interface/UpdateFrom";
 
 interface DashboardInterface {
-    setCurrentOption: React.Dispatch<React.SetStateAction<number>>
+    setCurrentOption: React.Dispatch<React.SetStateAction<number>>;
+    setShowUpdateForm: React.Dispatch<React.SetStateAction<UpdateFormInterface>>;
 }
 
 interface AddTaskResponse {
@@ -24,7 +26,7 @@ interface AddTaskResponse {
     message: string;
 }
 
-function Dashboard({ setCurrentOption }: DashboardInterface) {
+function Dashboard({ setCurrentOption, setShowUpdateForm }: DashboardInterface) {
     const [label, setLabel] = useState('Start');
     const [icon, setIcon] = useState<IconDefinition>(faPlay);
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -218,13 +220,13 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
                 {todayTasks.length > 0 && <p className="text-xl !mt-20">Today's tasks</p>}
 
                 {todayTasks.map((task: Task) => (
-                    <SingleTask key={task.taskId} task={task} />
+                    <SingleTask key={task.taskId} task={task} setShowUpdateForm={setShowUpdateForm} />
                 ))}
 
                 {tasks.length > 0 && <p className="text-xl !mt-5">Remain tasks</p>}
 
                 {tasks.slice(0, 5).map((task: Task) => (
-                    <SingleTask key={task.taskId} task={task} />
+                    <SingleTask key={task.taskId} task={task} setShowUpdateForm={setShowUpdateForm} />
                 ))}
 
                 {totalTasks > 5 &&

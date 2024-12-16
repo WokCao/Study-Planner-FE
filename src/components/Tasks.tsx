@@ -7,8 +7,9 @@ import { fetcherGet } from "../clients/apiClientAny";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../hooks/useAuthStore";
 import { format } from "date-fns";
+import UpdateFormInterface from "../interface/UpdateFrom";
 
-const Tasks = () => {
+const Tasks = ({ setShowUpdateForm }: { setShowUpdateForm: React.Dispatch<React.SetStateAction<UpdateFormInterface>> }) => {
     // const tasksPerPage = 5;
     const thisMonthRef = useRef<HTMLParagraphElement>(null);
     const otherMonthsRef = useRef<HTMLParagraphElement>(null);
@@ -74,7 +75,7 @@ const Tasks = () => {
             }),
         onSuccess: (data) => {
             if (!data) return;
-            
+
             if (data.statusCode === 200) {
                 setNumberOfTasks(data.data.response.total);
             } else {
@@ -140,27 +141,27 @@ const Tasks = () => {
             }),
         onSuccess: (data) => {
             if (!data) return;
-            
+
             if (data.statusCode === 200) {
                 const response = data.data.response;
                 const tasks = response.data;
                 setOtherMonthsPageCount(Math.ceil(response.total / 5));
                 setTotalOtherMonthsTasks(response.total);
-    
+
                 tasks.map((task: any) => {
                     delete task['updatedAt'];
                     delete task['createdAt'];
-    
+
                     const timeObject = identifyEstimatedTime(task.estimatedTime);
                     delete task['estimatedTime'];
                     task.estimatedTime = timeObject.timeValue;
                     task.estimatedTimeUnit = timeObject.timeUnit;
-    
+
                     const date = new Date(task.deadline);
                     const formattedDate = format(date, 'dd-MM-yyyy H:m');
                     task.deadline = formattedDate;
                 })
-    
+
                 setOtherMonthsTasks(tasks);
                 setOtherMonthsError('');
             } else {
@@ -201,7 +202,7 @@ const Tasks = () => {
 
             <p ref={thisMonthRef} className="font-semibold ms-5 text-lg select-none">This month ({totalThisMonthTasks})</p>
             {thisMonthTasks.length > 0 ? thisMonthTasks.map((task: Task) => (
-                <SingleTask key={task.taskId} task={task} />
+                <SingleTask key={task.taskId} task={task} setShowUpdateForm={setShowUpdateForm} />
             )) : (
                 <h1 className={`text-lg ${thisMonthError ? 'text-red-600' : 'text-slate-400'} h-full flex items-center justify-center select-none`}>{thisMonthError || 'No tasks'}</h1>
             )}
@@ -226,7 +227,7 @@ const Tasks = () => {
 
             <p ref={otherMonthsRef} className="font-semibold ms-5 text-lg select-none">Other months ({totalOtherMonthsTasks})</p>
             {otherMonthsTasks.length > 0 ? otherMonthsTasks.map((task: Task) => (
-                <SingleTask key={task.taskId} task={task} />
+                <SingleTask key={task.taskId} task={task} setShowUpdateForm={setShowUpdateForm} />
             )) : (
                 <h1 className={`text-lg ${otherMonthsError ? 'text-red-600' : 'text-slate-400'} h-full flex items-center justify-center select-none`}>{otherMonthsError || 'No tasks'}</h1>
             )}

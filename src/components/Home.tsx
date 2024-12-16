@@ -3,6 +3,8 @@ import { mockUpDataTop, mockUpDataBottom } from "../data/menuData"
 import MenuOption from "./elements/MenuOption";
 import Dashboard from "./Dashboard";
 import Tasks from "./Tasks";
+import PopUpForm from "./PopUpForm";
+import UpdateFormInterface from "../interface/UpdateFrom";
 
 interface MenuOptionsInterface {
   id: number;
@@ -14,6 +16,7 @@ function Home() {
   const [dataTop, setDataTop] = useState<MenuOptionsInterface[]>([]);
   const [dataBottom, setDataBottom] = useState<MenuOptionsInterface[]>([]);
   const [currentOption, setCurrentOption] = useState(1);
+  const [showUpdateForm, setShowUpdateForm] = useState<UpdateFormInterface>({ isShown: false, task: undefined });
 
   useEffect(() => {
     setDataTop(mockUpDataTop);
@@ -37,8 +40,11 @@ function Home() {
       </section>
 
       <section className="w-5/6 h-full absolute top-0 right-0">
-          {currentOption === 1 && <Dashboard setCurrentOption={setCurrentOption} />}
-          {currentOption === 3 && <Tasks />}
+        <div className="relative h-full w-full">
+          {currentOption === 1 && <Dashboard setCurrentOption={setCurrentOption} setShowUpdateForm={setShowUpdateForm} />}
+          {currentOption === 3 && <Tasks setShowUpdateForm={setShowUpdateForm} />}
+          {showUpdateForm.isShown && <PopUpForm setShowUpdateForm={setShowUpdateForm} />}
+        </div>
       </section>
     </div>
   );
