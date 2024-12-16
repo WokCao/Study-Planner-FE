@@ -59,9 +59,9 @@ const PopUpForm = ({ setShowUpdateForm, task }: { setShowUpdateForm: React.Dispa
         },
     });
 
-    const mutationDelete = useMutation<DeleteTaskResponse, Error, null>({
-        mutationFn: async () => {
-            return await fetcherGet(`/tasks/${task?.taskId}`, {
+    const mutationDelete = useMutation<DeleteTaskResponse, Error, { id: number }>({
+        mutationFn: async (data) => {
+            return await fetcherGet(`/tasks/${data.id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': 'Bearer ' + token }
             })
@@ -102,7 +102,12 @@ const PopUpForm = ({ setShowUpdateForm, task }: { setShowUpdateForm: React.Dispa
     }
 
     const handleDeleteTask = () => {
-        mutationDelete.mutate(null);
+        const id = task?.taskId;
+        if (id) {
+            mutationDelete.mutate({ id });
+        } else {
+            alert("Task doesn't exist");
+        }
     }
 
     return (
