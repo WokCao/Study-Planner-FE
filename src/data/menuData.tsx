@@ -18,7 +18,7 @@ const mockUpDataTop: MenuOptionsInterface[] = [
     {
         id: 3,
         label: 'Tasks',
-        svg: <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 14 14"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 1.5H11a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-10a1 1 0 0 1 1-1h1.5" /><rect width="5" height="2.5" x="4.5" y=".5" rx="1" /><path d="M4.5 5.5h5M4.5 8h5m-5 2.5h5" /></g></svg>
+        svg: <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 14 14"><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><path d="M9.5 1.5H11a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-10a1 1 0 0 1 1-1h1.5" /><rect width="5" height="2.5" x="4.5" y=".5" rx="1" /><path d="M4.5 5.5h5M4.5 8h5m-5 2.5h5" /></g></svg>
     },
     {
         id: 4,
@@ -31,7 +31,7 @@ const mockUpDataBottom: MenuOptionsInterface[] = [
     {
         id: 5,
         label: 'Analytics',
-        svg: <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" color="currentColor"><path d="M21 21H10c-3.3 0-4.95 0-5.975-1.025S3 17.3 3 14V3m4 1h1M7 7h4" /><path d="M5 20c1.07-1.947 2.523-6.981 5.306-6.981c1.924 0 2.422 2.453 4.308 2.453C17.857 15.472 17.387 10 21 10" /></g></svg>
+        svg: <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" color="currentColor"><path d="M21 21H10c-3.3 0-4.95 0-5.975-1.025S3 17.3 3 14V3m4 1h1M7 7h4" /><path d="M5 20c1.07-1.947 2.523-6.981 5.306-6.981c1.924 0 2.422 2.453 4.308 2.453C17.857 15.472 17.387 10 21 10" /></g></svg>
     },
     {
         id: 6,
@@ -41,7 +41,7 @@ const mockUpDataBottom: MenuOptionsInterface[] = [
     {
         id: 7,
         label: 'Logout',
-        svg: <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M12 18.25a.75.75 0 0 0 0 1.5h6A1.75 1.75 0 0 0 19.75 18V6A1.75 1.75 0 0 0 18 4.25h-6a.75.75 0 0 0 0 1.5h6a.25.25 0 0 1 .25.25v12a.25.25 0 0 1-.25.25z" /><path fill="currentColor" fill-rule="evenodd" d="M14.503 14.365c.69 0 1.25-.56 1.25-1.25v-2.24c0-.69-.56-1.25-1.25-1.25H9.89l-.02-.22l-.054-.556a1.227 1.227 0 0 0-1.751-.988a15 15 0 0 0-4.368 3.164l-.099.103a1.253 1.253 0 0 0 0 1.734l.1.103a15 15 0 0 0 4.367 3.164a1.227 1.227 0 0 0 1.751-.988l.054-.556l.02-.22zm-5.308-1.5a.75.75 0 0 0-.748.704q-.028.435-.07.871l-.016.162a13.6 13.6 0 0 1-3.516-2.607a13.6 13.6 0 0 1 3.516-2.607l.016.162q.042.435.07.871a.75.75 0 0 0 .748.704h5.058v1.74z" clip-rule="evenodd" /></svg>
+        svg: <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M12 18.25a.75.75 0 0 0 0 1.5h6A1.75 1.75 0 0 0 19.75 18V6A1.75 1.75 0 0 0 18 4.25h-6a.75.75 0 0 0 0 1.5h6a.25.25 0 0 1 .25.25v12a.25.25 0 0 1-.25.25z" /><path fill="currentColor" fillRule="evenodd" d="M14.503 14.365c.69 0 1.25-.56 1.25-1.25v-2.24c0-.69-.56-1.25-1.25-1.25H9.89l-.02-.22l-.054-.556a1.227 1.227 0 0 0-1.751-.988a15 15 0 0 0-4.368 3.164l-.099.103a1.253 1.253 0 0 0 0 1.734l.1.103a15 15 0 0 0 4.367 3.164a1.227 1.227 0 0 0 1.751-.988l.054-.556l.02-.22zm-5.308-1.5a.75.75 0 0 0-.748.704q-.028.435-.07.871l-.016.162a13.6 13.6 0 0 1-3.516-2.607a13.6 13.6 0 0 1 3.516-2.607l.016.162q.042.435.07.871a.75.75 0 0 0 .748.704h5.058v1.74z" clipRule="evenodd" /></svg>
     }
 ]
 
