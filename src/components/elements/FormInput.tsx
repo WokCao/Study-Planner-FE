@@ -38,7 +38,7 @@ const FormInput: React.FC<FormInputProps> = ({ label, type, register, errors, er
 						autoComplete="off"
 						{...(label.startsWith('priority') || label.startsWith('status') ? {} : register[0])}
 						className={`${label.startsWith('priority') || label.startsWith('status') ? 'w-0' : 'w-full'
-							} border-0 bg-transparent p-0 text-sm file:my-1 file:rounded-full file:border-0 file:bg-accent file:px-4 file:py-2 file:font-medium placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 sm:leading-7 text-foreground ${type === 'text' || type === 'date' ? 'h-[30px]' : ''
+							} border-0 bg-transparent p-0 text-sm file:my-1 file:rounded-full file:border-0 file:bg-accent file:px-4 file:py-2 file:font-medium placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 sm:leading-7 text-foreground ${type === 'text' || type === 'datetime-local' || type === 'number' ? 'h-[30px]' : ''
 							}`}
 					/>
 
