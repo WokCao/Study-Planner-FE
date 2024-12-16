@@ -1,0 +1,16 @@
+/* General calendar styling */
+.tui-full-calendar-weekday-grid {
+    background-color: #f7f9fc;
+  }
+  
+  .tui-full-calendar-time-schedule {
+    background-color: #e7f3ff;
+    border-radius: 5px;
+    color: #333;
+  }
+  
+  .tui-full-calendar-popup-save {
+    background-color: #007bff;
+    color: #fff;
+  }
+  
