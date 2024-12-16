@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useNavigate, Link } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
@@ -113,14 +113,14 @@ function Login() {
 					<FormInput
 						label='email'
 						type='text'
-						register={register('email', { required: 'Email is required' })}
+						register={[register('email', { required: 'Email is required' })]}
 						errors={errors}
 						error={errorEmail}
 					/>
 					<FormInput
 						label='password'
 						type='password'
-						register={register('password', { required: 'Password is required' })}
+						register={[register('password', { required: 'Password is required' })]}
 						errors={errors}
 						error={errorPassword}
 					/>

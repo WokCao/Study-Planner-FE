@@ -9,7 +9,7 @@ const clientId = import.meta.env.VITE_REACT_APP_GOOGLE_CLIENT_ID;
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <BrowserRouter basename="/Study-Planner-FE">
+    <BrowserRouter basename='/Study-Planner-FE'>
       <GoogleOAuthProvider clientId={clientId ? clientId : ""}>
         <App />
       </GoogleOAuthProvider>

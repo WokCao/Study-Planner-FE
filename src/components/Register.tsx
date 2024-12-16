@@ -83,6 +83,7 @@ function Register() {
 			})
 		},
 		onError: (error: any) => {
+			console.error(error);
 			alert('Please try again!');
 		}
 	})
@@ -95,14 +96,14 @@ function Register() {
 					<FormInput
 						label='email'
 						type='email'
-						register={register('email', { required: 'Email is required' })}
+						register={[register('email', { required: 'Email is required' })]}
 						errors={errors}
 						error={errorEmail}
 					/>
 					<FormInput
 						label='full name'
 						type='text'
-						register={register('fullname', { required: 'Full name is required' })}
+						register={[register('fullname', { required: 'Full name is required' })]}
 						errors={errors}
 						error={errorFullname}
 						errorKey='fullname'
@@ -110,22 +111,21 @@ function Register() {
 					<FormInput
 						label='password'
 						type='password'
-						register={register('password', { required: 'Password is required' })}
+						register={[register('password', { required: 'Password is required' })]}
 						errors={errors}
 						error={errorPassword}
 					/>
 					<FormInput
 						label='confirm password'
 						type='password'
-						register={register('confirmPassword', {
+						register={[register('confirmPassword', {
 							required: 'Please confirm password',
 							validate: (value: string) => {
 								if (watch('password') !== value) {
 									return "Your passwords do not match";
 								}
 							}
-						})
-						}
+						})]}
 						errors={errors}
 						errorKey='confirmPassword'
 					/>

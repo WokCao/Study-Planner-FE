@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { fetcher } from '../clients/apiClientGet';
+import { fetcherGet } from '../clients/apiClientAny';
 import useAuthStore from '../hooks/useAuthStore';
 import { useNavigate } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
@@ -12,7 +12,7 @@ function Logout() {
   const token = useAuthStore((state) => state.token);
 
   const mutation = useMutation({
-    mutationFn: async () => await fetcher('/auth/logout', {
+    mutationFn: async () => await fetcherGet('/auth/logout', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${token}` }
     }),
