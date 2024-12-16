@@ -74,10 +74,9 @@ const Tasks = () => {
             }),
         onSuccess: (data) => {
             if (!data) return;
-            setNumberOfTasks(data.total);
-
+            
             if (data.statusCode === 200) {
-
+                setNumberOfTasks(data.data.response.total);
             } else {
 
             }
@@ -215,13 +214,14 @@ const Tasks = () => {
                 pageCount={thisMonthPageCount}
                 previousLabel="Previous"
                 renderOnZeroPageCount={null}
-                containerClassName={'pagination flex justify-center my-4'}
-                pageClassName={'page-item px-3 py-1 border rounded-full mx-1 select-none'}
+                containerClassName={'pagination flex justify-center items-center my-4'}
+                pageClassName={'mx-[0.1rem]'}
+                pageLinkClassName={'px-3 py-1 hover:outline hover:outline-1 rounded-lg hover:outline-purple-300'}
                 previousClassName={`px-3 py-1 rounded-lg select-none ${thisMonthCurrentPage === 0 ? 'text-slate-300' : ''}`}
                 previousLinkClassName={`${thisMonthCurrentPage === 0 ? 'text-slate-300 !cursor-not-allowed' : ''}`}
                 nextClassName={'px-3 py-1 rounded-lg select-none'}
                 nextLinkClassName={`${thisMonthCurrentPage === thisMonthPageCount - 1 ? 'text-slate-300 !cursor-not-allowed' : ''}`}
-                activeClassName={'bg-purple-400 text-white'}
+                activeLinkClassName={'bg-purple-400 text-white rounded-lg select-none hover:!outline-0'}
             />
 
             <p ref={otherMonthsRef} className="font-semibold ms-5 text-lg select-none">Other months ({totalOtherMonthsTasks})</p>
@@ -239,13 +239,14 @@ const Tasks = () => {
                 pageCount={otherMonthsPageCount}
                 previousLabel="Previous"
                 renderOnZeroPageCount={null}
-                containerClassName={'pagination flex justify-center my-4'}
-                pageClassName={'page-item px-3 py-1 border rounded-full mx-1 select-none'}
+                containerClassName={'pagination flex justify-center items-center my-4'}
+                pageClassName={'mx-[0.1rem]'}
+                pageLinkClassName={'px-3 py-1 hover:outline hover:outline-1 rounded-lg hover:outline-purple-300'}
                 previousClassName={'px-3 py-1 rounded-lg select-none'}
                 previousLinkClassName={`${otherMonthsCurrentPage === 0 ? 'text-slate-300 !cursor-not-allowed' : ''}`}
                 nextClassName={'px-3 py-1 rounded-lg select-none'}
                 nextLinkClassName={`${otherMonthsCurrentPage === otherMonthsPageCount - 1 ? 'text-slate-300 !cursor-not-allowed' : ''}`}
-                activeClassName={'bg-purple-400 text-white'}
+                activeLinkClassName={'bg-purple-400 text-white rounded-lg select-none hover:!outline-0'}
             />
         </div>
     )
