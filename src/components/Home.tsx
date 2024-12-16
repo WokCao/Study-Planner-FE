@@ -43,7 +43,7 @@ function Home() {
         <div className="relative h-full w-full">
           {currentOption === 1 && <Dashboard setCurrentOption={setCurrentOption} setShowUpdateForm={setShowUpdateForm} />}
           {currentOption === 3 && <Tasks setShowUpdateForm={setShowUpdateForm} />}
-          {showUpdateForm.isShown && <PopUpForm setShowUpdateForm={setShowUpdateForm} />}
+          {showUpdateForm.isShown && <PopUpForm setShowUpdateForm={setShowUpdateForm} task={showUpdateForm.task} />}
         </div>
       </section>
     </div>
