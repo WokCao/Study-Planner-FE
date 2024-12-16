@@ -201,7 +201,7 @@ const Tasks = () => {
 
             <p ref={thisMonthRef} className="font-semibold ms-5 text-lg select-none">This month ({totalThisMonthTasks})</p>
             {thisMonthTasks.length > 0 ? thisMonthTasks.map((task: Task) => (
-                <SingleTask task={task} />
+                <SingleTask key={task.taskId} task={task} />
             )) : (
                 <h1 className={`text-lg ${thisMonthError ? 'text-red-600' : 'text-slate-400'} h-full flex items-center justify-center select-none`}>{thisMonthError || 'No tasks'}</h1>
             )}
@@ -226,7 +226,7 @@ const Tasks = () => {
 
             <p ref={otherMonthsRef} className="font-semibold ms-5 text-lg select-none">Other months ({totalOtherMonthsTasks})</p>
             {otherMonthsTasks.length > 0 ? otherMonthsTasks.map((task: Task) => (
-                <SingleTask task={task} />
+                <SingleTask key={task.taskId} task={task} />
             )) : (
                 <h1 className={`text-lg ${otherMonthsError ? 'text-red-600' : 'text-slate-400'} h-full flex items-center justify-center select-none`}>{otherMonthsError || 'No tasks'}</h1>
             )}

@@ -218,13 +218,13 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
                 {todayTasks.length > 0 && <p className="text-xl !mt-20">Today's tasks</p>}
 
                 {todayTasks.map((task: Task) => (
-                    <SingleTask task={task} />
+                    <SingleTask key={task.taskId} task={task} />
                 ))}
 
                 {tasks.length > 0 && <p className="text-xl !mt-5">Remain tasks</p>}
 
                 {tasks.slice(0, 5).map((task: Task) => (
-                    <SingleTask task={task} />
+                    <SingleTask key={task.taskId} task={task} />
                 ))}
 
                 {totalTasks > 5 &&

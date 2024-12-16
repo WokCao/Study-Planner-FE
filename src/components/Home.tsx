@@ -25,13 +25,13 @@ function Home() {
       <section className="bg-white w-1/6 py-3 h-full flex flex-col justify-between absolute top-0 left-0 overflow-auto">
         <div>
           {dataTop?.map((option: MenuOptionsInterface) => (
-            <MenuOption label={option.label} svg={option.svg} id={option.id} currentOption={currentOption} setCurrentOption={setCurrentOption} />
+            <MenuOption key={option.id} label={option.label} svg={option.svg} id={option.id} currentOption={currentOption} setCurrentOption={setCurrentOption} />
           ))}
         </div>
 
         <div>
           {dataBottom?.map((option: MenuOptionsInterface) => (
-            <MenuOption label={option.label} svg={option.svg} id={option.id} currentOption={currentOption} setCurrentOption={setCurrentOption} />
+            <MenuOption key={option.id} label={option.label} svg={option.svg} id={option.id} currentOption={currentOption} setCurrentOption={setCurrentOption} />
           ))}
         </div>
       </section>
