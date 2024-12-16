@@ -11,9 +11,9 @@ interface FormInputProps {
 
 const FormInput: React.FC<FormInputProps> = ({ label, type, register, errors, errorKey, error }) => {
 	let field = errorKey || label;
-	const priorityLevel = ['High', 'Medium', 'Low', 'None'];
+	const priorityLevel = ['High', 'Medium', 'Low'];
 	const estimatedTimeUnit = ['second(s)', 'minute(s)', 'hour(s)', 'day(s)', 'week(s)', 'month(s)', 'year(s)'];
-	const status = ['Todo', 'In Progress', 'Completed', 'Expired', 'None'];
+	const status = ['Todo', 'In Progress', 'Completed'];
 	const additionalRegister = register.length === 2 ? register[1] : register[0];
 
 	const valuesToUse =
@@ -33,8 +33,14 @@ const FormInput: React.FC<FormInputProps> = ({ label, type, register, errors, er
 					<label className="text-xs font-medium text-muted-foreground capitalize">{label}</label>
 				</div>
 				<div className="flex items-center">
-					<input type={type} autoComplete="off" {...register[0]} // This will overlap the ...register[0] at select tag below
-						className={`${label.startsWith('priority') || label.startsWith('status') ? 'w-0' : 'w-full'} border-0 bg-transparent p-0 text-sm file:my-1 file:rounded-full file:border-0 file:bg-accent file:px-4 file:py-2 file:font-medium placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 sm:leading-7 text-foreground ${type === 'text' || 'date' ? 'h-[30px]' : ''}`} />
+					<input
+						type={type}
+						autoComplete="off"
+						{...(label.startsWith('priority') || label.startsWith('status') ? {} : register[0])}
+						className={`${label.startsWith('priority') || label.startsWith('status') ? 'w-0' : 'w-full'
+							} border-0 bg-transparent p-0 text-sm file:my-1 file:rounded-full file:border-0 file:bg-accent file:px-4 file:py-2 file:font-medium placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 sm:leading-7 text-foreground ${type === 'text' || type === 'datetime-local' || type === 'number' ? 'h-[30px]' : ''
+							}`}
+					/>
 
 					{/* Case with specific values */}
 					{valuesToUse && <span className={`${label.startsWith('estimated') ? 'ms-auto' : 'w-full'}`}>

@@ -145,11 +145,13 @@ function Profile() {
     const file = event.target.files;
     if (file) {
       const imageFile = file[0];
-      const maxFileSize = 1024 * 1024 * 5; // Max size 5MB
-      if (imageFile.size <= maxFileSize) {
-        const formData = new FormData();
-        formData.append('file', imageFile);
-        mutationAvatar.mutate({ formData });
+      if (imageFile) {
+        const maxFileSize = 1024 * 1024 * 5; // Max size 5MB
+        if (imageFile.size <= maxFileSize) {
+          const formData = new FormData();
+          formData.append('file', imageFile);
+          mutationAvatar.mutate({ formData });
+        }
       }
     }
   }
