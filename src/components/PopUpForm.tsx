@@ -1,7 +1,7 @@
 import { UseFormReset } from "react-hook-form";
 import Task from "../interface/Task";
 import FormTask from "./elements/FormTask";
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import UpdateFormInterface from "../interface/UpdateFrom";
 import { useMutation } from "@tanstack/react-query";
@@ -10,9 +10,15 @@ import { fetcher } from "../clients/apiClient";
 import AddTask from "../interface/AddTask";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../hooks/useAuthStore";
+import { fetcherGet } from "../clients/apiClientAny";
 
 interface AddTaskResponse {
     data: any;
+    statusCode: number;
+    message: string;
+}
+
+interface DeleteTaskResponse {
     statusCode: number;
     message: string;
 }
@@ -53,6 +59,32 @@ const PopUpForm = ({ setShowUpdateForm, task }: { setShowUpdateForm: React.Dispa
         },
     });
 
+    const mutationDelete = useMutation<DeleteTaskResponse, Error, null>({
+        mutationFn: async () => {
+            return await fetcherGet(`/tasks/${task?.taskId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + token }
+            })
+        },
+        onSuccess: (data) => {
+            if (!data) return;
+
+            if (data.statusCode === 200) {
+                alert(data.message);
+                setShowUpdateForm({ isShown: false, task: undefined });
+            } else {
+                throw new Error(data.message);
+            }
+        },
+        onError: (error) => {
+            if (error.message.startsWith('Unauthorized')) {
+                navigate('Login');
+            } else {
+                alert(error.message);
+            }
+        }
+    })
+
 
     const handleUpdateTask = async (updatedTask: Task, setFetching: React.Dispatch<React.SetStateAction<boolean>>, reset: UseFormReset<Task>, setTaskError: React.Dispatch<React.SetStateAction<string>>, taskId?: number | undefined) => {
         const taskObj = {
@@ -68,11 +100,23 @@ const PopUpForm = ({ setShowUpdateForm, task }: { setShowUpdateForm: React.Dispa
             mutation.mutate({ addTask: taskObj, setFetching, reset, setTaskError, taskId });
         }
     }
+
+    const handleDeleteTask = () => {
+        mutationDelete.mutate(null);
+    }
+
     return (
         <div className="bg-gradient-to-r from-violet-200 to-fuchsia-200 absolute h-full p-2 w-full overflow-y-auto top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scroll-smooth">
-            <div className="ms-10 my-5 hover:cursor-pointer flex items-center hover:font-semibold" onClick={() => setShowUpdateForm({ isShown: false, task: undefined })}>
-                <FontAwesomeIcon icon={faChevronLeft} />
-                <span className="ms-2">Back</span>
+            <div className="flex mx-10 my-5 ">
+                <div className="hover:cursor-pointer text-slate-500 flex items-center hover:text-black" onClick={() => setShowUpdateForm({ isShown: false, task: undefined })}>
+                    <FontAwesomeIcon icon={faChevronLeft} />
+                    <span className="ms-2">Back</span>
+                </div>
+
+                <div className="ms-auto hover:cursor-pointer text-slate-500 flex items-center hover:text-red-600" onClick={handleDeleteTask}>
+                    <FontAwesomeIcon icon={faTrash} />
+                    <span className="ms-2">Delete task</span>
+                </div>
             </div>
             <FormTask handleAddTask={handleUpdateTask} action="Update" task={task} />
         </div>
