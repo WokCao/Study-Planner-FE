@@ -23,14 +23,9 @@ const CalendarComponent: React.FC = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const API_BASE_URL = import.meta.env.DEV
-          ? import.meta.env.VITE_REACT_APP_API_LOCAL
-          : import.meta.env.VITE_REACT_APP_API;
-        const response = await fetch(API_BASE_URL + "/tasks/all", {
-          headers: { Authorization: "Bearer " + token },
-        });
+        const API_BASE_URL = import.meta.env.DEV ? import.meta.env.VITE_REACT_APP_API_LOCAL : import.meta.env.VITE_REACT_APP_API;
+        const response = await fetch(API_BASE_URL + "/tasks/all", { headers: { 'Authorization': 'Bearer ' + token } }); 
         const data = await response.json();
-        console.log(data.data.response.data);
         setTasks(data.data.response.data);
       } catch (error) {
         console.error("Error fetching tasks:", error);
@@ -38,7 +33,7 @@ const CalendarComponent: React.FC = () => {
     };
 
     fetchTasks();
-  }, [tasks]);
+  }, []);
 
   // Map tasks to calendar schedules
   const getSchedules = () => {
@@ -48,14 +43,11 @@ const CalendarComponent: React.FC = () => {
       body: task.description,
       priority: task.priorityLevel,
       estimatedTime: task.estimatedTime,
-      deadline: new Date(task.deadline),
-      category: "time",
+      deadline: task.deadline,
+      category: "time", // Use 'time' for time-bound events
       isReadOnly: task.status === "Completed" || task.status === "Expired",
-      start: new Date(task.deadline),
-      end: new Date(task.deadline),
-      customStyle: `background-color: ${
-        task.status === "Completed" ? "#2ecc71" : "#e74c3c"
-      }; color: white;`, // Custom background color based on status
+      start: task.deadline,
+      end: task.deadline,
     }));
   };
 
