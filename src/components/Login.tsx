@@ -37,7 +37,7 @@ function Login() {
 	const [errorEmail, setErrorEmail] = useState('');
 	const [errorPassword, setErrorPassword] = useState('');
 	const [fetching, setFetching] = useState(false);
-	const [googleFetching, setGoogleFetching] = useState(false);
+	const [, setGoogleFetching] = useState(false);
 
 	const setToken = useAuthStore((state) => state.setToken);
 	const setData = useUserStore((state) => state.setData);
@@ -99,7 +99,7 @@ function Login() {
 				}
 			}).finally(() => setGoogleFetching(false));
 		},
-		onError: (error: any) => {
+		onError: () => {
 			setGoogleFetching(false);
 			alert('Please try again!');
 		}
