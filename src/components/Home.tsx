@@ -4,6 +4,9 @@ import MenuOption from "./elements/MenuOption";
 import Dashboard from "./Dashboard";
 import Tasks from "./Tasks";
 import CalendarComponent from "./Calendar";
+import Task from "../interface/Task";
+import PopUpForm from "./PopUpForm";
+import UpdateFormInterface from "../interface/UpdateFrom";
 
 interface MenuOptionsInterface {
   id: number;
@@ -15,6 +18,8 @@ function Home() {
   const [dataTop, setDataTop] = useState<MenuOptionsInterface[]>([]);
   const [dataBottom, setDataBottom] = useState<MenuOptionsInterface[]>([]);
   const [currentOption, setCurrentOption] = useState(1);
+  const [editedTask, setEditedTask] = useState<Task | number | undefined>(undefined);
+  const [showUpdateForm, setShowUpdateForm] = useState<UpdateFormInterface>({ isShown: false, task: undefined });
 
   useEffect(() => {
     setDataTop(mockUpDataTop);
@@ -52,11 +57,10 @@ function Home() {
       </section>
 
       <section className="w-5/6 h-full absolute top-0 right-0">
-        {currentOption === 1 && (
-          <Dashboard setCurrentOption={setCurrentOption} />
-        )}
+        {currentOption === 1 && <Dashboard setCurrentOption={setCurrentOption} setShowUpdateForm={setShowUpdateForm} editedTask={editedTask} setEditedTask={setEditedTask} />}
         {currentOption === 2 && <CalendarComponent />}
-        {currentOption === 3 && <Tasks />}
+        {currentOption === 3 && <Tasks setShowUpdateForm={setShowUpdateForm} editedTask={editedTask} setEditedTask={setEditedTask} />}
+        {showUpdateForm.isShown && <PopUpForm setShowUpdateForm={setShowUpdateForm} task={showUpdateForm.task} setEditedTask={setEditedTask} />}
       </section>
     </div>
   );
