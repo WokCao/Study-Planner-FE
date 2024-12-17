@@ -13,9 +13,15 @@ import AddTask from "../interface/AddTask";
 import useAuthStore from "../hooks/useAuthStore";
 import { useNavigate } from "react-router-dom";
 import { UseFormReset } from "react-hook-form";
+import UpdateFormInterface from "../interface/UpdateFrom";
+import ButtonAI from "./elements/ButtonAI";
+import AIAnalysis from "./AIAnalysis";
 
 interface DashboardInterface {
-    setCurrentOption: React.Dispatch<React.SetStateAction<number>>
+    setCurrentOption: React.Dispatch<React.SetStateAction<number>>;
+    setShowUpdateForm: React.Dispatch<React.SetStateAction<UpdateFormInterface>>;
+    editedTask: Task | number | undefined;
+    setEditedTask: React.Dispatch<React.SetStateAction<Task | number | undefined>>;
 }
 
 interface AddTaskResponse {
@@ -24,7 +30,7 @@ interface AddTaskResponse {
     message: string;
 }
 
-function Dashboard({ setCurrentOption }: DashboardInterface) {
+function Dashboard({ setCurrentOption, setShowUpdateForm, editedTask, setEditedTask }: DashboardInterface) {
     const [label, setLabel] = useState('Start');
     const [icon, setIcon] = useState<IconDefinition>(faPlay);
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -57,7 +63,7 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
         setTodayTasks(todayTasksData);
     }
 
-    const mutation = useMutation<AddTaskResponse, Error, { addTask: AddTask, setFetching: any, reset: any, setTaskError: any }>({
+    const mutationAddTask = useMutation<AddTaskResponse, Error, { addTask: AddTask, setFetching: any, reset: any, setTaskError: any }>({
         mutationFn: async (formData) =>
             await fetcher('/tasks', formData.addTask, {
                 method: 'POST',
@@ -161,7 +167,6 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
         },
     });
 
-
     const handleAddTask = async (task: Task, setFetching: React.Dispatch<React.SetStateAction<boolean>>, reset: UseFormReset<Task>, setTaskError: React.Dispatch<React.SetStateAction<string>>) => {
         const taskObj = {
             name: task.name,
@@ -172,7 +177,7 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
             ...(task.status && { status: task.status })
         }
 
-        mutation.mutate({ addTask: taskObj, setFetching, reset, setTaskError });
+        mutationAddTask.mutate({ addTask: taskObj, setFetching, reset, setTaskError });
     }
 
     useEffect(() => {
@@ -195,12 +200,16 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
             mutationGetTask.mutate();
         }
 
+        if (editedTask) {
+            setEditedTask(undefined);
+        }
+
         updateTime();
         loadTasks();
-    }, []);
+    }, [editedTask]);
 
     return (
-        <div className="p-4 flex items-start h-full overflow-y-auto overflow-x-hidden gap-4 scroll-smooth">
+        <div className="relative p-4 flex items-start h-full overflow-y-auto overflow-x-hidden gap-4 scroll-smooth">
             <div className="w-9/12 space-y-4 mb-32">
                 <div className="p-4 bg-white rounded-3xl">
                     <section className="bg-gradient-to-b from-fuchsia-400 to-violet-300 p-4 rounded-3xl text-white">
@@ -218,13 +227,13 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
                 {todayTasks.length > 0 && <p className="text-xl !mt-20">Today's tasks</p>}
 
                 {todayTasks.map((task: Task) => (
-                    <SingleTask task={task} />
+                    <SingleTask key={task.taskId} task={task} setShowUpdateForm={setShowUpdateForm} />
                 ))}
 
                 {tasks.length > 0 && <p className="text-xl !mt-5">Remain tasks</p>}
 
                 {tasks.slice(0, 5).map((task: Task) => (
-                    <SingleTask task={task} />
+                    <SingleTask key={task.taskId} task={task} setShowUpdateForm={setShowUpdateForm} />
                 ))}
 
                 {totalTasks > 5 &&
@@ -233,6 +242,11 @@ function Dashboard({ setCurrentOption }: DashboardInterface) {
                         <span className="mx-4 text-sm font-medium text-slate-500 hover:cursor-pointer" onClick={() => setCurrentOption(3)}>See all</span>
                         <hr className="flex-grow border-t border-gray-300" />
                     </div>}
+
+                <div className="w-full hidden">
+                    <ButtonAI />
+                    <AIAnalysis />
+                </div>
             </div>
 
             <div className="p-4 bg-white rounded-3xl w-3/12">

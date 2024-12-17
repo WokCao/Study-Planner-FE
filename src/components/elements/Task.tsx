@@ -1,10 +1,11 @@
 import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Task from "../../interface/Task";
+import UpdateFormInterface from "../../interface/UpdateFrom";
 
-const SingleTask = ({ task }: { task: Task}) => {
+const SingleTask = ({ task, setShowUpdateForm }: { task: Task, setShowUpdateForm: React.Dispatch<React.SetStateAction<UpdateFormInterface>> }) => {
     return (
-        <div className="px-16 py-4 bg-white rounded-3xl flex items-center hover:cursor-pointer hover:shadow-xl">
+        <div className="px-16 py-4 bg-white rounded-3xl flex items-center hover:cursor-pointer hover:shadow-xl" onClick={() => setShowUpdateForm({ isShown: true, task: task })}>
             <section className="flex flex-col w-10/12">
                 <p className="text-xl mb-2 font-semibold">{task.name}</p>
                 <div className="flex">

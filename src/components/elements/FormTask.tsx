@@ -8,14 +8,23 @@ import { useState } from "react";
 import { day, hour, minute, month, week, year } from "../../data/timeUnit";
 
 interface FormTaskInterface {
-    handleAddTask: (task: Task, setFetching: React.Dispatch<React.SetStateAction<boolean>>, reset: UseFormReset<Task>, setTaskError: React.Dispatch<React.SetStateAction<string>>) => void;
+    handleAddTask: (task: Task, setFetching: React.Dispatch<React.SetStateAction<boolean>>, reset: UseFormReset<Task>, setTaskError: React.Dispatch<React.SetStateAction<string>>, taskId?: number | undefined) => void;
+    action?: string;
+    task?: Task;
 }
 
-const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask }) => {
+const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask, action, task }) => {
     const { register, handleSubmit, reset, formState: { errors } } = useForm<Task>();
     const [fetching, setFetching] = useState(false);
     const [timeError, setTimeError] = useState('');
     const [taskError, setTaskError] = useState('');
+
+    let formattedValue = task?.deadline;
+    if (formattedValue) {
+        const [date, time] = formattedValue.split(" ");
+        const [day, month, year] = date.split("-");
+        formattedValue = `${year}-${month}-${day}T${time}`;
+    }
 
     const calculateFactor = (timeUnit: string | undefined) => {
         switch (timeUnit) {
@@ -57,19 +66,26 @@ const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask }) => {
         const timeUnit = formData.estimatedTimeUnit;
         const timeAfterEstimated = new Date((new Date()).getTime() + timeValue * calculateFactor(timeUnit) * 1000);
         const deadlineTime = new Date(formData.deadline);
+
         if (deadlineTime < timeAfterEstimated) {
             setTimeError('The Estimated Time calculated from Now exceeds Deadline!');
         } else {
             setTimeError('');
             setFetching(true);
-            handleAddTask(formData, setFetching, reset, setTaskError);
+            handleAddTask(formData, setFetching, reset, setTaskError, task?.taskId);
         }
     };
     return (
         <div>
-            <FormTitle title="Add a new task" description="Fill in the required fields to add a task" />
+            <FormTitle title={action?.startsWith('Update') ? 'Update task' : 'Add a new task'} description={action?.startsWith('Update') ? 'Change values of the desired fields' : 'Fill in the required fields to add a task'} />
             <div className="p-6 pt-0 mt-7">
-                <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
+                <form className="flex flex-col"
+                    onSubmit={handleSubmit(onSubmit)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                        }
+                    }}>
                     <div className="grid desktop:grid-cols-3 laptop:grid-cols-2 tablet:grid-cols-1 gap-4">
                         <div className="flex flex-col items-center">
                             <FormInput
@@ -77,6 +93,7 @@ const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask }) => {
                                 type='text'
                                 register={[register('name', { required: 'Task name is required', minLength: { value: 2, message: "Min length can't be below 2" }, maxLength: { value: 15, message: "Max length can't exceed 15" } })]}
                                 errors={errors}
+                                values={[task?.name]}
                             />
                         </div>
 
@@ -86,6 +103,7 @@ const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask }) => {
                                 type='text'
                                 register={[register('description', { maxLength: { value: 100, message: "Max length can't exceed 100" } })]}
                                 errors={errors}
+                                values={[task?.description]}
                             />
                         </div>
 
@@ -95,6 +113,7 @@ const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask }) => {
                                 type='text'
                                 register={[register('priorityLevel')]}
                                 errors={errors}
+                                values={[task?.priorityLevel]}
                             />
                         </div>
 
@@ -104,6 +123,7 @@ const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask }) => {
                                 type='number'
                                 register={[register('estimatedTime', { required: 'Estimated time is required' }), register('estimatedTimeUnit', { required: 'Time unit is required' })]}
                                 errors={errors}
+                                values={[task?.estimatedTime, task?.estimatedTimeUnit]}
                             />
                         </div>
 
@@ -114,6 +134,7 @@ const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask }) => {
                                 type='datetime-local'
                                 register={[register('deadline', { validate: simpleDateValidation })]}
                                 errors={errors}
+                                values={[formattedValue]}
                             />
                         </div>
 
@@ -123,6 +144,7 @@ const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask }) => {
                                 type='text'
                                 register={[register('status')]}
                                 errors={errors}
+                                values={[task?.status]}
                             />
                         </div>
 
@@ -133,7 +155,7 @@ const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask }) => {
                         {fetching
                             ? <ClipLoader size={30} color={"black"} loading={true} />
                             : <>
-                                <ButtonPrimary label="Add task" type="submit" />
+                                <ButtonPrimary label={action?.startsWith('Update') ? 'Save task' : 'Add task'} type="submit" />
                             </>
                         }
                     </div>
