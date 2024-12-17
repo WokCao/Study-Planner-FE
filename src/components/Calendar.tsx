@@ -1,105 +1,198 @@
-import React, { useRef, useState } from "react";
-import { Calendar } from "@toast-ui/react-calendar";
+import React, { useRef, useState, useEffect } from "react";
+import Calendar from "@toast-ui/react-calendar";
 import "@toast-ui/calendar/dist/toastui-calendar.min.css";
 
+// Task interface for better type safety
 interface Task {
   id: string;
-  calendarId: string;
   title: string;
-  category: "time" | "allday"; // Define allowed values
-  start: string; // ISO date string
-  end: string; // ISO date string
+  description: string;
+  priority: "High" | "Medium" | "Low";
+  status: "Todo" | "In Progress" | "Completed" | "Expired";
+  estimatedTime: string;
+  deadline: Date;
 }
 
 const CalendarComponent: React.FC = () => {
   const calendarRef = useRef<Calendar | null>(null);
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: "1",
-      calendarId: "1",
-      title: "Complete React Assignment",
-      category: "time",
-      start: "2024-12-16T10:00:00",
-      end: "2024-12-16T12:00:00",
-    },
-  ]);
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [tasks, setTasks] = useState<Task[]>([]);
 
-  // Task creation handler
-  const handleCreateTask = (event: any) => {
-    const { start, end, title } = event;
-
-    const newTask: Task = {
-      id: String(tasks.length + 1),
-      calendarId: "1",
-      title,
-      category: "time",
-      start: start.toISOString(),
-      end: end.toISOString(),
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await fetch("/api/tasks"); 
+        const data = await response.json();
+        setTasks(data);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      }
     };
 
-    setTasks((prevTasks) => [...prevTasks, newTask]);
+    fetchTasks();
+  }, []);
+
+  // Map tasks to calendar schedules
+  const getSchedules = () => {
+    return tasks.map((task) => ({
+      id: task.id,
+      title: task.title,
+      body: task.description,
+      priority: task.priority,
+      estimatedTime: task.estimatedTime,
+      deadline: task.deadline,
+      category: "time", // Use 'time' for time-bound events
+      isReadOnly: task.status === "Completed" || task.status === "Expired",
+      start: task.deadline,
+      end: task.deadline,
+    }));
   };
 
-  // Task update handler
-  const handleUpdateTask = (event: any) => {
-    const { schedule, changes } = event;
+  // Handle navigation and update the current date display
+  const updateCurrentDate = () => {
+    const calendarInstance = calendarRef.current?.getInstance();
+    if (calendarInstance) {
+      const newDate = calendarInstance.getDate();
+      setCurrentDate(new Date(newDate));
+    }
+  };
 
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === schedule.id ? { ...task, ...changes } : task
+  useEffect(() => {
+    updateCurrentDate(); // Set the initial date when the component mounts
+  }, []);
+
+  // Handle new event creation (drag-and-drop or manual creation)
+  const handleBeforeCreateSchedule = (e: any) => {
+    const { end, title } = e;
+
+    const newTask: Task = {
+      id: (tasks.length + 1).toString(),
+      title,
+      description: "",
+      priority: "High",
+      status: "Todo",
+      estimatedTime: "1 day",
+      deadline: new Date(end),
+    };
+    setTasks((prev) => [...prev, newTask]);
+  };
+
+  // Handle event updates (e.g., drag-and-drop)
+  const handleBeforeUpdateSchedule = (e: any) => {
+    const { schedule, changes } = e;
+
+    const updatedTask = {
+      ...schedule,
+      deadline: new Date(changes.start),
+      status: getStatus(new Date(changes.start)),
+    };
+
+    // Update the corresponding task in state
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === updatedTask.id
+          ? {
+              ...task,
+              deadline: updatedTask.deadline,
+              status: updatedTask.status,
+            }
+          : task
       )
     );
   };
 
-  // Task deletion handler
-  const handleDeleteTask = (schedule: any) => {
-    setTasks((prevTasks) =>
-      prevTasks.filter((task) => task.id !== schedule.id)
-    );
+  // Determine status based on task time
+  const getStatus = (deadline: Date): Task["status"] => {
+    const now = new Date();
+    if (deadline > now) return "Expired";
+    return "Todo";
   };
 
-  // Toolbar navigation
-  const navigateCalendar = (action: "prev" | "next" | "today") => {
-    const calendarInstance = calendarRef.current?.getInstance();
-    if (!calendarInstance) return;
-
-    if (action === "prev") calendarInstance.prev();
-    else if (action === "next") calendarInstance.next();
-    else calendarInstance.today();
-  };
-
-  // Change calendar view
-  const changeView = (view: "day" | "week" | "month") => {
-    calendarRef.current?.getInstance().changeView(view);
+  // Format the current date as "Month Year"
+  const formatCurrentDate = (date: Date) => {
+    const options = { month: "long", year: "numeric" } as const;
+    return new Intl.DateTimeFormat("en-US", options).format(date);
   };
 
   return (
-    <div>
-      {/* Toolbar */}
-      <div className="toolbar">
-        <button onClick={() => navigateCalendar("prev")}>Previous</button>
-        <button onClick={() => navigateCalendar("today")}>Today</button>
-        <button onClick={() => navigateCalendar("next")}>Next</button>
-        <button onClick={() => changeView("day")}>Day</button>
-        <button onClick={() => changeView("week")}>Week</button>
-        <button onClick={() => changeView("month")}>Month</button>
+    <div className="h-full flex flex-col">
+      <div className="flex justify-between items-center p-4 bg-gray-100 border-b">
+        <div className="flex items-center space-x-4">
+          <span className="text-xl font-bold">
+            {formatCurrentDate(currentDate)}
+          </span>
+        </div>
+        <div className="flex space-x-2">
+          <button
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+            onClick={() => {
+              calendarRef.current?.getInstance()?.today();
+              updateCurrentDate();
+            }}
+          >
+            Today
+          </button>
+          <button
+            className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition"
+            onClick={() => {
+              calendarRef.current?.getInstance()?.prev();
+              updateCurrentDate();
+            }}
+          >
+            Previous
+          </button>
+          <button
+            className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition"
+            onClick={() => {
+              calendarRef.current?.getInstance()?.next();
+              updateCurrentDate();
+            }}
+          >
+            Next
+          </button>
+        </div>
+        <div className="flex space-x-2">
+          <button
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+            onClick={() => {
+              calendarRef.current?.getInstance()?.changeView("day");
+              updateCurrentDate();
+            }}
+          >
+            Day
+          </button>
+          <button
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+            onClick={() => {
+              calendarRef.current?.getInstance()?.changeView("week");
+              updateCurrentDate();
+            }}
+          >
+            Week
+          </button>
+          <button
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+            onClick={() => {
+              calendarRef.current?.getInstance()?.changeView("month");
+              updateCurrentDate();
+            }}
+          >
+            Month
+          </button>
+        </div>
       </div>
-
-      {/* Calendar Component */}
-      <Calendar
-        ref={calendarRef}
-        height="800px"
-        view="month"
-        month={{
-          startDayOfWeek: 1, // Start week on Monday
-        }}
-        schedules={tasks}
-        useCreationPopup={true}
-        useDetailPopup={true}
-        onBeforeCreateSchedule={handleCreateTask}
-        onBeforeUpdateSchedule={handleUpdateTask}
-        onBeforeDeleteSchedule={(event: any) => handleDeleteTask(event.schedule)}
-      />
+      <div className="flex-grow">
+        <Calendar
+          ref={calendarRef}
+          height="100%"
+          defaultView="week"
+          useDetailPopup={true}
+          useCreationPopup={true}
+          schedules={getSchedules()} // Map tasks to schedules
+          onBeforeCreateSchedule={handleBeforeCreateSchedule}
+          onBeforeUpdateSchedule={handleBeforeUpdateSchedule}
+        />
+      </div>
     </div>
   );
 };

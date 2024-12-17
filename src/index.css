@@ -29,3 +29,8 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
     -moz-appearance: textfield;
 }
+
+.bg-gray-100 { background-color: #f7fafc; }
+.border-b { border-bottom: 1px solid #e2e8f0; }
+.transition { transition: all 0.2s ease-in-out; }
+.hover\:bg-blue-600:hover { background-color: #3182ce; }
