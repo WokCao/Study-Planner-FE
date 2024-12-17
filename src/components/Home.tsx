@@ -5,6 +5,7 @@ import Dashboard from "./Dashboard";
 import Tasks from "./Tasks";
 import PopUpForm from "./PopUpForm";
 import UpdateFormInterface from "../interface/UpdateFrom";
+import Task from "../interface/Task";
 
 interface MenuOptionsInterface {
   id: number;
@@ -17,6 +18,7 @@ function Home() {
   const [dataBottom, setDataBottom] = useState<MenuOptionsInterface[]>([]);
   const [currentOption, setCurrentOption] = useState(1);
   const [showUpdateForm, setShowUpdateForm] = useState<UpdateFormInterface>({ isShown: false, task: undefined });
+  const [editedTask, setEditedTask] = useState<Task | number | undefined>(undefined);
 
   useEffect(() => {
     setDataTop(mockUpDataTop);
@@ -41,9 +43,9 @@ function Home() {
 
       <section className="w-5/6 h-full absolute top-0 right-0">
         <div className="relative h-full w-full">
-          {currentOption === 1 && <Dashboard setCurrentOption={setCurrentOption} setShowUpdateForm={setShowUpdateForm} />}
-          {currentOption === 3 && <Tasks setShowUpdateForm={setShowUpdateForm} />}
-          {showUpdateForm.isShown && <PopUpForm setShowUpdateForm={setShowUpdateForm} task={showUpdateForm.task} />}
+          {currentOption === 1 && <Dashboard setCurrentOption={setCurrentOption} setShowUpdateForm={setShowUpdateForm} editedTask={editedTask} setEditedTask={setEditedTask} />}
+          {currentOption === 3 && <Tasks setShowUpdateForm={setShowUpdateForm} editedTask={editedTask} setEditedTask={setEditedTask} />}
+          {showUpdateForm.isShown && <PopUpForm setShowUpdateForm={setShowUpdateForm} task={showUpdateForm.task} setEditedTask={setEditedTask} />}
         </div>
       </section>
     </div>

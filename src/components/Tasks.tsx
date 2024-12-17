@@ -9,7 +9,13 @@ import useAuthStore from "../hooks/useAuthStore";
 import { format } from "date-fns";
 import UpdateFormInterface from "../interface/UpdateFrom";
 
-const Tasks = ({ setShowUpdateForm }: { setShowUpdateForm: React.Dispatch<React.SetStateAction<UpdateFormInterface>> }) => {
+interface TasksInterface {
+    setShowUpdateForm: React.Dispatch<React.SetStateAction<UpdateFormInterface>>;
+    editedTask: Task | number | undefined;
+    setEditedTask: React.Dispatch<React.SetStateAction<Task | number | undefined>>;
+}
+
+const Tasks = ({ setShowUpdateForm, editedTask, setEditedTask }: TasksInterface) => {
     // const tasksPerPage = 5;
     const thisMonthRef = useRef<HTMLParagraphElement>(null);
     const otherMonthsRef = useRef<HTMLParagraphElement>(null);
@@ -194,7 +200,12 @@ const Tasks = ({ setShowUpdateForm }: { setShowUpdateForm: React.Dispatch<React.
         mutationGetTask.mutate();
         mutationGetThisMonthTask.mutate(thisMonthCurrentPage + 1);
         mutationGetOtherMonthsTask.mutate(otherMonthsCurrentPage + 1);
-    }, [])
+
+        if (editedTask) {
+            setEditedTask(undefined);
+        }
+        
+    }, [editedTask])
     return (
         <div className="p-4 flex flex-col h-full overflow-y-auto overflow-x-hidden gap-4 scroll-smooth">
             <h1 className="text-2xl font-bold select-none">All Tasks ({numberOfTasks})</h1>

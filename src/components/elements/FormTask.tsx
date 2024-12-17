@@ -8,7 +8,7 @@ import { useState } from "react";
 import { day, hour, minute, month, week, year } from "../../data/timeUnit";
 
 interface FormTaskInterface {
-    handleAddTask: (task: Task, setFetching: React.Dispatch<React.SetStateAction<boolean>>, reset: UseFormReset<Task>, setTaskError: React.Dispatch<React.SetStateAction<string>>,  taskId?: number | undefined) => void;
+    handleAddTask: (task: Task, setFetching: React.Dispatch<React.SetStateAction<boolean>>, reset: UseFormReset<Task>, setTaskError: React.Dispatch<React.SetStateAction<string>>, taskId?: number | undefined) => void;
     action?: string;
     task?: Task;
 }
@@ -66,6 +66,7 @@ const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask, action, task }) 
         const timeUnit = formData.estimatedTimeUnit;
         const timeAfterEstimated = new Date((new Date()).getTime() + timeValue * calculateFactor(timeUnit) * 1000);
         const deadlineTime = new Date(formData.deadline);
+
         if (deadlineTime < timeAfterEstimated) {
             setTimeError('The Estimated Time calculated from Now exceeds Deadline!');
         } else {
@@ -78,7 +79,13 @@ const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask, action, task }) 
         <div>
             <FormTitle title={action?.startsWith('Update') ? 'Update task' : 'Add a new task'} description={action?.startsWith('Update') ? 'Change values of the desired fields' : 'Fill in the required fields to add a task'} />
             <div className="p-6 pt-0 mt-7">
-                <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
+                <form className="flex flex-col"
+                    onSubmit={handleSubmit(onSubmit)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                        }
+                    }}>
                     <div className="grid desktop:grid-cols-3 laptop:grid-cols-2 tablet:grid-cols-1 gap-4">
                         <div className="flex flex-col items-center">
                             <FormInput

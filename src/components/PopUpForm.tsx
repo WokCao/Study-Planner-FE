@@ -23,11 +23,17 @@ interface DeleteTaskResponse {
     message: string;
 }
 
-const PopUpForm = ({ setShowUpdateForm, task }: { setShowUpdateForm: React.Dispatch<React.SetStateAction<UpdateFormInterface>>, task: Task | undefined }) => {
+interface PopUpFormInterface {
+    setShowUpdateForm: React.Dispatch<React.SetStateAction<UpdateFormInterface>>;
+    task: Task | undefined;
+    setEditedTask: React.Dispatch<React.SetStateAction<Task | number | undefined>>;
+}
+
+const PopUpForm = ({ setShowUpdateForm, task, setEditedTask }: PopUpFormInterface) => {
     const token = useAuthStore((state) => state.token);
     const navigate = useNavigate();
 
-    const mutation = useMutation<AddTaskResponse, Error, { addTask: AddTask, setFetching: any, reset: any, setTaskError: any, taskId: number }>({
+    const mutationUpdateTask = useMutation<AddTaskResponse, Error, { addTask: AddTask, setFetching: any, reset: any, setTaskError: any, taskId: number }>({
         mutationFn: async (formData) =>
             await fetcher(`/tasks/${formData.taskId}`, formData.addTask, {
                 method: 'PUT',
@@ -41,6 +47,7 @@ const PopUpForm = ({ setShowUpdateForm, task }: { setShowUpdateForm: React.Dispa
                 const formattedDate = format(date, 'dd-MM-yyyy H:m');
                 task.deadline = formattedDate;
 
+                setEditedTask(task);
                 setFetching(false);
                 reset();
                 setTaskError('');
@@ -59,18 +66,19 @@ const PopUpForm = ({ setShowUpdateForm, task }: { setShowUpdateForm: React.Dispa
         },
     });
 
-    const mutationDelete = useMutation<DeleteTaskResponse, Error, { id: number }>({
+    const mutationDeleteTask = useMutation<DeleteTaskResponse, Error, { id: number }>({
         mutationFn: async (data) => {
             return await fetcherGet(`/tasks/${data.id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': 'Bearer ' + token }
             })
         },
-        onSuccess: (data) => {
+        onSuccess: (data, { id }) => {
             if (!data) return;
 
             if (data.statusCode === 200) {
                 alert(data.message);
+                setEditedTask(id);
                 setShowUpdateForm({ isShown: false, task: undefined });
             } else {
                 throw new Error(data.message);
@@ -97,14 +105,14 @@ const PopUpForm = ({ setShowUpdateForm, task }: { setShowUpdateForm: React.Dispa
         }
 
         if (taskId) {
-            mutation.mutate({ addTask: taskObj, setFetching, reset, setTaskError, taskId });
+            mutationUpdateTask.mutate({ addTask: taskObj, setFetching, reset, setTaskError, taskId });
         }
     }
 
     const handleDeleteTask = () => {
         const id = task?.taskId;
         if (id) {
-            mutationDelete.mutate({ id });
+            mutationDeleteTask.mutate({ id });
         } else {
             alert("Task doesn't exist");
         }

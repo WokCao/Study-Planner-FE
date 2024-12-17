@@ -20,6 +20,8 @@ import AIAnalysis from "./AIAnalysis";
 interface DashboardInterface {
     setCurrentOption: React.Dispatch<React.SetStateAction<number>>;
     setShowUpdateForm: React.Dispatch<React.SetStateAction<UpdateFormInterface>>;
+    editedTask: Task | number | undefined;
+    setEditedTask: React.Dispatch<React.SetStateAction<Task | number | undefined>>;
 }
 
 interface AddTaskResponse {
@@ -28,7 +30,7 @@ interface AddTaskResponse {
     message: string;
 }
 
-function Dashboard({ setCurrentOption, setShowUpdateForm }: DashboardInterface) {
+function Dashboard({ setCurrentOption, setShowUpdateForm, editedTask, setEditedTask }: DashboardInterface) {
     const [label, setLabel] = useState('Start');
     const [icon, setIcon] = useState<IconDefinition>(faPlay);
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -61,7 +63,7 @@ function Dashboard({ setCurrentOption, setShowUpdateForm }: DashboardInterface) 
         setTodayTasks(todayTasksData);
     }
 
-    const mutation = useMutation<AddTaskResponse, Error, { addTask: AddTask, setFetching: any, reset: any, setTaskError: any }>({
+    const mutationAddTask = useMutation<AddTaskResponse, Error, { addTask: AddTask, setFetching: any, reset: any, setTaskError: any }>({
         mutationFn: async (formData) =>
             await fetcher('/tasks', formData.addTask, {
                 method: 'POST',
@@ -165,7 +167,6 @@ function Dashboard({ setCurrentOption, setShowUpdateForm }: DashboardInterface) 
         },
     });
 
-
     const handleAddTask = async (task: Task, setFetching: React.Dispatch<React.SetStateAction<boolean>>, reset: UseFormReset<Task>, setTaskError: React.Dispatch<React.SetStateAction<string>>) => {
         const taskObj = {
             name: task.name,
@@ -176,7 +177,7 @@ function Dashboard({ setCurrentOption, setShowUpdateForm }: DashboardInterface) 
             ...(task.status && { status: task.status })
         }
 
-        mutation.mutate({ addTask: taskObj, setFetching, reset, setTaskError });
+        mutationAddTask.mutate({ addTask: taskObj, setFetching, reset, setTaskError });
     }
 
     useEffect(() => {
@@ -199,9 +200,13 @@ function Dashboard({ setCurrentOption, setShowUpdateForm }: DashboardInterface) 
             mutationGetTask.mutate();
         }
 
+        if (editedTask) {
+            setEditedTask(undefined);
+        }
+
         updateTime();
         loadTasks();
-    }, []);
+    }, [editedTask]);
 
     return (
         <div className="relative p-4 flex items-start h-full overflow-y-auto overflow-x-hidden gap-4 scroll-smooth">
