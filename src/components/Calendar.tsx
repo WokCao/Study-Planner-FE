@@ -39,6 +39,7 @@ const CalendarComponent: React.FC = () => {
   const getSchedules = () => {
     const schedule = tasks.map((task) => ({
       id: task.taskId,
+      calendarId: 'cal' + task.taskId,
       title: task.name,
       body: task.description,
       priority: task.priorityLevel,
@@ -49,7 +50,6 @@ const CalendarComponent: React.FC = () => {
       start: task.deadline,
       end: task.deadline,
     }));
-    console.log(schedule)
     return schedule;
   };
 
@@ -194,8 +194,8 @@ const CalendarComponent: React.FC = () => {
           useDetailPopup={true}
           useCreationPopup={true}
           events={getSchedules()} // Map tasks to schedules
-        //   onBeforeCreateSchedule={handleBeforeCreateSchedule}
-        //   onBeforeUpdateSchedule={handleBeforeUpdateSchedule}
+          onBeforeCreateSchedule={handleBeforeCreateSchedule}
+          onBeforeUpdateSchedule={handleBeforeUpdateSchedule}
         />
       </div>
     </div>
