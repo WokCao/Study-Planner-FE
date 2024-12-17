@@ -230,7 +230,7 @@ function Dashboard({ setCurrentOption, setShowUpdateForm, editedTask, setEditedT
                     <SingleTask key={task.taskId} task={task} setShowUpdateForm={setShowUpdateForm} />
                 ))}
 
-                {tasks.length > 0 && <p className="text-xl !mt-5">Remain tasks</p>}
+                {tasks.length > 0 && <p className="text-xl !mt-5">Remaining Tasks</p>}
 
                 {tasks.slice(0, 5).map((task: Task) => (
                     <SingleTask key={task.taskId} task={task} setShowUpdateForm={setShowUpdateForm} />

@@ -27,8 +27,12 @@ const CalendarComponent: React.FC = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const API_BASE_URL = import.meta.env.DEV ? import.meta.env.VITE_REACT_APP_API_LOCAL : import.meta.env.VITE_REACT_APP_API;
-        const response = await fetch(API_BASE_URL + "/tasks/all", { headers: { 'Authorization': 'Bearer ' + token } }); 
+        const API_BASE_URL = import.meta.env.DEV
+          ? import.meta.env.VITE_REACT_APP_API_LOCAL
+          : import.meta.env.VITE_REACT_APP_API;
+        const response = await fetch(API_BASE_URL + "/tasks/all", {
+          headers: { Authorization: "Bearer " + token },
+        });
         const data = await response.json();
         setTasks(mapTasks(data.data.response.data));
       } catch (error) {
@@ -43,7 +47,7 @@ const CalendarComponent: React.FC = () => {
   const mapTasks = (tasks: any) => {
     return tasks.map((task: any) => ({
       id: task.taskId,
-      calendarId: 'cal' + task.taskId,
+      calendarId: "cal" + task.taskId,
       title: task.name,
       body: task.description,
       priority: task.priorityLevel,
@@ -86,27 +90,34 @@ const CalendarComponent: React.FC = () => {
   };
 
   const mutationUpdateTask = useMutation({
-    mutationFn: async ({id, deadline} : {id: number, deadline: Date}) => await fetcherGet('/tasks/' + id, {
-			method: 'PUT',
-			body: JSON.stringify({ deadline: deadline, status: getStatus(deadline) }),
-			headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-    }),
+    mutationFn: async ({ id, deadline }: { id: number; deadline: Date }) =>
+      await fetcherGet("/tasks/" + id, {
+        method: "PUT",
+        body: JSON.stringify({
+          deadline: deadline,
+          status: getStatus(deadline),
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+      }),
     onSuccess: (_data) => {
-			Swal.fire({
-				title: "Success",
-				text: "Your task schedule has been updated.",
-				icon: "success"
-			});
+      Swal.fire({
+        title: "Success",
+        text: "Your task schedule has been updated.",
+        icon: "success",
+      });
     },
     onError: (error) => {
-			console.log(error)
-			Swal.fire({
-				title: "Failure",
-				text: "Couldn't update your task schedule: " + error.message,
-				icon: "error"
-			});
+      console.log(error);
+      Swal.fire({
+        title: "Failure",
+        text: "Couldn't update your task schedule: " + error.message,
+        icon: "error",
+      });
     },
-	});
+  });
 
   // Handle event updates (e.g., drag-and-drop)
   const handleBeforeUpdateEvent = (updateData: any) => {
@@ -114,12 +125,13 @@ const CalendarComponent: React.FC = () => {
 
     // Update the event details
     setTasks((prev) =>
-      prev.map((e) =>
-        e.id === event.id ? { ...e, ...changes } : e
-      )
+      prev.map((e) => (e.id === event.id ? { ...e, ...changes } : e))
     );
 
-		mutationUpdateTask.mutate({id: Number(event.id), deadline: changes.start.d.d});
+    mutationUpdateTask.mutate({
+      id: Number(event.id),
+      deadline: changes.start.d.d,
+    });
   };
 
   // Determine status based on task time
