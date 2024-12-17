@@ -77,7 +77,6 @@ const PopUpForm = ({ setShowUpdateForm, task, setEditedTask }: PopUpFormInterfac
             if (!data) return;
 
             if (data.statusCode === 200) {
-                alert(data.message);
                 setEditedTask(id);
                 setShowUpdateForm({ isShown: false, task: undefined });
             } else {

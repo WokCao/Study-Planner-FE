@@ -243,7 +243,7 @@ function Dashboard({ setCurrentOption, setShowUpdateForm, editedTask, setEditedT
                         <hr className="flex-grow border-t border-gray-300" />
                     </div>}
 
-                <div className="w-full">
+                <div className="w-full hidden">
                     <ButtonAI />
                     <AIAnalysis />
                 </div>
