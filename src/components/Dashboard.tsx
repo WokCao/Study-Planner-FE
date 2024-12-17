@@ -14,6 +14,8 @@ import useAuthStore from "../hooks/useAuthStore";
 import { useNavigate } from "react-router-dom";
 import { UseFormReset } from "react-hook-form";
 import UpdateFormInterface from "../interface/UpdateFrom";
+import ButtonAI from "./elements/ButtonAI";
+import AIAnalysis from "./AIAnalysis";
 
 interface DashboardInterface {
     setCurrentOption: React.Dispatch<React.SetStateAction<number>>;
@@ -202,7 +204,7 @@ function Dashboard({ setCurrentOption, setShowUpdateForm }: DashboardInterface) 
     }, []);
 
     return (
-        <div className="p-4 flex items-start h-full overflow-y-auto overflow-x-hidden gap-4 scroll-smooth">
+        <div className="relative p-4 flex items-start h-full overflow-y-auto overflow-x-hidden gap-4 scroll-smooth">
             <div className="w-9/12 space-y-4 mb-32">
                 <div className="p-4 bg-white rounded-3xl">
                     <section className="bg-gradient-to-b from-fuchsia-400 to-violet-300 p-4 rounded-3xl text-white">
@@ -235,6 +237,11 @@ function Dashboard({ setCurrentOption, setShowUpdateForm }: DashboardInterface) 
                         <span className="mx-4 text-sm font-medium text-slate-500 hover:cursor-pointer" onClick={() => setCurrentOption(3)}>See all</span>
                         <hr className="flex-grow border-t border-gray-300" />
                     </div>}
+
+                <div className="w-full">
+                    <ButtonAI />
+                    <AIAnalysis />
+                </div>
             </div>
 
             <div className="p-4 bg-white rounded-3xl w-3/12">
