@@ -37,7 +37,7 @@ const CalendarComponent: React.FC = () => {
 
   // Map tasks to calendar schedules
   const getSchedules = () => {
-    return tasks.map((task) => ({
+    const schedule = tasks.map((task) => ({
       id: task.taskId,
       title: task.name,
       body: task.description,
@@ -49,6 +49,8 @@ const CalendarComponent: React.FC = () => {
       start: task.deadline,
       end: task.deadline,
     }));
+    console.log(schedule)
+    return schedule;
   };
 
   // Handle navigation and update the current date display
@@ -191,9 +193,9 @@ const CalendarComponent: React.FC = () => {
           defaultView="week"
           useDetailPopup={true}
           useCreationPopup={true}
-          schedules={getSchedules()} // Map tasks to schedules
-          onBeforeCreateSchedule={handleBeforeCreateSchedule}
-          onBeforeUpdateSchedule={handleBeforeUpdateSchedule}
+          events={getSchedules()} // Map tasks to schedules
+        //   onBeforeCreateSchedule={handleBeforeCreateSchedule}
+        //   onBeforeUpdateSchedule={handleBeforeUpdateSchedule}
         />
       </div>
     </div>
