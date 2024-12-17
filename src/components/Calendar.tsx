@@ -1,13 +1,14 @@
 import React, { useRef, useState, useEffect } from "react";
 import Calendar from "@toast-ui/react-calendar";
 import "@toast-ui/calendar/dist/toastui-calendar.min.css";
+import useAuthStore from "../hooks/useAuthStore";
 
 // Task interface for better type safety
 interface Task {
-  id: string;
-  title: string;
+  taskId: string;
+  name: string;
   description: string;
-  priority: "High" | "Medium" | "Low";
+  priorityLevel: "High" | "Medium" | "Low";
   status: "Todo" | "In Progress" | "Completed" | "Expired";
   estimatedTime: string;
   deadline: Date;
@@ -17,13 +18,15 @@ const CalendarComponent: React.FC = () => {
   const calendarRef = useRef<Calendar | null>(null);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [tasks, setTasks] = useState<Task[]>([]);
+  const token = useAuthStore((state) => state.token);
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await fetch("/api/tasks"); 
+        const API_BASE_URL = import.meta.env.DEV ? import.meta.env.VITE_REACT_APP_API_LOCAL : import.meta.env.VITE_REACT_APP_API;
+        const response = await fetch(API_BASE_URL + "/tasks/all", { headers: { 'Authorization': 'Bearer ' + token } }); 
         const data = await response.json();
-        setTasks(data);
+        setTasks(data.data.response.data);
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }
@@ -35,10 +38,10 @@ const CalendarComponent: React.FC = () => {
   // Map tasks to calendar schedules
   const getSchedules = () => {
     return tasks.map((task) => ({
-      id: task.id,
-      title: task.title,
+      id: task.taskId,
+      title: task.name,
       body: task.description,
-      priority: task.priority,
+      priority: task.priorityLevel,
       estimatedTime: task.estimatedTime,
       deadline: task.deadline,
       category: "time", // Use 'time' for time-bound events
@@ -63,13 +66,13 @@ const CalendarComponent: React.FC = () => {
 
   // Handle new event creation (drag-and-drop or manual creation)
   const handleBeforeCreateSchedule = (e: any) => {
-    const { end, title } = e;
+    const { end, name } = e;
 
     const newTask: Task = {
-      id: (tasks.length + 1).toString(),
-      title,
+      taskId: (tasks.length + 1).toString(),
+      name,
       description: "",
-      priority: "High",
+      priorityLevel: "High",
       status: "Todo",
       estimatedTime: "1 day",
       deadline: new Date(end),
@@ -90,7 +93,7 @@ const CalendarComponent: React.FC = () => {
     // Update the corresponding task in state
     setTasks((prev) =>
       prev.map((task) =>
-        task.id === updatedTask.id
+        task.taskId === updatedTask.id
           ? {
               ...task,
               deadline: updatedTask.deadline,
