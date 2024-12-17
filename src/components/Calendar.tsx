@@ -1,11 +1,15 @@
 import React, { useRef, useState, useEffect } from "react";
+// @ts-ignore
 import Calendar from "@toast-ui/react-calendar";
 import "@toast-ui/calendar/dist/toastui-calendar.min.css";
 import useAuthStore from "../hooks/useAuthStore";
+import { fetcherGet } from "../clients/apiClientAny";
+import { useMutation } from "@tanstack/react-query";
+import Swal from "sweetalert2";
 
 // Task interface for better type safety
 interface Task {
-  taskId: string;
+  id: string;
   name: string;
   description: string;
   priorityLevel: "High" | "Medium" | "Low";
@@ -26,7 +30,7 @@ const CalendarComponent: React.FC = () => {
         const API_BASE_URL = import.meta.env.DEV ? import.meta.env.VITE_REACT_APP_API_LOCAL : import.meta.env.VITE_REACT_APP_API;
         const response = await fetch(API_BASE_URL + "/tasks/all", { headers: { 'Authorization': 'Bearer ' + token } }); 
         const data = await response.json();
-        setTasks(data.data.response.data);
+        setTasks(mapTasks(data.data.response.data));
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }
@@ -35,9 +39,9 @@ const CalendarComponent: React.FC = () => {
     fetchTasks();
   }, []);
 
-  // Map tasks to calendar schedules
-  const getSchedules = () => {
-    const schedule = tasks.map((task) => ({
+  // Map tasks to calendar events
+  const mapTasks = (tasks: any) => {
+    return tasks.map((task: any) => ({
       id: task.taskId,
       calendarId: 'cal' + task.taskId,
       title: task.name,
@@ -46,11 +50,10 @@ const CalendarComponent: React.FC = () => {
       estimatedTime: task.estimatedTime,
       deadline: task.deadline,
       category: "time", // Use 'time' for time-bound events
-      isReadOnly: task.status === "Completed" || task.status === "Expired",
+      isReadOnly: task.status === "Completed",
       start: task.deadline,
       end: task.deadline,
     }));
-    return schedule;
   };
 
   // Handle navigation and update the current date display
@@ -67,11 +70,11 @@ const CalendarComponent: React.FC = () => {
   }, []);
 
   // Handle new event creation (drag-and-drop or manual creation)
-  const handleBeforeCreateSchedule = (e: any) => {
+  const handleBeforeCreateEvent = (e: any) => {
     const { end, name } = e;
 
     const newTask: Task = {
-      taskId: (tasks.length + 1).toString(),
+      id: (tasks.length + 1).toString(),
       name,
       description: "",
       priorityLevel: "High",
@@ -82,34 +85,47 @@ const CalendarComponent: React.FC = () => {
     setTasks((prev) => [...prev, newTask]);
   };
 
+  const mutationUpdateTask = useMutation({
+    mutationFn: async ({id, deadline} : {id: number, deadline: Date}) => await fetcherGet('/tasks/' + id, {
+			method: 'PUT',
+			body: JSON.stringify({ deadline: deadline, status: getStatus(deadline) }),
+			headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+    }),
+    onSuccess: (_data) => {
+			Swal.fire({
+				title: "Success",
+				text: "Your task schedule has been updated.",
+				icon: "success"
+			});
+    },
+    onError: (error) => {
+			console.log(error)
+			Swal.fire({
+				title: "Failure",
+				text: "Couldn't update your task schedule: " + error.message,
+				icon: "error"
+			});
+    },
+	});
+
   // Handle event updates (e.g., drag-and-drop)
-  const handleBeforeUpdateSchedule = (e: any) => {
-    const { schedule, changes } = e;
+  const handleBeforeUpdateEvent = (updateData: any) => {
+    const { event, changes } = updateData;
 
-    const updatedTask = {
-      ...schedule,
-      deadline: new Date(changes.start),
-      status: getStatus(new Date(changes.start)),
-    };
-
-    // Update the corresponding task in state
+    // Update the event details
     setTasks((prev) =>
-      prev.map((task) =>
-        task.taskId === updatedTask.id
-          ? {
-              ...task,
-              deadline: updatedTask.deadline,
-              status: updatedTask.status,
-            }
-          : task
+      prev.map((e) =>
+        e.id === event.id ? { ...e, ...changes } : e
       )
     );
+
+		mutationUpdateTask.mutate({id: Number(event.id), deadline: changes.start.d.d});
   };
 
   // Determine status based on task time
-  const getStatus = (deadline: Date): Task["status"] => {
+  const getStatus = (deadline: Date): string => {
     const now = new Date();
-    if (deadline > now) return "Expired";
+    if (now > deadline) return "Expired";
     return "Todo";
   };
 
@@ -191,11 +207,12 @@ const CalendarComponent: React.FC = () => {
           ref={calendarRef}
           height="100%"
           defaultView="week"
+          isReadOnly={false}
           useDetailPopup={true}
           useCreationPopup={true}
-          events={getSchedules()} // Map tasks to schedules
-          onBeforeCreateSchedule={handleBeforeCreateSchedule}
-          onBeforeUpdateSchedule={handleBeforeUpdateSchedule}
+          events={tasks}
+          onBeforeCreateEvent={handleBeforeCreateEvent}
+          onBeforeUpdateEvent={handleBeforeUpdateEvent}
         />
       </div>
     </div>
