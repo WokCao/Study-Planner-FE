@@ -10,7 +10,7 @@ const Layout: React.FC<Props> = ({ children }) => {
     <div className="bg-violet-50 h-screen flex flex-col">
       {/* Header */}
       <header className="bg-white py-4 border-b-2">
-        <div className="container mx-auto px-4 flex justify-between items-center">
+        <div className="mx-auto px-7 flex justify-between items-center">
 					<Link to="/" className='flex justify-center items-center'>
 						<img title='icon' src='/Study-Planner-FE/gem.ico'/>
 						<h1 className="text-2xl text-violet-500 font-bold ms-2">

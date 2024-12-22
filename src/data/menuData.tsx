@@ -11,8 +11,8 @@ const mockUpDataTop: MenuOptionsInterface[] = [
     svg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="32"
-        height="32"
+        width="25"
+        height="25"
         viewBox="0 0 24 24"
       >
         <path fill="currentColor" d="M10 20v-6h4v6h5v-8h3L12 3L2 12h3v8z" />
@@ -25,8 +25,8 @@ const mockUpDataTop: MenuOptionsInterface[] = [
     svg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="32"
-        height="32"
+        width="25"
+        height="25"
         viewBox="0 0 24 24"
       >
         <path
@@ -42,8 +42,8 @@ const mockUpDataTop: MenuOptionsInterface[] = [
     svg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="32"
-        height="32"
+        width="25"
+        height="25"
         viewBox="0 0 14 14"
       >
         <g
@@ -65,8 +65,8 @@ const mockUpDataTop: MenuOptionsInterface[] = [
     svg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="32"
-        height="32"
+        width="25"
+        height="25"
         viewBox="0 0 24 24"
       >
         <path
@@ -85,8 +85,8 @@ const mockUpDataBottom: MenuOptionsInterface[] = [
     svg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="32"
-        height="32"
+        width="25"
+        height="25"
         viewBox="0 0 24 24"
       >
         <g
@@ -109,8 +109,8 @@ const mockUpDataBottom: MenuOptionsInterface[] = [
     svg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="32"
-        height="32"
+        width="25"
+        height="25"
         viewBox="0 0 24 24"
       >
         <path
@@ -126,8 +126,8 @@ const mockUpDataBottom: MenuOptionsInterface[] = [
     svg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="32"
-        height="32"
+        width="25"
+        height="25"
         viewBox="0 0 24 24"
       >
         <path
