@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import ButtonTimer from "./elements/ButtonTimer";
-import { faGripLinesVertical, faPlay, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import FormTask from "./elements/FormTask";
 import Task from "../interface/Task";
 import { format } from "date-fns";
@@ -31,8 +29,6 @@ interface AddTaskResponse {
 }
 
 function Dashboard({ setCurrentOption, setShowUpdateForm, editedTask, setEditedTask }: DashboardInterface) {
-    const [label, setLabel] = useState('Start');
-    const [icon, setIcon] = useState<IconDefinition>(faPlay);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [totalTasks, setTotalTasks] = useState(0);
     const [todayTasks, setTodayTasks] = useState<Task[]>([]);
@@ -40,16 +36,6 @@ function Dashboard({ setCurrentOption, setShowUpdateForm, editedTask, setEditedT
     const [loadTaskError, setLoadTaskError] = useState('');
     const token = useAuthStore((state) => state.token);
     const navigate = useNavigate();
-
-    const handleSetComponents = () => {
-        if (label === 'Start') {
-            setLabel('Stop');
-            setIcon(faGripLinesVertical);
-        } else {
-            setLabel('Start');
-            setIcon(faPlay);
-        }
-    }
 
     const dueTodayTask = (tasks: Task[]) => {
         const now = new Date();
