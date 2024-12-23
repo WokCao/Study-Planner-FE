@@ -6,6 +6,7 @@ import useAuthStore from "../hooks/useAuthStore";
 import { fetcherGet } from "../clients/apiClientAny";
 import { useMutation } from "@tanstack/react-query";
 import Swal from "sweetalert2";
+import OpenAI from "openai";
 
 // Task interface for better type safety
 interface Task {
@@ -23,6 +24,15 @@ const CalendarComponent: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [tasks, setTasks] = useState<Task[]>([]);
   const token = useAuthStore((state) => state.token);
+  const [feedback, setFeedback] = useState<{
+    warnings: string[];
+    suggestions: string[];
+  }>({
+    warnings: [],
+    suggestions: [],
+  });
+
+  const openai = new OpenAI();
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -147,6 +157,68 @@ const CalendarComponent: React.FC = () => {
     return new Intl.DateTimeFormat("en-US", options).format(date);
   };
 
+  // Handle user clicking on "Analyze Schedule"
+  const analyzeSchedule = () => {
+    const scheduleData = tasks.map((task) => ({
+      id: task.id,
+      name: task.name,
+      description: task.description,
+      deadline: task.deadline,
+      priorityLevel: task.priorityLevel,
+      estimatedTime: task.estimatedTime,
+      status: task.status,
+    }));
+
+    // Send the collected schedule data to the LLM API
+    sendToLLM(scheduleData);
+  };
+
+  // Send data to LLM for analysis
+  const sendToLLM = async (data: Task[]) => {
+    try {
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "developer",
+            content: [
+              {
+                type: "text",
+                text: `
+                  You are a helpful assistant that helps in a study-scheduling application by providing feedback on potential adjustments, such as:
+                  Warning about overly tight schedules that may lead to burnout.
+                  Recommending prioritization changes for improved focus and balance.
+                  .
+                `,
+              },
+            ],
+          },
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: `Can you give warnings and recommendations based on my schedule data (it's in JSON format): ${data}`,
+              },
+            ],
+          },
+        ],
+      });
+
+      const result = await response.json();
+      handleLLMFeedback(result);
+    } catch (error) {
+      console.error("Error sending data to LLM:", error);
+    }
+  };
+
+  const handleLLMFeedback = (feedbackData: {
+    warnings: string[];
+    suggestions: string[];
+  }) => {
+    setFeedback(feedbackData);
+  };
+
   return (
     <div className="h-full flex flex-col">
       <div className="flex justify-between items-center p-4 bg-gray-100 border-b">
@@ -226,6 +298,37 @@ const CalendarComponent: React.FC = () => {
           onBeforeCreateEvent={handleBeforeCreateEvent}
           onBeforeUpdateEvent={handleBeforeUpdateEvent}
         />
+      </div>
+
+      <div className="p-4 bg-gray-100 border-t">
+        <button
+          onClick={analyzeSchedule}
+          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition"
+        >
+          Analyze Schedule
+        </button>
+
+        {feedback.warnings.length > 0 && (
+          <div className="mt-4 text-red-500">
+            <h3 className="font-bold">Warnings</h3>
+            <ul>
+              {feedback.warnings.map((warning, idx) => (
+                <li key={idx}>{warning}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {feedback.suggestions.length > 0 && (
+          <div className="mt-4 text-blue-500">
+            <h3 className="font-bold">Suggestions</h3>
+            <ul>
+              {feedback.suggestions.map((suggestion, idx) => (
+                <li key={idx}>{suggestion}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );
