@@ -21,6 +21,7 @@ interface Task {
 
 const CalendarComponent: React.FC = () => {
   const calendarRef = useRef<Calendar | null>(null);
+  const feedbackRef = useRef<HTMLDivElement | null>(null);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [tasks, setTasks] = useState<Task[]>([]);
   const token = useAuthStore((state) => state.token);
@@ -32,7 +33,10 @@ const CalendarComponent: React.FC = () => {
     suggestions: [],
   });
 
-  const openai = new OpenAI();
+  const openai = new OpenAI({
+    apiKey: import.meta.env.VITE_OPENAI_API,
+    dangerouslyAllowBrowser: true,
+  });
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -169,54 +173,112 @@ const CalendarComponent: React.FC = () => {
       status: task.status,
     }));
 
+    // Validate data size for LLM token limits (optional safeguard)
+    if (JSON.stringify(scheduleData).length > 20000) {
+      Swal.fire({
+        title: "Data Too Large",
+        text: "Your schedule data is too large to analyze at once. Please reduce the number of tasks and try again.",
+        icon: "warning",
+      });
+      return;
+    }
+
     // Send the collected schedule data to the LLM API
     sendToLLM(scheduleData);
+
+    // Scroll to feedback after analyzing
+    if (feedbackRef.current) {
+      feedbackRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   // Send data to LLM for analysis
   const sendToLLM = async (data: Task[]) => {
     try {
       const response = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
+        model: import.meta.env.VITE_OPENAI_MODEL || "gpt-4o-mini", // Use dynamic model name from environment variables
         messages: [
           {
-            role: "developer",
-            content: [
-              {
-                type: "text",
-                text: `
-                  You are a helpful assistant that helps in a study-scheduling application by providing feedback on potential adjustments, such as:
-                  Warning about overly tight schedules that may lead to burnout.
-                  Recommending prioritization changes for improved focus and balance.
-                  .
-                `,
-              },
-            ],
+            role: "system",
+            content: `
+            You are a helpful assistant that analyzes study schedules.
+            Provide warnings about overly tight schedules and suggestions for better prioritization and balance.
+            Always format your response as:
+            Warnings:
+            - Item 1
+            - Item 2
+
+            Suggestions:
+            - Item 1
+            - Item 2
+          `,
           },
           {
             role: "user",
-            content: [
-              {
-                type: "text",
-                text: `Can you give warnings and recommendations based on my schedule data (it's in JSON format): ${data}`,
-              },
-            ],
+            content: `Analyze my schedule and provide feedback. Here is the data in JSON format:\n\n${JSON.stringify(
+              data
+            )}`,
           },
         ],
       });
 
-      const result = await response.json();
-      handleLLMFeedback(result);
-    } catch (error) {
+      if (!response) {
+        throw new Error("No response from the LLM API.");
+      }
+
+      const feedback = response.choices[0]?.message?.content;
+      console.log(feedback);
+      if (feedback) handleLLMFeedback(feedback);
+    } catch (error: any) {
       console.error("Error sending data to LLM:", error);
+
+      Swal.fire({
+        title: "Analysis Failed",
+        text: `Unable to analyze your schedule: ${
+          error.message || "An unknown error occurred."
+        }`,
+        icon: "error",
+      });
     }
   };
 
-  const handleLLMFeedback = (feedbackData: {
-    warnings: string[];
-    suggestions: string[];
-  }) => {
-    setFeedback(feedbackData);
+  // Handle feedback from LLM
+  const handleLLMFeedback = (feedbackString: string) => {
+    const warnings: string[] = [];
+    const suggestions: string[] = [];
+
+    // Split feedback into sections
+    const sections = feedbackString.split("\n\n");
+    sections.forEach((section) => {
+      if (section.startsWith("Warnings:")) {
+        warnings.push(
+          ...section
+            .replace("Warnings:", "")
+            .trim()
+            .split("\n")
+            .map((item) => item.trim())
+        );
+      } else if (section.startsWith("Suggestions:")) {
+        suggestions.push(
+          ...section
+            .replace("Suggestions:", "")
+            .trim()
+            .split("\n")
+            .map((item) => item.trim())
+        );
+      }
+    });
+
+    // Update state
+    setFeedback({ warnings, suggestions });
+    console.log(warnings);
+    console.log(suggestions);
+
+    Swal.fire({
+      title: "Analysis Complete",
+      text: "Your schedule has been analyzed. Please review the warnings and suggestions below.",
+      icon: "success",
+    });
   };
 
   return (
@@ -309,22 +371,26 @@ const CalendarComponent: React.FC = () => {
         </button>
 
         {feedback.warnings.length > 0 && (
-          <div className="mt-4 text-red-500">
-            <h3 className="font-bold">Warnings</h3>
-            <ul>
+          <div className="mt-6 p-4 border-l-4 border-red-500 bg-red-50 rounded-md">
+            <h3 className="text-lg font-bold text-red-700">⚠️ Warnings</h3>
+            <ul className="mt-2 list-disc list-inside text-red-600">
               {feedback.warnings.map((warning, idx) => (
-                <li key={idx}>{warning}</li>
+                <li key={idx} className="leading-relaxed">
+                  {warning}
+                </li>
               ))}
             </ul>
           </div>
         )}
 
         {feedback.suggestions.length > 0 && (
-          <div className="mt-4 text-blue-500">
-            <h3 className="font-bold">Suggestions</h3>
-            <ul>
+          <div className="mt-6 p-4 border-l-4 border-blue-500 bg-blue-50 rounded-md">
+            <h3 className="text-lg font-bold text-blue-700">💡 Suggestions</h3>
+            <ul className="mt-2 list-disc list-inside text-blue-600">
               {feedback.suggestions.map((suggestion, idx) => (
-                <li key={idx}>{suggestion}</li>
+                <li key={idx} className="leading-relaxed">
+                  {suggestion}
+                </li>
               ))}
             </ul>
           </div>
