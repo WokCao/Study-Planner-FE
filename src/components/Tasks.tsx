@@ -232,14 +232,19 @@ const Tasks = ({
           );
         } else if (sortKey === "priority") {
           // Sort by priority
-          const priorityOrder = { High: 3, Medium: 2, Low: 1 }; // Define priority levels
+          interface IPriorityOrder {
+            High: number;
+            Medium: number;
+            Low: number;
+          }
+          const priorityOrder: IPriorityOrder = { High: 3, Medium: 2, Low: 1 }; // Define priority levels
 
-          const priorityA = priorityOrder[a.priorityLevel] || 0; // Default to 0 if undefined
-          const priorityB = priorityOrder[b.priorityLevel] || 0; // Default to 0 if undefined
+          const priorityA = priorityOrder[a.priorityLevel as keyof IPriorityOrder] || 0; // Default to 0 if undefined
+          const priorityB = priorityOrder[b.priorityLevel as keyof IPriorityOrder] || 0; // Default to 0 if undefined
 
           return (priorityA - priorityB) * sortFactor; // Higher priority first in descending order
         }
-        return a[sortKey].localeCompare(b[sortKey]) * sortFactor;
+        return String(a[sortKey as keyof Task])?.localeCompare(String(b[sortKey as keyof Task])) * sortFactor;
       });
   };
 
