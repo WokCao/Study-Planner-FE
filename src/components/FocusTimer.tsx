@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import ButtonTimer from "./elements/ButtonTimer";
 import Timer from "./classes/Timer";
 import { faGripLinesVertical, faPlay, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import useTimerStore from "../hooks/useTimerStore";
 
 interface TimeAndButtonInterface {
     hasCircle: boolean;
@@ -54,32 +55,32 @@ function TimeAndButton({ hasCircle } : TimeAndButtonInterface) {
     return (
         <div className="flex flex-col items-center font-semibold">
             <svg width={svgSize} height={svgSize} className={`absolute pointer-events-none ${hasCircle || 'hidden'}`}>
-                <defs>
-                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#9333ea" /> {/* Start color */}
-                        <stop offset="100%" stopColor="#ddd6fe" /> {/* End color */}
-                    </linearGradient>
-                </defs>
-                <circle
-                    cx={svgSize / 2}
-                    cy={svgSize / 2}
-                    r={radius}
-                    stroke="white"
-                    fill="none"
-                    strokeWidth="8"
-                />
-                <circle
-                    cx={svgSize / 2}
-                    cy={svgSize / 2}
-                    r={radius}
-                    stroke="url(#gradient)"
-                    fill="none"
-                    strokeWidth="8"
-                    strokeDasharray={circumference}
-                    strokeDashoffset={strokeDashoffset}
-                    transform={`rotate(-90 ${svgSize / 2} ${svgSize / 2})`}
-                    className="transition"
-                />
+            <defs>
+                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#9333ea" /> {/* Start color */}
+                    <stop offset="100%" stopColor="#ddd6fe" /> {/* End color */}
+                </linearGradient>
+            </defs>
+            <circle
+                cx={svgSize / 2}
+                cy={svgSize / 2}
+                r={radius}
+                stroke="white"
+                fill="none"
+                strokeWidth="8"
+            />
+            <circle
+                cx={svgSize / 2}
+                cy={svgSize / 2}
+                r={radius}
+                stroke="url(#gradient)"
+                fill="none"
+                strokeWidth="8"
+                strokeDasharray={circumference}
+                strokeDashoffset={strokeDashoffset}
+                transform={`rotate(-90 ${svgSize / 2} ${svgSize / 2})`}
+                className="transition"
+            />
             </svg>
             <p className={`${hasCircle ? 'text-5xl mt-11' : 'text-2xl'}`}>{timeString}</p>
             <p className={`${hasCircle ? 'text-xl mt-1 mb-3' : 'text-lg'}`}>Focus</p>
@@ -89,6 +90,8 @@ function TimeAndButton({ hasCircle } : TimeAndButtonInterface) {
 }
 
 function FocusTimer({ widget } : FocusTimerInterface) {
+    const task = useTimerStore((state) => state.task);
+
     return (
         <>
         {widget
@@ -96,8 +99,11 @@ function FocusTimer({ widget } : FocusTimerInterface) {
         <div className="relative flex items-start w-3/12 h-full overflow-y-auto overflow-x-hidden gap-4 scroll-smooth">
             <div className="p-4 bg-white rounded-3xl w-full">
                 <section className="bg-gradient-to-b from-purple-500 to-violet-300 p-4 rounded-3xl text-white">
-                    <h3 className="font-bold text-2xl mb-3">Focus Timer</h3>
-                    <TimeAndButton hasCircle={false} />
+                    <h3 className="font-bold text-2xl mb-1">Focus Timer</h3>
+                    <h3 className="text-lg leading-6 mt-2 mb-3">
+                        {task ? <>{task.title}</> : <>Please select a task from the Calendar first.</>}
+                    </h3>
+                    {task && <TimeAndButton hasCircle={false} />}
                 </section>
             </div>
         </div>
@@ -106,8 +112,10 @@ function FocusTimer({ widget } : FocusTimerInterface) {
             <section className="bg-gradient-to-b from-purple-500 to-violet-300 p-4 ps-6 text-white h-full">
                 <h2 className="font-bold text-3xl mb-2">Time to focus</h2>
                 <hr />
-                <h3 className="text-xl mt-2">Focus strong, achieve big.</h3>
-                <TimeAndButton hasCircle={true} />
+                <h3 className="text-xl mt-2">
+                    {task ? <>{task.title}</> : <>Please select a task from the Calendar first.</>}
+                </h3>
+                {task && <TimeAndButton hasCircle={true} />}
             </section>
         </div>
         }

@@ -3,9 +3,11 @@ import React, { useRef, useState, useEffect } from "react";
 import Calendar from "@toast-ui/react-calendar";
 import "@toast-ui/calendar/dist/toastui-calendar.min.css";
 import useAuthStore from "../hooks/useAuthStore";
+import useTimerStore from "../hooks/useTimerStore";
 import { fetcherGet } from "../clients/apiClientAny";
 import { useMutation } from "@tanstack/react-query";
 import Swal from "sweetalert2";
+import CalendarEvent from "../interface/CalendarEvent";
 
 // Task interface for better type safety
 interface Task {
@@ -144,8 +146,8 @@ const CalendarComponent: React.FC = () => {
     });
   };
 
-  const handleClickEvent = ({ event } : { event: any }) => {
-    console.log(event)
+  const setTask = useTimerStore((state) => state.setTask);
+  const handleClickEvent = ({ event } : { event: CalendarEvent }) => {
     Swal.fire({
         title: event.title,
         html: `<span style='text-decoration:underline'>Deadline: ${event.start.d.d.toISOString().substring(0, 10)}</span><br><br>${event.body}`,
@@ -157,7 +159,12 @@ const CalendarComponent: React.FC = () => {
         if (result.isConfirmed) {
             // Wok làm
         } else if (result.isDenied) {
-            
+            setTask(event);
+            Swal.fire({
+                title: 'Success',
+                text: 'Task has been assigned to Focus Timer.',
+                icon: 'success',
+            })
         }
     });
   };
