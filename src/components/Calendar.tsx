@@ -144,6 +144,24 @@ const CalendarComponent: React.FC = () => {
     });
   };
 
+  const handleClickEvent = ({ event } : { event: any }) => {
+    console.log(event)
+    Swal.fire({
+        title: event.title,
+        html: `<span style='text-decoration:underline'>Deadline: ${event.start.d.d.toISOString().substring(0, 10)}</span><br><br>${event.body}`,
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: 'Edit',
+        denyButtonText: 'Set Focus Timer'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Wok làm
+        } else if (result.isDenied) {
+            
+        }
+    });
+  };
+
   // Determine status based on task time
   const getStatus = (deadline: Date): string => {
     const now = new Date();
@@ -231,11 +249,12 @@ const CalendarComponent: React.FC = () => {
           defaultView="week"
           isReadOnly={false}
           disableResizing={true}
-          useDetailPopup={true}
-          useCreationPopup={true}
+          useDetailPopup={false}
+          useCreationPopup={false}
           events={tasks}
           onBeforeCreateEvent={handleBeforeCreateEvent}
           onBeforeUpdateEvent={handleBeforeUpdateEvent}
+          onClickEvent={handleClickEvent}
         />
       </div>
     </div>
