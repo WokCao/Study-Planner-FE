@@ -1,8 +1,9 @@
 import { useRef, useState } from "react";
 import ButtonTimer from "./elements/ButtonTimer";
 import Timer from "./classes/Timer";
-import { faGripLinesVertical, faPlay, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { faGripLinesVertical, faPlay, faX, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import useTimerStore from "../hooks/useTimerStore";
+import Swal from "sweetalert2";
 
 interface TimeAndButtonInterface {
     hasCircle: boolean;
@@ -15,20 +16,57 @@ interface FocusTimerInterface {
 function TimeAndButton({ hasCircle } : TimeAndButtonInterface) {
     const [label, setLabel] = useState('Start');
 	const [icon, setIcon] = useState<IconDefinition>(faPlay);
-    const [timeString, setTimeString] = useState('25:00');
     const [progress, setProgress] = useState<number>(1); // 1 = full progress
     const timerRef = useRef<Timer | null>(null);
 
+    const time = useTimerStore((state) => state.time);
+    const breakTime = useTimerStore((state) => state.break);
+    const setTime = useTimerStore((state) => state.setDuration);
+    const timeDisplay = useTimerStore((state) => state.timeDisplay);
+    const setTimeDisplay = useTimerStore((state) => state.setTimeDisplay);
+    const clearData = useTimerStore((state) => state.clearData);
+
     if (!timerRef.current) {
         timerRef.current = new Timer(
-            1, // minutes
+            time || 25, // minutes
             0, // seconds
             (time: string, progress: number) => {
-                setTimeString(time);
+                setTimeDisplay(time);
                 setProgress(progress);
             },
             () => {
-                alert("Time's up!");
+                if (!breakTime || (breakTime && breakTime === 0)) {
+                    Swal.fire({
+                        title: "Time's up! Focus session ended.",
+                        icon: "info"
+                    });
+                    return clearData();
+                }
+
+                Swal.fire({
+                    title: "Time's up! Take a break.",
+                    icon: "info"
+                });
+
+                setTime({ time: breakTime, break: 0 });
+                setLabel('Start');
+                setIcon(faPlay);
+
+                timerRef.current = new Timer(
+                    breakTime || 5, // minutes
+                    0, // seconds
+                    (time: string, progress: number) => {
+                        setTimeDisplay(time);
+                        setProgress(progress);
+                    },
+                    () => {
+                        Swal.fire({
+                            title: "Break's over! Focus session ended.",
+                            icon: "info"
+                        });
+                        clearData();
+                    }
+                );
             }
         );
     }
@@ -43,6 +81,15 @@ function TimeAndButton({ hasCircle } : TimeAndButtonInterface) {
             setLabel('Start');
             setIcon(faPlay);
         }
+    }
+
+    const handleEndTimer = () => {
+        timerRef.current?.stop();
+        Swal.fire({
+            title: "Focus session ended early.",
+            icon: "info"
+        });
+        clearData();
     }
 
     // Calculate the circumference of the circle
@@ -82,9 +129,10 @@ function TimeAndButton({ hasCircle } : TimeAndButtonInterface) {
                 className="transition"
             />
             </svg>
-            <p className={`${hasCircle ? 'text-5xl mt-11' : 'text-2xl'}`}>{timeString}</p>
+            <p className={`${hasCircle ? 'text-5xl mt-11' : 'text-2xl'}`}>{timeDisplay}</p>
             <p className={`${hasCircle ? 'text-xl mt-1 mb-3' : 'text-lg'}`}>Focus</p>
             <ButtonTimer label={label} icon={icon} handleSetComponents={handleSetComponents} />
+            {timerRef.current?.isRunning() && <ButtonTimer label={'End'} icon={faX} handleSetComponents={handleEndTimer} />}
         </div>
     )
 }

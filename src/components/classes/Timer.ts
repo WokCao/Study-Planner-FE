@@ -14,6 +14,10 @@ export default class CountdownTimer {
       return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
 
+    public isRunning(): boolean {
+        return Boolean(this.intervalId);
+    }
+
     start() {
       if (this.intervalId) return; // Prevent multiple intervals
 

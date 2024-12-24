@@ -147,6 +147,8 @@ const CalendarComponent: React.FC = () => {
   };
 
   const setTask = useTimerStore((state) => state.setTask);
+  const setDuration = useTimerStore((state) => state.setDuration);
+
   const handleClickEvent = ({ event } : { event: CalendarEvent }) => {
     Swal.fire({
         title: event.title,
@@ -155,16 +157,57 @@ const CalendarComponent: React.FC = () => {
         showCancelButton: true,
         confirmButtonText: 'Edit',
         denyButtonText: 'Set Focus Timer'
-    }).then((result) => {
+    }).then(async (result) => {
         if (result.isConfirmed) {
             // Wok làm
         } else if (result.isDenied) {
             setTask(event);
-            Swal.fire({
-                title: 'Success',
-                text: 'Task has been assigned to Focus Timer.',
-                icon: 'success',
-            })
+            
+            const { value: formValues } = await Swal.fire({
+                title: 'Set Focus Timer',
+                html: `
+                    <label class="swal2-input-label" for="swal-input1">Set duration (minutes)</label>
+                    <input id="swal-input1" class="swal2-input" type="number" placeholder="25">
+                    <label class="swal2-input-label" for="swal-input2">Set break duration (minutes)</label>
+                    <input id="swal-input2" class="swal2-input" type="number" placeholder="5">
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                preConfirm: () => {
+                return [
+                    (document.getElementById("swal-input1") as HTMLInputElement).value,
+                    (document.getElementById("swal-input2") as HTMLInputElement).value,
+                ];
+                }
+            });
+        
+            if (formValues) {
+                const duration = formValues[0];
+                const breakDuration = formValues[1] || 0;
+
+                if (!duration) {
+                    return Swal.fire({
+                        title: "Failure",
+                        text: "Please enter duration!",
+                        icon: "error"
+                    });
+                }
+
+                if (duration <= 0) {
+                    return Swal.fire({
+                        title: "Failure",
+                        text: "Duration must be higher than 0!",
+                        icon: "error"
+                    });
+                }
+
+                setDuration({ time: Math.floor(duration), break: Math.floor(breakDuration) });
+                Swal.fire({
+                    title: 'Success',
+                    text: 'Task has been assigned to Focus Timer.',
+                    icon: 'success',
+                })
+            }
         }
     });
   };
