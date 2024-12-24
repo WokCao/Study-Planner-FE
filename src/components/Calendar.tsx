@@ -104,9 +104,11 @@ const CalendarComponent: React.FC = () => {
       }),
     onSuccess: (_data) => {
       Swal.fire({
-        title: "Success",
-        text: "Your task schedule has been updated.",
+        position: "top-end",
+        title: "Your schedule has been updated",
         icon: "success",
+        showConfirmButton: false,
+        timer: 1500,
       });
     },
     onError: (error) => {
@@ -127,6 +129,14 @@ const CalendarComponent: React.FC = () => {
     setTasks((prev) =>
       prev.map((e) => (e.id === event.id ? { ...e, ...changes } : e))
     );
+
+    Swal.fire({
+        position: "top-end",
+        title: "Updating your schedule",
+        icon: "info",
+        showConfirmButton: false,
+        timer: 1500,
+    });
 
     mutationUpdateTask.mutate({
       id: Number(event.id),
@@ -220,6 +230,7 @@ const CalendarComponent: React.FC = () => {
           height="100%"
           defaultView="week"
           isReadOnly={false}
+          disableResizing={true}
           useDetailPopup={true}
           useCreationPopup={true}
           events={tasks}
