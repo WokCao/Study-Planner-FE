@@ -7,6 +7,10 @@ import { fetcherGet } from "../clients/apiClientAny";
 import { useMutation } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import OpenAI from "openai";
+import ButtonAI from "./elements/ButtonAI";
+import AIAnalysis from "./AIAnalysis";
+import { faCommentDots } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // Task interface for better type safety
 interface Task {
@@ -25,6 +29,7 @@ const CalendarComponent: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [tasks, setTasks] = useState<Task[]>([]);
   const token = useAuthStore((state) => state.token);
+  const [showAnalysis, setShowAnalysis] = useState(false);
   const [feedback, setFeedback] = useState<{
     warnings: string[];
     suggestions: string[];
@@ -234,9 +239,8 @@ const CalendarComponent: React.FC = () => {
 
       Swal.fire({
         title: "Analysis Failed",
-        text: `Unable to analyze your schedule: ${
-          error.message || "An unknown error occurred."
-        }`,
+        text: `Unable to analyze your schedule: ${error.message || "An unknown error occurred."
+          }`,
         icon: "error",
       });
     }
@@ -282,7 +286,7 @@ const CalendarComponent: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col overflow-y-auto">
       <div className="flex justify-between items-center p-4 bg-gray-100 border-b">
         <div className="flex items-center space-x-4">
           <span className="text-xl font-bold">
@@ -362,39 +366,14 @@ const CalendarComponent: React.FC = () => {
         />
       </div>
 
-      <div className="p-4 bg-gray-100 border-t">
-        <button
-          onClick={analyzeSchedule}
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition"
-        >
-          Analyze Schedule
-        </button>
-
-        {feedback.warnings.length > 0 && (
-          <div className="mt-6 p-4 border-l-4 border-red-500 bg-red-50 rounded-md">
-            <h3 className="text-lg font-bold text-red-700">⚠️ Warnings</h3>
-            <ul className="mt-2 list-disc list-inside text-red-600">
-              {feedback.warnings.map((warning, idx) => (
-                <li key={idx} className="leading-relaxed">
-                  {warning}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {feedback.suggestions.length > 0 && (
-          <div className="mt-6 p-4 border-l-4 border-blue-500 bg-blue-50 rounded-md">
-            <h3 className="text-lg font-bold text-blue-700">💡 Suggestions</h3>
-            <ul className="mt-2 list-disc list-inside text-blue-600">
-              {feedback.suggestions.map((suggestion, idx) => (
-                <li key={idx} className="leading-relaxed">
-                  {suggestion}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+      <div className="py-1 px-3 bg-white flex items-center">
+        <ButtonAI AnalyzeSchedule={analyzeSchedule} />
+        {feedback.suggestions.length > 0 && feedback.warnings.length > 0 && <AIAnalysis feedback={feedback} showAnalysis={showAnalysis} setFeedback={setFeedback} setShowAnalysis={setShowAnalysis} />}
+        <span
+          className="ms-auto hover:cursor-pointer hover:text-indigo-700 rounded-full shadow-lg p-2"
+          onClick={() => setShowAnalysis(true)}>
+          <FontAwesomeIcon icon={faCommentDots} className="w-7 h-7" />
+        </span>
       </div>
     </div>
   );

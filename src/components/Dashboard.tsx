@@ -14,8 +14,6 @@ import useAuthStore from "../hooks/useAuthStore";
 import { useNavigate } from "react-router-dom";
 import { UseFormReset } from "react-hook-form";
 import UpdateFormInterface from "../interface/UpdateFrom";
-import ButtonAI from "./elements/ButtonAI";
-import AIAnalysis from "./AIAnalysis";
 
 interface DashboardInterface {
     setCurrentOption: React.Dispatch<React.SetStateAction<number>>;
@@ -242,11 +240,6 @@ function Dashboard({ setCurrentOption, setShowUpdateForm, editedTask, setEditedT
                         <span className="mx-4 text-sm font-medium text-slate-500 hover:cursor-pointer" onClick={() => setCurrentOption(3)}>See all</span>
                         <hr className="flex-grow border-t border-gray-300" />
                     </div>}
-
-                <div className="w-full hidden">
-                    <ButtonAI />
-                    <AIAnalysis />
-                </div>
             </div>
 
             <div className="p-4 bg-white rounded-3xl w-3/12">
