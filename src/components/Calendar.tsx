@@ -258,7 +258,7 @@ const CalendarComponent: React.FC = () => {
                     });
                 }
 
-                setDuration({ time: Math.floor(duration), break: Math.floor(breakDuration) });
+                setDuration({ time: duration, break: breakDuration });
                 Swal.fire({
                     title: 'Success',
                     text: 'Task has been assigned to Focus Timer.',

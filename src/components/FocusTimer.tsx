@@ -4,16 +4,32 @@ import Timer from "./classes/Timer";
 import { faGripLinesVertical, faPlay, faX, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import useTimerStore from "../hooks/useTimerStore";
 import Swal from "sweetalert2";
+import AddTask from "../interface/AddTask";
+import { useMutation } from "@tanstack/react-query";
+import { fetcher } from "../clients/apiClient";
+import useAuthStore from "../hooks/useAuthStore";
+import { useNavigate } from "react-router-dom";
+
+interface AddTaskResponse {
+    data: any;
+    statusCode: number;
+    message: string;
+}
 
 interface TimeAndButtonInterface {
     hasCircle: boolean;
+    startBreak: Function;
+    endBreak: Function;
 }
 
 interface FocusTimerInterface {
     widget: boolean;
 }
 
-function TimeAndButton({ hasCircle } : TimeAndButtonInterface) {
+function TimeAndButton({ hasCircle, startBreak, endBreak } : TimeAndButtonInterface) {
+    const token = useAuthStore((state) => state.token);
+    const navigate = useNavigate();
+
     const [label, setLabel] = useState('Start');
 	const [icon, setIcon] = useState<IconDefinition>(faPlay);
     const [progress, setProgress] = useState<number>(1); // 1 = full progress
@@ -29,6 +45,31 @@ function TimeAndButton({ hasCircle } : TimeAndButtonInterface) {
     const setIsRunning = useTimerStore((state) => state.setIsRunning);
     const clearData = useTimerStore((state) => state.clearData);
 
+    const task = useTimerStore((state) => state.task);
+
+    const mutationUpdateTask = useMutation<AddTaskResponse, Error, { addTask: AddTask, taskId: number, successUpdate: Function }>({
+        mutationFn: async (formData) =>
+            await fetcher(`/tasks/${formData.taskId}`, formData.addTask, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            }),
+        onSuccess: (data, { successUpdate }) => {
+            if (!data) return;
+            if (data.statusCode === 200) {
+                successUpdate();
+            } else {
+                throw new Error(data.message);
+            }
+        },
+        onError: (error) => {
+            if (error.message.startsWith('Unauthorized')) {
+                navigate('Login');
+            } else {
+                throw new Error(error.message);
+            }
+        },
+    });
+
     if (!timerRef.current) {
         // Focus timer
         timerRef.current = new Timer(
@@ -40,60 +81,72 @@ function TimeAndButton({ hasCircle } : TimeAndButtonInterface) {
             },
             () => {
                 setIsRunning(false);
-                // No break timer set
-                if (!breakTime || (breakTime && breakTime === 0)) {
-                    Swal.fire({
-                        title: "Time's up! Focus session ended.",
-                        icon: "info",
-                        showClass: {
-                            popup: `block`
-                        },
-                        hideClass: {
-                            popup: `hidden`
-                        }
-                    });
-                    return clearData();
-                }
+                setLabel('Start');
+                setIcon(faPlay);
 
-                // Break timer set
                 Swal.fire({
-                    title: "Time's up! Take a break.",
+                    title: "Time's up!",
                     icon: "info",
+                    showDenyButton: true,
+                    showCancelButton: true,
+                    confirmButtonText: 'Mark Task as Completed',
+                    denyButtonText: 'Restart Focus Timer',
                     showClass: {
                         popup: `block`
                     },
                     hideClass: {
                         popup: `hidden`
                     }
-                });
+                }).then(async (result) => {
+                    if (result.isConfirmed && task) {
+                        mutationUpdateTask.mutate({ addTask: { status: 'Completed' }, taskId: task.id, successUpdate: () => {
+                            Swal.fire({
+                                title: "Success",
+                                text: "Task marked as Completed. Focus session ended.",
+                                icon: "success",
+                                showClass: {
+                                    popup: `block`
+                                },
+                                hideClass: {
+                                    popup: `hidden`
+                                }
+                            });
 
-                setTime({ time: breakTime, break: 0 });
-                setLabel('Start');
-                setIcon(faPlay);
+                            // No break timer set
+                            if (!breakTime || (breakTime && breakTime === 0)) return clearData();
 
-                // Break timer
-                timerRef.current = new Timer(
-                    breakTime || 5, // minutes
-                    0, // seconds
-                    (time: string, progress: number) => {
-                        setTimeDisplay(time);
-                        setProgress(progress);
-                    },
-                    () => {
-                        setIsRunning(false);
-                        Swal.fire({
-                            title: "Break's over! Focus session ended.",
-                            icon: "info",
-                            showClass: {
-                                popup: `block`
-                            },
-                            hideClass: {
-                                popup: `hidden`
-                            }
-                        });
-                        clearData();
+                            startBreak();
+                            setTime({ time: breakTime, break: 0 });
+
+                            // Break timer
+                            timerRef.current = new Timer(
+                                breakTime || 5, // minutes
+                                0, // seconds
+                                (time: string, progress: number) => {
+                                    setTimeDisplay(time);
+                                    setProgress(progress);
+                                },
+                                () => {
+                                    setIsRunning(false);
+                                    endBreak();
+                                    Swal.fire({
+                                        title: "Break's over!",
+                                        icon: "info",
+                                        showClass: {
+                                            popup: `block`
+                                        },
+                                        hideClass: {
+                                            popup: `hidden`
+                                        }
+                                    });
+                                    clearData();
+                                }
+                            );
+                        }});
+                    } else if (result.isDenied) {
+                        timerRef.current?.reset(time || 25, 0);
                     }
-                );
+                });
             }
         );
     }
@@ -175,6 +228,7 @@ function TimeAndButton({ hasCircle } : TimeAndButtonInterface) {
 
 function FocusTimer({ widget } : FocusTimerInterface) {
     const task = useTimerStore((state) => state.task);
+    const [breakOn, setBreakOn] = useState(false);
 
     return (
         <>
@@ -185,9 +239,9 @@ function FocusTimer({ widget } : FocusTimerInterface) {
                 <section className="bg-gradient-to-b from-purple-500 to-violet-300 p-4 rounded-3xl text-white">
                     <h3 className="font-bold text-2xl mb-1">Focus Timer</h3>
                     <h3 className="text-lg leading-6 mt-2 mb-3">
-                        {task ? <>{task.title}</> : <>Please select a task from the Calendar first.</>}
+                        {(breakOn && 'Take a break') || (task ? <>{task.title}</> : <>Please select a task from the Calendar first.</>)}
                     </h3>
-                    {task && <TimeAndButton hasCircle={false} />}
+                    {task && <TimeAndButton hasCircle={false} startBreak={() => setBreakOn(true)} endBreak={() => setBreakOn(false)} />}
                 </section>
             </div>
         </div>
@@ -197,9 +251,9 @@ function FocusTimer({ widget } : FocusTimerInterface) {
                 <h2 className="font-bold text-3xl mb-2">Time to focus</h2>
                 <hr />
                 <h3 className="text-xl mt-2">
-                    {task ? <>{task.title}</> : <>Please select a task from the Calendar first.</>}
+                    {(breakOn && 'Take a break') || (task ? <>{task.title}</> : <>Please select a task from the Calendar first.</>)}
                 </h3>
-                {task && <TimeAndButton hasCircle={true} />}
+                {task && <TimeAndButton hasCircle={true} startBreak={() => setBreakOn(true)} endBreak={() => setBreakOn(false)} />}
             </section>
         </div>
         }
