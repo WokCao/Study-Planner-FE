@@ -7,9 +7,11 @@ interface TimerState {
 	break: number | null;
   timeDisplay: string | null;
   task: CalendarEvent | null;
+	isRunning: boolean;
 	setDuration: (data: { time: number, break: number }) => void;
 	setTimeDisplay: (timeDisplay: string) => void;
   setTask: (task: CalendarEvent) => void;
+	setIsRunning: (isRunning: boolean) => void;
   clearData: () => void;
 }
 
@@ -20,6 +22,7 @@ const useUserStore = create<TimerState>()(
 			break: null,
 			timeDisplay: null,
 			task: null,
+			isRunning: false,
 			setDuration: (data) =>
         set({
 					time: data.time,
@@ -28,12 +31,14 @@ const useUserStore = create<TimerState>()(
         }),
 			setTimeDisplay: (timeDisplay) => set({ timeDisplay }),
 			setTask: (task: CalendarEvent) => set({ task }),
+			setIsRunning: (isRunning: boolean) => set({ isRunning }),
       clearData: () =>
         set({
 					time: null,
 					break: null,
 					timeDisplay: null,
 					task: null,
+					isRunning: false,
         }),
     }),
     {

@@ -22,11 +22,15 @@ function TimeAndButton({ hasCircle } : TimeAndButtonInterface) {
     const time = useTimerStore((state) => state.time);
     const breakTime = useTimerStore((state) => state.break);
     const setTime = useTimerStore((state) => state.setDuration);
+
     const timeDisplay = useTimerStore((state) => state.timeDisplay);
     const setTimeDisplay = useTimerStore((state) => state.setTimeDisplay);
+
+    const setIsRunning = useTimerStore((state) => state.setIsRunning);
     const clearData = useTimerStore((state) => state.clearData);
 
     if (!timerRef.current) {
+        // Focus timer
         timerRef.current = new Timer(
             time || 25, // minutes
             0, // seconds
@@ -35,6 +39,8 @@ function TimeAndButton({ hasCircle } : TimeAndButtonInterface) {
                 setProgress(progress);
             },
             () => {
+                setIsRunning(false);
+                // No break timer set
                 if (!breakTime || (breakTime && breakTime === 0)) {
                     Swal.fire({
                         title: "Time's up! Focus session ended.",
@@ -49,6 +55,7 @@ function TimeAndButton({ hasCircle } : TimeAndButtonInterface) {
                     return clearData();
                 }
 
+                // Break timer set
                 Swal.fire({
                     title: "Time's up! Take a break.",
                     icon: "info",
@@ -64,6 +71,7 @@ function TimeAndButton({ hasCircle } : TimeAndButtonInterface) {
                 setLabel('Start');
                 setIcon(faPlay);
 
+                // Break timer
                 timerRef.current = new Timer(
                     breakTime || 5, // minutes
                     0, // seconds
@@ -72,6 +80,7 @@ function TimeAndButton({ hasCircle } : TimeAndButtonInterface) {
                         setProgress(progress);
                     },
                     () => {
+                        setIsRunning(false);
                         Swal.fire({
                             title: "Break's over! Focus session ended.",
                             icon: "info",
@@ -92,10 +101,12 @@ function TimeAndButton({ hasCircle } : TimeAndButtonInterface) {
     const handleSetComponents = () => {
         if (label === 'Start') {
             timerRef.current?.start();
+            setIsRunning(true);
             setLabel('Stop');
             setIcon(faGripLinesVertical);
         } else {
             timerRef.current?.stop();
+            setIsRunning(false);
             setLabel('Start');
             setIcon(faPlay);
         }
@@ -103,6 +114,7 @@ function TimeAndButton({ hasCircle } : TimeAndButtonInterface) {
 
     const handleEndTimer = () => {
         timerRef.current?.stop();
+        setIsRunning(false);
         Swal.fire({
             title: "Focus session ended early.",
             icon: "info",
