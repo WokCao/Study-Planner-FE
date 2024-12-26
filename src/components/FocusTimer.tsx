@@ -175,7 +175,8 @@ function TimeAndButton({ hasCircle, startBreak, endBreak } : TimeAndButtonInterf
         timerRef.current?.stop();
         setIsRunning(false);
         Swal.fire({
-            title: "Focus session ended early.",
+            title: "Info",
+            text: "Focus session ended early.",
             icon: "info",
             showClass: {
                 popup: `block`

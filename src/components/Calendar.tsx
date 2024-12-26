@@ -227,10 +227,7 @@ const CalendarComponent: React.FC = () => {
             });
 
             if (formValues) {
-                const duration = formValues[0];
-                const breakDuration = formValues[1] || 0;
-
-                if (!duration) {
+                if (!formValues[0]) {
                     return Swal.fire({
                         title: "Failure",
                         text: "Please enter duration!",
@@ -243,6 +240,9 @@ const CalendarComponent: React.FC = () => {
                         }
                     });
                 }
+
+                const duration = Math.floor(formValues[0]);
+                const breakDuration = formValues[1] ? Math.floor(formValues[1]) : 0;
 
                 if (duration <= 0) {
                     return Swal.fire({
