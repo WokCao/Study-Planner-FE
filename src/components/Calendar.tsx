@@ -27,6 +27,7 @@ const CalendarComponent: React.FC = () => {
   const calendarRef = useRef<Calendar | null>(null);
   const feedbackRef = useRef<HTMLDivElement | null>(null);
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const token = useAuthStore((state) => state.token);
   const [showAnalysis, setShowAnalysis] = useState(false);
@@ -168,6 +169,10 @@ const CalendarComponent: React.FC = () => {
 
   // Handle user clicking on "Analyze Schedule"
   const analyzeSchedule = () => {
+    // Call API to get tasks
+    if (!selectedDate) return;
+
+
     const scheduleData = tasks.map((task) => ({
       id: task.id,
       name: task.name,
@@ -285,6 +290,19 @@ const CalendarComponent: React.FC = () => {
     });
   };
 
+  const handleSelectedDateInMonth = (event: any) => {
+    const { start } = event;
+    const selected = new Date(start);
+    const curDate = new Date();
+
+    if (curDate <= selected || curDate.getDate() === selected.getDate() && curDate.getMonth() === selected.getMonth() && curDate.getFullYear() === selected.getFullYear()) {
+      setSelectedDate(selected);
+    } else {
+      setSelectedDate(null);
+    }
+
+  }
+
   return (
     <div className="h-full flex flex-col overflow-y-auto">
       <div className="flex justify-between items-center p-4 bg-gray-100 border-b">
@@ -363,12 +381,20 @@ const CalendarComponent: React.FC = () => {
           events={tasks}
           onBeforeCreateEvent={handleBeforeCreateEvent}
           onBeforeUpdateEvent={handleBeforeUpdateEvent}
+          onSelectDateTime={handleSelectedDateInMonth}
         />
       </div>
 
-      <div className="py-1 px-3 bg-white flex items-center">
+      <div className="py-1 px-3 bg-white flex items-center justify-around">
         <ButtonAI AnalyzeSchedule={analyzeSchedule} />
+
         {feedback.suggestions.length > 0 && feedback.warnings.length > 0 && <AIAnalysis feedback={feedback} showAnalysis={showAnalysis} setFeedback={setFeedback} setShowAnalysis={setShowAnalysis} />}
+
+        {selectedDate &&
+          <span className="ms-auto">
+            Selected Date: {selectedDate.getMonth() + 1 < 10 ? '0' : ''}{selectedDate.getMonth() + 1} - {selectedDate.getDate() < 10 ? '0' : ''}{selectedDate.getDate()} - {selectedDate.getFullYear()}
+          </span>}
+
         <span
           className="ms-auto hover:cursor-pointer hover:text-indigo-700 rounded-full shadow-lg p-2"
           onClick={() => setShowAnalysis(true)}>
