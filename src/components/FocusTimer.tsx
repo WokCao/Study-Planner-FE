@@ -88,9 +88,10 @@ function TimeAndButton({ hasCircle, startBreak, endBreak } : TimeAndButtonInterf
                     title: "Time's up!",
                     icon: "info",
                     showDenyButton: true,
-                    showCancelButton: true,
                     confirmButtonText: 'Mark Task as Completed',
                     denyButtonText: 'Restart Focus Timer',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
                     showClass: {
                         popup: `block`
                     },
@@ -100,9 +101,12 @@ function TimeAndButton({ hasCircle, startBreak, endBreak } : TimeAndButtonInterf
                 }).then(async (result) => {
                     if (result.isConfirmed && task) {
                         mutationUpdateTask.mutate({ addTask: { status: 'Completed' }, taskId: task.id, successUpdate: () => {
+                            // No break timer set
+                            const noBreak = !breakTime || (breakTime && breakTime === 0);
+
                             Swal.fire({
                                 title: "Success",
-                                text: "Task marked as Completed. Focus session ended.",
+                                text: "Task marked as Completed." + (noBreak ? " Focus session ended." : ""),
                                 icon: "success",
                                 showClass: {
                                     popup: `block`
@@ -113,8 +117,9 @@ function TimeAndButton({ hasCircle, startBreak, endBreak } : TimeAndButtonInterf
                             });
 
                             // No break timer set
-                            if (!breakTime || (breakTime && breakTime === 0)) return clearData();
+                            if (noBreak) return clearData();
 
+                            setIsRunning(true);
                             startBreak();
                             setTime({ time: breakTime, break: 0 });
 
@@ -131,6 +136,7 @@ function TimeAndButton({ hasCircle, startBreak, endBreak } : TimeAndButtonInterf
                                     endBreak();
                                     Swal.fire({
                                         title: "Break's over!",
+                                        text: "Focus session ended.",
                                         icon: "info",
                                         showClass: {
                                             popup: `block`
