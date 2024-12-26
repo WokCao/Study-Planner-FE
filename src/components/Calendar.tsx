@@ -102,6 +102,12 @@ const CalendarComponent: React.FC = () => {
         icon: "success",
         showConfirmButton: false,
         timer: 1500,
+        showClass: {
+            popup: `block`
+        },
+        hideClass: {
+            popup: `hidden`
+        }
       });
     },
     onError: (error) => {
@@ -110,6 +116,12 @@ const CalendarComponent: React.FC = () => {
         title: "Failure",
         text: "Couldn't update your task schedule: " + error.message,
         icon: "error",
+        showClass: {
+            popup: `block`
+        },
+        hideClass: {
+            popup: `hidden`
+        }
       });
     },
   });
@@ -129,6 +141,12 @@ const CalendarComponent: React.FC = () => {
         icon: "info",
         showConfirmButton: false,
         timer: 1500,
+        showClass: {
+            popup: `block`
+        },
+        hideClass: {
+            popup: `hidden`
+        }
     });
 
     mutationUpdateTask.mutate({
@@ -172,7 +190,13 @@ const CalendarComponent: React.FC = () => {
                 return Swal.fire({
                     title: "Failure",
                     text: "Cannot start timer for tasks not \"In Progress\"!",
-                    icon: "error"
+                    icon: "error",
+                    showClass: {
+                        popup: `block`
+                    },
+                    hideClass: {
+                        popup: `hidden`
+                    }
                 });
             }
 
@@ -188,6 +212,12 @@ const CalendarComponent: React.FC = () => {
                 `,
                 focusConfirm: false,
                 showCancelButton: true,
+                showClass: {
+                    popup: `block`
+                },
+                hideClass: {
+                    popup: `hidden`
+                },
                 preConfirm: () => {
                 return [
                     (document.getElementById("swal-input1") as HTMLInputElement).value,
@@ -204,7 +234,13 @@ const CalendarComponent: React.FC = () => {
                     return Swal.fire({
                         title: "Failure",
                         text: "Please enter duration!",
-                        icon: "error"
+                        icon: "error",
+                        showClass: {
+                            popup: `block`
+                        },
+                        hideClass: {
+                            popup: `hidden`
+                        }
                     });
                 }
 
@@ -212,7 +248,13 @@ const CalendarComponent: React.FC = () => {
                     return Swal.fire({
                         title: "Failure",
                         text: "Duration must be higher than 0!",
-                        icon: "error"
+                        icon: "error",
+                        showClass: {
+                            popup: `block`
+                        },
+                        hideClass: {
+                            popup: `hidden`
+                        }
                     });
                 }
 
@@ -221,6 +263,12 @@ const CalendarComponent: React.FC = () => {
                     title: 'Success',
                     text: 'Task has been assigned to Focus Timer.',
                     icon: 'success',
+                    showClass: {
+                        popup: `block`
+                    },
+                    hideClass: {
+                        popup: `hidden`
+                    }
                 })
             }
         }

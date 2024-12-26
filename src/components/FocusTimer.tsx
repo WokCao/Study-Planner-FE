@@ -38,14 +38,26 @@ function TimeAndButton({ hasCircle } : TimeAndButtonInterface) {
                 if (!breakTime || (breakTime && breakTime === 0)) {
                     Swal.fire({
                         title: "Time's up! Focus session ended.",
-                        icon: "info"
+                        icon: "info",
+                        showClass: {
+                            popup: `block`
+                        },
+                        hideClass: {
+                            popup: `hidden`
+                        }
                     });
                     return clearData();
                 }
 
                 Swal.fire({
                     title: "Time's up! Take a break.",
-                    icon: "info"
+                    icon: "info",
+                    showClass: {
+                        popup: `block`
+                    },
+                    hideClass: {
+                        popup: `hidden`
+                    }
                 });
 
                 setTime({ time: breakTime, break: 0 });
@@ -62,7 +74,13 @@ function TimeAndButton({ hasCircle } : TimeAndButtonInterface) {
                     () => {
                         Swal.fire({
                             title: "Break's over! Focus session ended.",
-                            icon: "info"
+                            icon: "info",
+                            showClass: {
+                                popup: `block`
+                            },
+                            hideClass: {
+                                popup: `hidden`
+                            }
                         });
                         clearData();
                     }
@@ -87,7 +105,13 @@ function TimeAndButton({ hasCircle } : TimeAndButtonInterface) {
         timerRef.current?.stop();
         Swal.fire({
             title: "Focus session ended early.",
-            icon: "info"
+            icon: "info",
+            showClass: {
+                popup: `block`
+            },
+            hideClass: {
+                popup: `hidden`
+            }
         });
         clearData();
     }
