@@ -232,14 +232,19 @@ const Tasks = ({
           );
         } else if (sortKey === "priority") {
           // Sort by priority
-          const priorityOrder = { High: 3, Medium: 2, Low: 1 }; // Define priority levels
+          interface IPriorityOrder {
+            High: number;
+            Medium: number;
+            Low: number;
+          }
+          const priorityOrder: IPriorityOrder = { High: 3, Medium: 2, Low: 1 }; // Define priority levels
 
-          const priorityA = priorityOrder[a.priorityLevel] || 0; // Default to 0 if undefined
-          const priorityB = priorityOrder[b.priorityLevel] || 0; // Default to 0 if undefined
+          const priorityA = priorityOrder[a.priorityLevel as keyof IPriorityOrder] || 0; // Default to 0 if undefined
+          const priorityB = priorityOrder[b.priorityLevel as keyof IPriorityOrder] || 0; // Default to 0 if undefined
 
           return (priorityA - priorityB) * sortFactor; // Higher priority first in descending order
         }
-        return a[sortKey].localeCompare(b[sortKey]) * sortFactor;
+        return String(a[sortKey as keyof Task])?.localeCompare(String(b[sortKey as keyof Task])) * sortFactor;
       });
   };
 
@@ -329,9 +334,8 @@ const Tasks = ({
         ))
       ) : (
         <h1
-          className={`text-lg ${
-            thisMonthError ? "text-red-600" : "text-slate-400"
-          } h-full flex items-center justify-center select-none`}
+          className={`text-lg ${thisMonthError ? "text-red-600" : "text-slate-400"
+            } h-full flex items-center justify-center select-none`}
         >
           {thisMonthError || "No tasks found for this month"}
         </h1>
@@ -350,18 +354,15 @@ const Tasks = ({
         pageLinkClassName={
           "px-3 py-1 hover:outline hover:outline-1 rounded-lg hover:outline-purple-300"
         }
-        previousClassName={`px-3 py-1 rounded-lg select-none ${
-          thisMonthCurrentPage === 0 ? "text-slate-300" : ""
-        }`}
-        previousLinkClassName={`${
-          thisMonthCurrentPage === 0 ? "text-slate-300 !cursor-not-allowed" : ""
-        }`}
+        previousClassName={`px-3 py-1 rounded-lg select-none ${thisMonthCurrentPage === 0 ? "text-slate-300" : ""
+          }`}
+        previousLinkClassName={`${thisMonthCurrentPage === 0 ? "text-slate-300 !cursor-not-allowed" : ""
+          }`}
         nextClassName={"px-3 py-1 rounded-lg select-none"}
-        nextLinkClassName={`${
-          thisMonthCurrentPage === thisMonthPageCount - 1
+        nextLinkClassName={`${thisMonthCurrentPage === thisMonthPageCount - 1
             ? "text-slate-300 !cursor-not-allowed"
             : ""
-        }`}
+          }`}
         activeLinkClassName={
           "bg-purple-400 text-white rounded-lg select-none hover:!outline-0"
         }
@@ -383,9 +384,8 @@ const Tasks = ({
         ))
       ) : (
         <h1
-          className={`text-lg ${
-            otherMonthsError ? "text-red-600" : "text-slate-400"
-          } h-full flex items-center justify-center select-none`}
+          className={`text-lg ${otherMonthsError ? "text-red-600" : "text-slate-400"
+            } h-full flex items-center justify-center select-none`}
         >
           {otherMonthsError || "No tasks found for other months"}
         </h1>
@@ -405,17 +405,15 @@ const Tasks = ({
           "px-3 py-1 hover:outline hover:outline-1 rounded-lg hover:outline-purple-300"
         }
         previousClassName={"px-3 py-1 rounded-lg select-none"}
-        previousLinkClassName={`${
-          otherMonthsCurrentPage === 0
+        previousLinkClassName={`${otherMonthsCurrentPage === 0
             ? "text-slate-300 !cursor-not-allowed"
             : ""
-        }`}
+          }`}
         nextClassName={"px-3 py-1 rounded-lg select-none"}
-        nextLinkClassName={`${
-          otherMonthsCurrentPage === otherMonthsPageCount - 1
+        nextLinkClassName={`${otherMonthsCurrentPage === otherMonthsPageCount - 1
             ? "text-slate-300 !cursor-not-allowed"
             : ""
-        }`}
+          }`}
         activeLinkClassName={
           "bg-purple-400 text-white rounded-lg select-none hover:!outline-0"
         }
