@@ -7,54 +7,53 @@ import useTimerStore from "../hooks/useTimerStore";
 import { fetcherGet } from "../clients/apiClientAny";
 import { useMutation } from "@tanstack/react-query";
 import Swal from "sweetalert2";
+import Task from "../interface/Task";
 import CalendarEvent from "../interface/CalendarEvent";
-
-// Task interface for better type safety
-interface Task {
-  id: string;
-  name: string;
-  description: string;
-  priorityLevel: "High" | "Medium" | "Low";
-  status: "Todo" | "In Progress" | "Completed" | "Expired";
-  estimatedTime: string;
-  deadline: Date;
-}
+import { useNavigate } from "react-router-dom";
 
 const CalendarComponent: React.FC = () => {
   const calendarRef = useRef<Calendar | null>(null);
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasksData, setTasksData] = useState<Task[]>([]);
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
   const token = useAuthStore((state) => state.token);
+  const navigate = useNavigate();
+
+  const mutationGetTasks = useMutation({
+    mutationFn: async () =>
+      await fetcherGet("/tasks/all", {
+        method: "GET",
+        headers: { Authorization: "Bearer " + token },
+      }),
+    onSuccess: (data) => {
+      if (!data) return;
+
+      if (data.statusCode === 200) {
+        const fullData = data.data.response.data;
+        setTasksData(fullData);
+        setEvents(mapTasks(fullData));
+      } else {
+        
+      }
+    },
+    onError: (error) => {
+      if (error.message.startsWith("Unauthorized")) {
+        navigate("Login");
+      }
+    },
+  });
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const API_BASE_URL = import.meta.env.DEV
-          ? import.meta.env.VITE_REACT_APP_API_LOCAL
-          : import.meta.env.VITE_REACT_APP_API;
-        const response = await fetch(API_BASE_URL + "/tasks/all", {
-          headers: { Authorization: "Bearer " + token },
-        });
-        const data = await response.json();
-        setTasks(mapTasks(data.data.response.data));
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      }
-    };
-
-    fetchTasks();
+    mutationGetTasks.mutate();
   }, []);
 
   // Map tasks to calendar events
-  const mapTasks = (tasks: any) => {
-    return tasks.map((task: any) => ({
+  const mapTasks = (tasks: Task[]) => {
+    return tasks.map((task: Task) => ({
       id: task.taskId,
       calendarId: "cal" + task.taskId,
       title: task.name,
       body: task.description,
-      priority: task.priorityLevel,
-      estimatedTime: task.estimatedTime,
-      deadline: task.deadline,
       category: "time", // Use 'time' for time-bound events
       isReadOnly: task.status === "Completed",
       start: task.deadline,
@@ -78,20 +77,9 @@ const CalendarComponent: React.FC = () => {
     updateCurrentDate(); // Set the initial date when the component mounts
   }, []);
 
-  // Handle new event creation (drag-and-drop or manual creation)
-  const handleBeforeCreateEvent = (e: any) => {
-    const { end, name } = e;
-
-    const newTask: Task = {
-      id: (tasks.length + 1).toString(),
-      name,
-      description: "",
-      priorityLevel: "High",
-      status: "Todo",
-      estimatedTime: "1 day",
-      deadline: new Date(end),
-    };
-    setTasks((prev) => [...prev, newTask]);
+  // Prevent new event creation
+  const handleBeforeCreateEvent = (_e: any) => {
+    return;
   };
 
   const mutationUpdateTask = useMutation({
@@ -131,7 +119,7 @@ const CalendarComponent: React.FC = () => {
     const { event, changes } = updateData;
 
     // Update the event details
-    setTasks((prev) =>
+    setEvents((prev) =>
       prev.map((e) => (e.id === event.id ? { ...e, ...changes } : e))
     );
 
@@ -153,19 +141,43 @@ const CalendarComponent: React.FC = () => {
   const setDuration = useTimerStore((state) => state.setDuration);
 
   const handleClickEvent = ({ event } : { event: CalendarEvent }) => {
+    const taskIndex = tasksData.map(e => e.taskId).indexOf(event.id);
+    if (taskIndex === -1) return;
+
+    const task = tasksData[taskIndex];
+
     Swal.fire({
         title: event.title,
-        html: `<span style='text-decoration:underline'>Deadline: ${event.start.d.d.toISOString().substring(0, 10)}</span><br><br>${event.body}`,
-        showDenyButton: true,
+        html:
+            `<span style='text-decoration:underline'>Priority:</span> ${task.priorityLevel}<br>
+            <span style='text-decoration:underline'>Status:</span> ${task.status}<br>
+            <span style='text-decoration:underline'>Deadline:</span> ${event.start.d.d.toISOString().substring(0, 10)}<br><br>
+            ${event.body}
+            `,
+        showDenyButton: task.status === 'In Progress',
         showCancelButton: true,
         confirmButtonText: 'Edit',
-        denyButtonText: 'Set Focus Timer'
+        denyButtonText: 'Set Focus Timer',
+        showClass: {
+            popup: `block`
+        },
+        hideClass: {
+            popup: `hidden`
+        }
     }).then(async (result) => {
         if (result.isConfirmed) {
             // Wok làm
         } else if (result.isDenied) {
+            if (task.status !== 'In Progress') {
+                return Swal.fire({
+                    title: "Failure",
+                    text: "Cannot start timer for tasks not \"In Progress\"!",
+                    icon: "error"
+                });
+            }
+
             setTask(event);
-            
+
             const { value: formValues } = await Swal.fire({
                 title: 'Set Focus Timer',
                 html: `
@@ -183,7 +195,7 @@ const CalendarComponent: React.FC = () => {
                 ];
                 }
             });
-        
+
             if (formValues) {
                 const duration = formValues[0];
                 const breakDuration = formValues[1] || 0;
@@ -304,7 +316,7 @@ const CalendarComponent: React.FC = () => {
           disableResizing={true}
           useDetailPopup={false}
           useCreationPopup={false}
-          events={tasks}
+          events={events}
           onBeforeCreateEvent={handleBeforeCreateEvent}
           onBeforeUpdateEvent={handleBeforeUpdateEvent}
           onClickEvent={handleClickEvent}
