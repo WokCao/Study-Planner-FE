@@ -153,6 +153,22 @@ function TimeAndButton({ hasCircle, startBreak, endBreak } : TimeAndButtonInterf
                         timerRef.current?.reset(time || 25, 0);
                     }
                 });
+            },
+            task?.start.d.d,
+            () => {
+                setIsRunning(false);
+                Swal.fire({
+                    title: "Deadline's met!",
+                    text: "Focus session ended early.",
+                    icon: "info",
+                    showClass: {
+                        popup: `block`
+                    },
+                    hideClass: {
+                        popup: `hidden`
+                    }
+                });
+                clearData();
             }
         );
     }
