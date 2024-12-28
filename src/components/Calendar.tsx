@@ -760,7 +760,7 @@ const CalendarComponent: React.FC = () => {
 				</div>
 				<div className="flex space-x-2">
 					<button
-						className={`px-4 py-2 ${calendarRef.current?.getInstance()?.getViewName() === 'day' ? 'bg-purple-600' : 'bg-purple-300'} text-white rounded hover:bg-blue-600 transition`}
+						className={`px-4 py-2 ${calendarRef.current?.getInstance()?.getViewName() === 'day' ? 'bg-purple-600' : 'bg-purple-300'} text-white rounded hover:bg-purple-600 transition`}
 						onClick={() => {
 							calendarRef.current?.getInstance()?.changeView("day");
 							updateCurrentDate('day');
@@ -769,7 +769,7 @@ const CalendarComponent: React.FC = () => {
 						Day
 					</button>
 					<button
-						className={`px-4 py-2 ${calendarRef.current?.getInstance()?.getViewName() === 'week' ? 'bg-purple-600' : 'bg-purple-300'} text-white rounded hover:bg-blue-600 transition`}
+						className={`px-4 py-2 ${calendarRef.current?.getInstance()?.getViewName() === 'week' ? 'bg-purple-600' : 'bg-purple-300'} text-white rounded hover:bg-purple-600 transition`}
 						onClick={() => {
 							calendarRef.current?.getInstance()?.changeView("week");
 							updateCurrentDate('week');
@@ -778,7 +778,7 @@ const CalendarComponent: React.FC = () => {
 						Week
 					</button>
 					<button
-						className={`px-4 py-2 ${calendarRef.current?.getInstance()?.getViewName() === 'month' ? 'bg-purple-600' : 'bg-purple-300'} text-white rounded hover:bg-blue-600 transition`}
+						className={`px-4 py-2 ${calendarRef.current?.getInstance()?.getViewName() === 'month' ? 'bg-purple-600' : 'bg-purple-300'} text-white rounded hover:bg-purple-600 transition`}
 						onClick={() => {
 							calendarRef.current?.getInstance()?.changeView("month");
 							updateCurrentDate('month');
