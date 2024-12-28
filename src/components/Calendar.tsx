@@ -95,12 +95,18 @@ const CalendarComponent: React.FC = () => {
         /**
          * Calculate the start date when click prev or next.
          */
-        const startDate =
-            dateInstance.getMonth() === newDateInstance.getMonth() &&
-                dateInstance.getFullYear() === newDateInstance.getFullYear() ? newDateInstance.getDate() : 1;
+        const formatDate1 = new Date(dateInstance.getFullYear(), dateInstance.getMonth(), 1);
+        const formatDate2 = new Date(newDateInstance.getFullYear(), newDateInstance.getMonth(), 1);
+        const startDate = formatDate1.getTime() === formatDate2.getTime() ? newDateInstance.getDate() : 1;
+        if (formatDate1.getTime() < formatDate2.getTime()) setIsValidDate(false);
+        else setIsValidDate(true);
 
         const year = dateInstance.getFullYear();
         let endDate = -1;
+
+        /**
+         * Check if the year is leap.
+         */
         const isLeapYear = year % 400 === 0 || (year % 4 === 0 && year % 100 !== 0);
         endDate = with31days.includes(month) ? 31 : with30days.includes(month) ? 30 : isLeapYear ? 29 : 28;
         const sameDate = startDate === endDate;
@@ -115,29 +121,43 @@ const CalendarComponent: React.FC = () => {
         let newDateInstance = new Date();
         let day = dateInstance.getDay();
         let startDate = dateInstance.getDate();
+
+        /**
+         * If the position of day > 0, get the start date of that week.
+         * Then if that date >= current date, start date is Sunday.
+         * If not, add 6 days to cloneDateInstance, for instance: dateInstance = 20 (Fri - 5), newDateInstance = 28 (Sat), cloneDateInstance = 15(Sun). Add 6 to cloneDateInstance.
+         * Then we check if it < newDateInstance. Start date is 15(Sunday).
+         * If not, check start date is Sunday or day of newDateInstance.
+         */
         if (day > 0) {
             const cloneDateInstance = dateInstance;
             cloneDateInstance.setDate(startDate - day);
-            if (cloneDateInstance >= newDateInstance) {
+            
+            let formatDate1 = new Date(cloneDateInstance.getFullYear(), cloneDateInstance.getMonth(), cloneDateInstance.getDate());
+            let formatDate2 = new Date(newDateInstance.getFullYear(), newDateInstance.getMonth(), newDateInstance.getDate());
+
+            if (formatDate1.getTime() >= formatDate2.getTime()) {
                 day = 0;
                 startDate = cloneDateInstance.getDate();
+                setIsValidDate(true);
             } else {
-                cloneDateInstance.setDate(cloneDateInstance.getDate() + 7);
-                if (cloneDateInstance < newDateInstance) {
+                cloneDateInstance.setDate(cloneDateInstance.getDate() + 6);
+                formatDate1 = new Date(cloneDateInstance.getFullYear(), cloneDateInstance.getMonth(), cloneDateInstance.getDate());
+                if (formatDate1.getTime() < formatDate2.getTime()) {
                     day = 0;
-                    cloneDateInstance.setDate(cloneDateInstance.getDate() - 7);
+                    cloneDateInstance.setDate(cloneDateInstance.getDate() - 6);
                     startDate = cloneDateInstance.getDate();
+                    setIsValidDate(false);
                 } else {
-                    const formatDate1 = new Date(cloneDateInstance.getFullYear(), cloneDateInstance.getMonth(), cloneDateInstance.getDate());
-                    const formatDate2 = new Date(newDateInstance.getFullYear(), newDateInstance.getMonth(), newDateInstance.getDate());
-
-                    if (formatDate1 < formatDate2) {
+                    if (formatDate1.getTime() < formatDate2.getTime()) {
                         day = 0;
-                        cloneDateInstance.setDate(cloneDateInstance.getDate() - 7);
+                        cloneDateInstance.setDate(cloneDateInstance.getDate() - 6);
                         startDate = cloneDateInstance.getDate();
+                        setIsValidDate(false);
                     } else {
                         day = newDateInstance.getDay();
                         startDate = newDateInstance.getDate();
+                        setIsValidDate(true);
                     }
                 }
             }
@@ -145,6 +165,9 @@ const CalendarComponent: React.FC = () => {
         const month = dateInstance.getMonth() + 1;
         const year = dateInstance.getFullYear();
 
+        /**
+         * Add value to selected date string.
+         */
         const dateToPlus = 6 - day;
         if (dateToPlus === 0) {
             setSelectedDate(`${String(month).padStart(2, '0')} - [${String(startDate).padStart(2, '0')}] - ${year}`);
@@ -165,9 +188,18 @@ const CalendarComponent: React.FC = () => {
     }
 
     const handleDay = (dateInstance: Date) => {
+        /**
+         * Just set the string without extra logic
+         */
+        const newDateInstance = new Date();
         const month = dateInstance.getMonth() + 1;
         const startDate = dateInstance.getDate();
         const year = dateInstance.getFullYear();
+
+        const formatDate1 = new Date(dateInstance.getFullYear(), dateInstance.getMonth(), dateInstance.getDate());
+        const formatDate2 = new Date(newDateInstance.getFullYear(), newDateInstance.getMonth(), newDateInstance.getDate());
+        if (formatDate1.getTime() < formatDate2.getTime()) setIsValidDate(false);
+        else setIsValidDate(true);
 
         setSelectedDate(`${String(month).padStart(2, '0')} - [${String(startDate).padStart(2, '0')}] - ${year}`);
     }
@@ -192,9 +224,6 @@ const CalendarComponent: React.FC = () => {
                     break;
                 }
                 case 'day': {
-                    /**
-                     * Just set the string without extra logic
-                     */
                     setCurrentType('day');
                     handleDay(dateInstance);
                     break;
