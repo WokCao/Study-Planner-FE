@@ -85,46 +85,110 @@ const CalendarComponent: React.FC = () => {
         }));
     };
 
+    const handleMonth = (dateInstance: Date) => {
+        /**
+         * Show the calendar base on the currently selected day when using prev & next.
+         */
+        const month = dateInstance.getMonth() + 1;
+        const newDateInstance = new Date();
+
+        /**
+         * Calculate the start date when click prev or next.
+         */
+        const startDate =
+            dateInstance.getMonth() === newDateInstance.getMonth() &&
+                dateInstance.getFullYear() === newDateInstance.getFullYear() ? newDateInstance.getDate() : 1;
+
+        const year = dateInstance.getFullYear();
+        let endDate = -1;
+        const isLeapYear = year % 400 === 0 || (year % 4 === 0 && year % 100 !== 0);
+        endDate = with31days.includes(month) ? 31 : with30days.includes(month) ? 30 : isLeapYear ? 29 : 28;
+        const sameDate = startDate === endDate;
+        if (sameDate) {
+            setSelectedDate(`${String(month).padStart(2, '0')} - [${String(startDate).padStart(2, '0')}] - ${year}`);
+        } else {
+            setSelectedDate(`${String(month).padStart(2, '0')} - [${String(startDate).padStart(2, '0')} - ${String(endDate).padStart(2, '0')}] - ${year}`);
+        }
+    }
+
+    const handleWeek = (dateInstance: Date) => {
+        let newDateInstance = new Date();
+        let day = dateInstance.getDay();
+        let startDate = dateInstance.getDate();
+        if (day > 0) {
+            const cloneDateInstance = dateInstance;
+            cloneDateInstance.setDate(startDate - day);
+            if (cloneDateInstance >= newDateInstance) {
+                day = 0;
+                startDate = cloneDateInstance.getDate();
+            } else {
+                cloneDateInstance.setDate(cloneDateInstance.getDate() + 7);
+                if (cloneDateInstance < newDateInstance) {
+                    day = 0;
+                    cloneDateInstance.setDate(cloneDateInstance.getDate() - 7);
+                    startDate = cloneDateInstance.getDate();
+                } else {
+                    const formatDate1 = new Date(cloneDateInstance.getFullYear(), cloneDateInstance.getMonth(), cloneDateInstance.getDate());
+                    const formatDate2 = new Date(newDateInstance.getFullYear(), newDateInstance.getMonth(), newDateInstance.getDate());
+
+                    if (formatDate1 < formatDate2) {
+                        day = 0;
+                        cloneDateInstance.setDate(cloneDateInstance.getDate() - 7);
+                        startDate = cloneDateInstance.getDate();
+                    } else {
+                        day = newDateInstance.getDay();
+                        startDate = newDateInstance.getDate();
+                    }
+                }
+            }
+        }
+        const month = dateInstance.getMonth() + 1;
+        const year = dateInstance.getFullYear();
+
+        const dateToPlus = 6 - day;
+        if (dateToPlus === 0) {
+            setSelectedDate(`${String(month).padStart(2, '0')} - [${String(startDate).padStart(2, '0')}] - ${year}`);
+        } else {
+            dateInstance.setDate(startDate + dateToPlus);
+            const endDate = dateInstance.getDate();
+            const endMonth = dateInstance.getMonth() + 1;
+            const endYear = dateInstance.getFullYear();
+
+            let dateString: string = '';
+            if (year === endYear && month === endMonth) {
+                dateString += `${String(month).padStart(2, '0')} - [${String(startDate).padStart(2, '0')} - ${String(endDate).padStart(2, '0')}] - ${year}`
+            } else {
+                dateString += `${String(month).padStart(2, '0')} - ${String(startDate).padStart(2, '0')} - ${year} / ${String(endMonth).padStart(2, '0')} - ${String(endDate).padStart(2, '0')} - ${endYear}`;
+            }
+            setSelectedDate(dateString);
+        }
+    }
+
+    const handleDay = (dateInstance: Date) => {
+        const month = dateInstance.getMonth() + 1;
+        const startDate = dateInstance.getDate();
+        const year = dateInstance.getFullYear();
+
+        setSelectedDate(`${String(month).padStart(2, '0')} - [${String(startDate).padStart(2, '0')}] - ${year}`);
+    }
+
     // Handle navigation and update the current date display
     const updateCurrentDate = (type: string) => {
         const calendarInstance = calendarRef.current?.getInstance();
         if (calendarInstance) {
             const newDate = calendarInstance.getDate();
             const dateInstance = new Date(newDate);
-            console.log(dateInstance)
             setCurrentDate(dateInstance);
 
             switch (type) {
                 case 'month': {
-                    /**
-                     * Show the calendar base on the currently selected day when using prev & next.
-                     */
                     setCurrentType('month');
-                    const month = dateInstance.getMonth() + 1;
-                    const newDateInstance = new Date();
-
-                    /**
-                     * Calculate the start date when click prev or next.
-                     */
-                    const startDate =
-                        dateInstance.getMonth() === newDateInstance.getMonth() &&
-                            dateInstance.getFullYear() === newDateInstance.getFullYear() ? newDateInstance.getDate() : 1;
-
-                    const year = dateInstance.getFullYear();
-                    let endDate = -1;
-                    const isLeapYear = year % 400 === 0 || (year % 4 === 0 || year % 100 !== 0);
-                    endDate = with31days.includes(month) ? 31 : with30days.includes(month) ? 30 : isLeapYear ? 29 : 28;
-                    const sameDate = startDate === endDate;
-                    if (sameDate) {
-                        setSelectedDate(`${month < 10 ? '0' : ''}${month} - [${startDate < 10 ? '0' : ''}${startDate}] - ${year}`);
-                    } else {
-                        setSelectedDate(`${month < 10 ? '0' : ''}${month} - [${startDate < 10 ? '0' : ''}${startDate} - ${endDate}] - ${year}`);
-                    }
+                    handleMonth(dateInstance);
                     break;
                 }
                 case 'week': {
                     setCurrentType('week');
-
+                    handleWeek(dateInstance);
                     break;
                 }
                 case 'day': {
@@ -132,89 +196,33 @@ const CalendarComponent: React.FC = () => {
                      * Just set the string without extra logic
                      */
                     setCurrentType('day');
-                    const month = dateInstance.getMonth() + 1;
-                    const startDate = dateInstance.getDate();
-                    const year = dateInstance.getFullYear();
-
-                    setSelectedDate(`${month < 10 ? '0' : ''}${month} - [${startDate < 10 ? '0' : ''}${startDate}] - ${year}`);
+                    handleDay(dateInstance);
                     break;
                 }
                 case 'today': {
                     /**
                      * Just set the string without extra logic
                      */
-                    const month = dateInstance.getMonth() + 1;
-                    const startDate = dateInstance.getDate();
-                    const year = dateInstance.getFullYear();
-
-                    setSelectedDate(`${month < 10 ? '0' : ''}${month} - [${startDate < 10 ? '0' : ''}${startDate}] - ${year}`);
+                    handleDay(dateInstance);
                     break;
                 }
                 case 'prev': {
                     if (currentType === 'month') {
-                        const month = dateInstance.getMonth() + 1;
-                        const newDateInstance = new Date();
-
-                        /**
-                         * Calculate the start date when click prev or next.
-                         */
-                        const startDate =
-                            dateInstance.getMonth() === newDateInstance.getMonth() &&
-                                dateInstance.getFullYear() === newDateInstance.getFullYear() ? newDateInstance.getDate() : 1;
-
-                        const year = dateInstance.getFullYear();
-                        let endDate = -1;
-                        const isLeapYear = year % 400 === 0 || (year % 4 === 0 || year % 100 !== 0);
-                        endDate = with31days.includes(month) ? 31 : with30days.includes(month) ? 30 : isLeapYear ? 29 : 28;
-                        const sameDate = startDate === endDate;
-                        if (sameDate) {
-                            setSelectedDate(`${month < 10 ? '0' : ''}${month} - [${startDate < 10 ? '0' : ''}${startDate}] - ${year}`);
-                        } else {
-                            setSelectedDate(`${month < 10 ? '0' : ''}${month} - [${startDate < 10 ? '0' : ''}${startDate} - ${endDate}] - ${year}`);
-                        }
+                        handleMonth(dateInstance);
                     } else if (currentType === 'day') {
-                        /**
-                         * Just set the string without extra logic
-                         */
-                        const month = dateInstance.getMonth() + 1;
-                        const startDate = dateInstance.getDate();
-                        const year = dateInstance.getFullYear();
-
-                        setSelectedDate(`${month < 10 ? '0' : ''}${month} - [${startDate < 10 ? '0' : ''}${startDate}] - ${year}`);
+                        handleDay(dateInstance);
+                    } else if (currentType === 'week') {
+                        handleWeek(dateInstance);
                     }
                     break;
                 }
                 case 'next': {
                     if (currentType === 'month') {
-                        const month = dateInstance.getMonth() + 1;
-                        const newDateInstance = new Date();
-
-                        /**
-                         * Calculate the start date when click prev or next.
-                         */
-                        const startDate =
-                            dateInstance.getMonth() === newDateInstance.getMonth() &&
-                                dateInstance.getFullYear() === newDateInstance.getFullYear() ? newDateInstance.getDate() : 1;
-
-                        const year = dateInstance.getFullYear();
-                        let endDate = -1;
-                        const isLeapYear = year % 400 === 0 || (year % 4 === 0 || year % 100 !== 0);
-                        endDate = with31days.includes(month) ? 31 : with30days.includes(month) ? 30 : isLeapYear ? 29 : 28;
-                        const sameDate = startDate === endDate;
-                        if (sameDate) {
-                            setSelectedDate(`${month < 10 ? '0' : ''}${month} - [${startDate < 10 ? '0' : ''}${startDate}] - ${year}`);
-                        } else {
-                            setSelectedDate(`${month < 10 ? '0' : ''}${month} - [${startDate < 10 ? '0' : ''}${startDate} - ${endDate}] - ${year}`);
-                        }
+                        handleMonth(dateInstance);
                     } else if (currentType === 'day') {
-                        /**
-                         * Just set the string without extra logic
-                         */
-                        const month = dateInstance.getMonth() + 1;
-                        const startDate = dateInstance.getDate();
-                        const year = dateInstance.getFullYear();
-
-                        setSelectedDate(`${month < 10 ? '0' : ''}${month} - [${startDate < 10 ? '0' : ''}${startDate}] - ${year}`);
+                        handleDay(dateInstance);
+                    } else if (currentType === 'week') {
+                        handleWeek(dateInstance);
                     }
                     break;
                 }
