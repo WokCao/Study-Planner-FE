@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
-import ButtonTimer from "./elements/ButtonTimer";
-import { faGripLinesVertical, faPlay, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import FormTask from "./elements/FormTask";
 import Task from "../interface/Task";
 import { format } from "date-fns";
-// import { tasksData } from "../data/tasksData";
+import FocusTimer from "./FocusTimer";
 import SingleTask from "./elements/Task";
 import { useMutation } from "@tanstack/react-query";
 import { fetcher } from "../clients/apiClient";
@@ -29,8 +27,6 @@ interface AddTaskResponse {
 }
 
 function Dashboard({ setCurrentOption, setShowUpdateForm, editedTask, setEditedTask }: DashboardInterface) {
-    const [label, setLabel] = useState('Start');
-    const [icon, setIcon] = useState<IconDefinition>(faPlay);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [totalTasks, setTotalTasks] = useState(0);
     const [todayTasks, setTodayTasks] = useState<Task[]>([]);
@@ -38,16 +34,6 @@ function Dashboard({ setCurrentOption, setShowUpdateForm, editedTask, setEditedT
     const [loadTaskError, setLoadTaskError] = useState('');
     const token = useAuthStore((state) => state.token);
     const navigate = useNavigate();
-
-    const handleSetComponents = () => {
-        if (label === 'Start') {
-            setLabel('Stop');
-            setIcon(faGripLinesVertical);
-        } else {
-            setLabel('Start');
-            setIcon(faPlay);
-        }
-    }
 
     const dueTodayTask = (tasks: Task[]) => {
         const now = new Date();
@@ -210,7 +196,7 @@ function Dashboard({ setCurrentOption, setShowUpdateForm, editedTask, setEditedT
         <div className="relative p-4 flex items-start h-full overflow-y-auto overflow-x-hidden gap-4 scroll-smooth">
             <div className="w-9/12 space-y-4 mb-32">
                 <div className="p-4 bg-white rounded-3xl">
-                    <section className="bg-gradient-to-b from-fuchsia-400 to-violet-300 p-4 rounded-3xl text-white">
+                    <section className="bg-gradient-to-b from-purple-500 to-violet-300 p-4 rounded-3xl text-white">
                         <h1 className="font-bold text-4xl mb-3">Good {currentTime}!</h1>
                         <p>You have {todayTasks.length} task(s) due today</p>
                     </section>
@@ -242,16 +228,7 @@ function Dashboard({ setCurrentOption, setShowUpdateForm, editedTask, setEditedT
                     </div>}
             </div>
 
-            <div className="p-4 bg-white rounded-3xl w-3/12">
-                <section className="bg-gradient-to-b from-fuchsia-400 to-violet-300 p-4 rounded-3xl text-white">
-                    <h3 className="font-bold text-2xl mb-7">Focus Timer</h3>
-                    <div className="flex flex-col items-center font-semibold">
-                        <p className="text-2xl">25:00</p>
-                        <p className="text-lg">Focus</p>
-                        <ButtonTimer label={label} icon={icon} handleSetComponents={handleSetComponents} />
-                    </div>
-                </section>
-            </div>
+            <FocusTimer widget={true} />
         </div>
     )
 }

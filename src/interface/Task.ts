@@ -1,10 +1,10 @@
 export default interface Task {
-    taskId?: number;
+    taskId: number;
     name: string;
     description: string;
-    priorityLevel: string;
+    priorityLevel: "High" | "Medium" | "Low";
     estimatedTime: number;
     estimatedTimeUnit?: string;
-    status: string;
-    deadline: string;
+    status: "Todo" | "In Progress" | "Completed" | "Expired";
+    deadline: Date;
 }

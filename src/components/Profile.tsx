@@ -24,7 +24,13 @@ function Profile() {
       Swal.fire({
         title: "Success",
         text: "Your full name has been changed.",
-        icon: "success"
+        icon: "success",
+        showClass: {
+            popup: `block`
+        },
+        hideClass: {
+            popup: `hidden`
+        }
       });
       setFullname(String(variables));
     },
@@ -43,14 +49,26 @@ function Profile() {
       Swal.fire({
         title: "Success",
         text: "Your password has been changed.",
-        icon: "success"
+        icon: "success",
+        showClass: {
+            popup: `block`
+        },
+        hideClass: {
+            popup: `hidden`
+        }
       });
     },
     onError: (error) => {
       Swal.fire({
         title: "Failure",
         text: error.message,
-        icon: "error"
+        icon: "error",
+        showClass: {
+            popup: `block`
+        },
+        hideClass: {
+            popup: `hidden`
+        }
       });
     },
   });
@@ -82,6 +100,12 @@ function Profile() {
       input: "text",
       inputLabel: "Full name",
       showCancelButton: true,
+      showClass: {
+        popup: `block`
+      },
+      hideClass: {
+        popup: `hidden`
+      },
       inputValidator: (value) => {
         if (!value) {
           return "Please enter full name!";
@@ -107,6 +131,12 @@ function Profile() {
 			`,
       focusConfirm: false,
       showCancelButton: true,
+      showClass: {
+        popup: `block`
+      },
+      hideClass: {
+        popup: `hidden`
+      },
       preConfirm: () => {
         return [
           (document.getElementById("swal-input1") as HTMLInputElement).value,
@@ -125,7 +155,13 @@ function Profile() {
         return Swal.fire({
           title: "Failure",
           text: "Please enter all fields!",
-          icon: "error"
+          icon: "error",
+          showClass: {
+            popup: `block`
+					},
+					hideClass: {
+						popup: `hidden`
+					}
         });
       }
 
@@ -133,7 +169,13 @@ function Profile() {
         return Swal.fire({
           title: "Failure",
           text: "Passwords do not match.",
-          icon: "error"
+          icon: "error",
+					showClass: {
+            popup: `block`
+					},
+					hideClass: {
+						popup: `hidden`
+					}
         });
       }
 
