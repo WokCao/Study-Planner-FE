@@ -132,7 +132,7 @@ const CalendarComponent: React.FC = () => {
         if (day > 0) {
             const cloneDateInstance = dateInstance;
             cloneDateInstance.setDate(startDate - day);
-            
+
             let formatDate1 = new Date(cloneDateInstance.getFullYear(), cloneDateInstance.getMonth(), cloneDateInstance.getDate());
             let formatDate2 = new Date(newDateInstance.getFullYear(), newDateInstance.getMonth(), newDateInstance.getDate());
 
@@ -149,16 +149,9 @@ const CalendarComponent: React.FC = () => {
                     startDate = cloneDateInstance.getDate();
                     setIsValidDate(false);
                 } else {
-                    if (formatDate1.getTime() < formatDate2.getTime()) {
-                        day = 0;
-                        cloneDateInstance.setDate(cloneDateInstance.getDate() - 6);
-                        startDate = cloneDateInstance.getDate();
-                        setIsValidDate(false);
-                    } else {
-                        day = newDateInstance.getDay();
-                        startDate = newDateInstance.getDate();
-                        setIsValidDate(true);
-                    }
+                    day = newDateInstance.getDay();
+                    startDate = newDateInstance.getDate();
+                    setIsValidDate(true);
                 }
             }
         }
