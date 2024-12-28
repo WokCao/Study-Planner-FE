@@ -11,6 +11,7 @@ import ButtonAI from "./elements/ButtonAI";
 import AIAnalysis from "./AIAnalysis";
 import { faCommentDots } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { format } from "date-fns";
 
 // Task interface for better type safety
 interface Task {
@@ -31,6 +32,8 @@ const CalendarComponent: React.FC = () => {
     const feedbackRef = useRef<HTMLDivElement | null>(null);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState<string>('');
+    const [startDateOfInterval, setStartDateOfInterval] = useState<Date | null>(null);
+    const [endDateOfInterval, setEndDateOfInterval] = useState<Date | null>(null);
     const [isValidDate, setIsValidDate] = useState(true);
     const [currentType, setCurrentType] = useState('month');
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -98,9 +101,6 @@ const CalendarComponent: React.FC = () => {
         const formatDate1 = new Date(dateInstance.getFullYear(), dateInstance.getMonth(), 1);
         const formatDate2 = new Date(newDateInstance.getFullYear(), newDateInstance.getMonth(), 1);
         const startDate = formatDate1.getTime() === formatDate2.getTime() ? newDateInstance.getDate() : 1;
-        if (formatDate1.getTime() < formatDate2.getTime()) setIsValidDate(false);
-        else setIsValidDate(true);
-
         const year = dateInstance.getFullYear();
         let endDate = -1;
 
@@ -109,6 +109,14 @@ const CalendarComponent: React.FC = () => {
          */
         const isLeapYear = year % 400 === 0 || (year % 4 === 0 && year % 100 !== 0);
         endDate = with31days.includes(month) ? 31 : with30days.includes(month) ? 30 : isLeapYear ? 29 : 28;
+
+        if (formatDate1.getTime() < formatDate2.getTime()) setIsValidDate(false);
+        else {
+            setIsValidDate(true);
+            setStartDateOfInterval(new Date(newDateInstance.getFullYear(), newDateInstance.getMonth(), startDate));
+            setEndDateOfInterval(new Date(newDateInstance.getFullYear(), newDateInstance.getMonth(), endDate));
+        }
+
         const sameDate = startDate === endDate;
         if (sameDate) {
             setSelectedDate(`${String(month).padStart(2, '0')} - [${String(startDate).padStart(2, '0')}] - ${year}`);
@@ -121,6 +129,8 @@ const CalendarComponent: React.FC = () => {
         let newDateInstance = new Date();
         let day = dateInstance.getDay();
         let startDate = dateInstance.getDate();
+        const month = dateInstance.getMonth() + 1;
+        const year = dateInstance.getFullYear();
 
         /**
          * If the position of day > 0, get the start date of that week.
@@ -155,8 +165,6 @@ const CalendarComponent: React.FC = () => {
                 }
             }
         }
-        const month = dateInstance.getMonth() + 1;
-        const year = dateInstance.getFullYear();
 
         /**
          * Add value to selected date string.
@@ -164,6 +172,9 @@ const CalendarComponent: React.FC = () => {
         const dateToPlus = 6 - day;
         if (dateToPlus === 0) {
             setSelectedDate(`${String(month).padStart(2, '0')} - [${String(startDate).padStart(2, '0')}] - ${year}`);
+
+            setStartDateOfInterval(new Date(year, month, startDate));
+            setEndDateOfInterval(new Date(year, month, startDate));
         } else {
             dateInstance.setDate(startDate + dateToPlus);
             const endDate = dateInstance.getDate();
@@ -172,9 +183,15 @@ const CalendarComponent: React.FC = () => {
 
             let dateString: string = '';
             if (year === endYear && month === endMonth) {
-                dateString += `${String(month).padStart(2, '0')} - [${String(startDate).padStart(2, '0')} - ${String(endDate).padStart(2, '0')}] - ${year}`
+                dateString += `${String(month).padStart(2, '0')} - [${String(startDate).padStart(2, '0')} - ${String(endDate).padStart(2, '0')}] - ${year}`;
+
+                setStartDateOfInterval(new Date(year, month, startDate));
+                setEndDateOfInterval(new Date(year, month, endDate));
             } else {
                 dateString += `${String(month).padStart(2, '0')} - ${String(startDate).padStart(2, '0')} - ${year} / ${String(endMonth).padStart(2, '0')} - ${String(endDate).padStart(2, '0')} - ${endYear}`;
+
+                setStartDateOfInterval(new Date(year, month, startDate));
+                setEndDateOfInterval(new Date(endYear, endMonth, endDate));
             }
             setSelectedDate(dateString);
         }
@@ -192,7 +209,11 @@ const CalendarComponent: React.FC = () => {
         const formatDate1 = new Date(dateInstance.getFullYear(), dateInstance.getMonth(), dateInstance.getDate());
         const formatDate2 = new Date(newDateInstance.getFullYear(), newDateInstance.getMonth(), newDateInstance.getDate());
         if (formatDate1.getTime() < formatDate2.getTime()) setIsValidDate(false);
-        else setIsValidDate(true);
+        else {
+            setIsValidDate(true);
+            setStartDateOfInterval(dateInstance);
+            setEndDateOfInterval(dateInstance);
+        };
 
         setSelectedDate(`${String(month).padStart(2, '0')} - [${String(startDate).padStart(2, '0')}] - ${year}`);
     }
@@ -274,6 +295,35 @@ const CalendarComponent: React.FC = () => {
         setTasks((prev) => [...prev, newTask]);
     };
 
+    const identifyEstimatedTime = (timeObject: any) => {
+        let timeValue = 0;
+        let timeUnit = "";
+        if (timeObject.seconds) {
+            timeValue = timeObject.seconds;
+            timeUnit = "second(s)";
+        } else if (timeObject.minutes) {
+            timeValue = timeObject.minutes;
+            timeUnit = "minute(s)";
+        } else if (timeObject.hours) {
+            timeValue = timeObject.hours;
+            timeUnit = "hour(s)";
+        } else if (timeObject.days) {
+            timeValue = timeObject.days;
+            timeUnit = "day(s)";
+        } else if (timeObject.weeks) {
+            timeValue = timeObject.weeks;
+            timeUnit = "week(s)";
+        } else if (timeObject.months) {
+            timeValue = timeObject.months;
+            timeUnit = "month(s)";
+        } else if (timeObject.years) {
+            timeValue = timeObject.years;
+            timeUnit = "year(s)";
+        }
+
+        return { timeValue, timeUnit };
+    };
+
     const mutationUpdateTask = useMutation({
         mutationFn: async ({ id, deadline }: { id: number; deadline: Date }) =>
             await fetcherGet("/tasks/" + id, {
@@ -303,6 +353,72 @@ const CalendarComponent: React.FC = () => {
             });
         },
     });
+
+    const mutationGetTaskWithInterval = useMutation<any, Error, { startDate: Date, endDate: Date }>({
+        mutationFn: async ({ startDate, endDate }) =>
+            await fetcherGet('/tasks/in-interval', {
+                method: 'POST',
+                body: JSON.stringify({
+                    startDate,
+                    endDate
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token,
+                },
+            }),
+        onSuccess: (data: any) => {
+            const taskList: Task[] = data.data.response.data;
+            taskList.map((task: any) => {
+                delete task["updatedAt"];
+                delete task["createdAt"];
+
+                const timeObject = identifyEstimatedTime(task.estimatedTime);
+                delete task["estimatedTime"];
+                task.estimatedTime = timeObject.timeValue;
+                task.estimatedTimeUnit = timeObject.timeUnit;
+
+                const date = new Date(task.deadline);
+                const formattedDate = format(date, "dd-MM-yyyy H:m");
+                task.deadline = formattedDate;
+            });
+
+            const scheduleData = taskList.map((task) => ({
+                id: task.id,
+                name: task.name,
+                description: task.description,
+                deadline: task.deadline,
+                priorityLevel: task.priorityLevel,
+                estimatedTime: task.estimatedTime,
+                status: task.status,
+            }));
+
+            // Validate data size for LLM token limits (optional safeguard)
+            if (JSON.stringify(scheduleData).length > 20000) {
+                Swal.fire({
+                    title: "Data Too Large",
+                    text: "Your schedule data is too large to analyze at once. Please reduce the number of tasks and try again.",
+                    icon: "warning",
+                });
+                return;
+            }
+
+            // Send the collected schedule data to the LLM API
+            sendToLLM(scheduleData);
+
+            // Scroll to feedback after analyzing
+            if (feedbackRef.current) {
+                feedbackRef.current.scrollIntoView({ behavior: "smooth" });
+            }
+        },
+        onError: (error) => {
+            Swal.fire({
+                title: "Failure",
+                text: "Couldn't get task in interval: " + error.message,
+                icon: "error",
+            });
+        }
+    })
 
     // Handle event updates (e.g., drag-and-drop)
     const handleBeforeUpdateEvent = (updateData: any) => {
@@ -334,37 +450,17 @@ const CalendarComponent: React.FC = () => {
 
     // Handle user clicking on "Analyze Schedule"
     const analyzeSchedule = () => {
-        if (!isValidDate) return;
-        // Call API to get tasks based on selected date
-
-
-
-        const scheduleData = tasks.map((task) => ({
-            id: task.id,
-            name: task.name,
-            description: task.description,
-            deadline: task.deadline,
-            priorityLevel: task.priorityLevel,
-            estimatedTime: task.estimatedTime,
-            status: task.status,
-        }));
-
-        // Validate data size for LLM token limits (optional safeguard)
-        if (JSON.stringify(scheduleData).length > 20000) {
-            Swal.fire({
-                title: "Data Too Large",
-                text: "Your schedule data is too large to analyze at once. Please reduce the number of tasks and try again.",
-                icon: "warning",
-            });
+        if (!isValidDate) {
+            alert('Invalid interval');
             return;
         }
 
-        // Send the collected schedule data to the LLM API
-        sendToLLM(scheduleData);
-
-        // Scroll to feedback after analyzing
-        if (feedbackRef.current) {
-            feedbackRef.current.scrollIntoView({ behavior: "smooth" });
+        // Call API to get tasks based on selected date
+        if (startDateOfInterval && endDateOfInterval) {
+            mutationGetTaskWithInterval.mutate({
+                startDate: startDateOfInterval,
+                endDate: endDateOfInterval
+            })
         }
     };
 
@@ -464,7 +560,10 @@ const CalendarComponent: React.FC = () => {
         const monthOfSelected = selected.getMonth() + 1;
         const dateOfSelected = selected.getDate();
 
-        setSelectedDate(`${monthOfSelected < 10 ? '0' : ''}${monthOfSelected} - [${dateOfSelected < 10 ? '0' : ''}${dateOfSelected}] - ${selected.getFullYear()}`);
+        setSelectedDate(`${String(monthOfSelected).padStart(2, '0')} - [${String(dateOfSelected).padStart(2, '0')}] - ${selected.getFullYear()}`);
+
+        setStartDateOfInterval(new Date(selected.getFullYear(), selected.getMonth(), dateOfSelected));
+        setEndDateOfInterval(new Date(selected.getFullYear(), selected.getMonth(), dateOfSelected));
 
         if (curDate <= selected || curDate.getDate() === selected.getDate() && curDate.getMonth() === selected.getMonth() && curDate.getFullYear() === selected.getFullYear()) {
             setIsValidDate(true);
