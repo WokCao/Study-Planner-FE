@@ -41,7 +41,7 @@ function Dashboard({ setCurrentOption, setShowUpdateForm, editedTask, setEditedT
         const todayTasksData: Task[] = [];
 
         tasks.map((task: Task) => {
-            if (task.deadline.split(' ')[0] === formattedDate) todayTasksData.push(task);
+            if (task.deadline.toString().split(' ')[0] === formattedDate) todayTasksData.push(task);
         })
 
         setTodayTasks(todayTasksData);
