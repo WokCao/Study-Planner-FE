@@ -57,9 +57,9 @@ function Dashboard({ setCurrentOption, setShowUpdateForm, editedTask, setEditedT
             if (!data) return;
             if (data.statusCode === 201) {
                 const task = data.data.response;
-                const date = new Date(task.deadline);
-                const formattedDate = format(date, 'dd-MM-yyyy H:m');
-                task.deadline = formattedDate;
+                const splitValueUnit = task.estimatedTime.split(' ');
+                task.estimatedTime = splitValueUnit[0];
+                task.estimatedTimeUnit = splitValueUnit[1];
 
                 setTasks((prevTasks) => [task, ...prevTasks]);
                 dueTodayTask([task, ...tasks]);
@@ -130,10 +130,6 @@ function Dashboard({ setCurrentOption, setShowUpdateForm, editedTask, setEditedT
                     delete task['estimatedTime'];
                     task.estimatedTime = timeObject.timeValue;
                     task.estimatedTimeUnit = timeObject.timeUnit;
-
-                    const date = new Date(task.deadline);
-                    const formattedDate = format(date, 'dd-MM-yyyy H:m');
-                    task.deadline = formattedDate;
                 })
                 setTasks(tasks);
                 dueTodayTask(tasks);
