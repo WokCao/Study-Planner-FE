@@ -4,6 +4,7 @@ import MenuOption from "./elements/MenuOption";
 import Dashboard from "./Dashboard";
 import Tasks from "./Tasks";
 import CalendarComponent from "./Calendar";
+import FocusTimer from "./FocusTimer";
 import Task from "../interface/Task";
 import PopUpForm from "./PopUpForm";
 import UpdateFormInterface from "../interface/UpdateFrom";
@@ -60,6 +61,7 @@ function Home() {
         {currentOption === 1 && <Dashboard setCurrentOption={setCurrentOption} setShowUpdateForm={setShowUpdateForm} editedTask={editedTask} setEditedTask={setEditedTask} />}
         {currentOption === 2 && <CalendarComponent />}
         {currentOption === 3 && <Tasks setShowUpdateForm={setShowUpdateForm} editedTask={editedTask} setEditedTask={setEditedTask} />}
+        {currentOption === 4 && <FocusTimer widget={false} />}
         {showUpdateForm.isShown && <PopUpForm setShowUpdateForm={setShowUpdateForm} task={showUpdateForm.task} setEditedTask={setEditedTask} />}
       </section>
     </div>
