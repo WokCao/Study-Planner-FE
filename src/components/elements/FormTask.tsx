@@ -6,6 +6,7 @@ import ButtonPrimary from "./ButtonPrimary";
 import { ClipLoader } from "react-spinners";
 import { useState } from "react";
 import { day, hour, minute, month, week, year } from "../../data/timeUnit";
+import { format } from "date-fns";
 
 interface FormTaskInterface {
     handleAddTask: (task: Task, setFetching: React.Dispatch<React.SetStateAction<boolean>>, reset: UseFormReset<Task>, setTaskError: React.Dispatch<React.SetStateAction<string>>, taskId?: number | undefined) => void;
@@ -19,11 +20,12 @@ const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask, action, task }) 
     const [timeError, setTimeError] = useState('');
     const [taskError, setTaskError] = useState('');
 
-    let formattedValue = task?.deadline;
-    if (formattedValue) {
-        const [date, time] = formattedValue.split(" ");
+    let formattedValue = '';
+    if (task?.deadline) {
+        const dateString = format(task.deadline, 'dd-MM-yyyy H:m');
+        const [date, time] = dateString.split(" ");
         const [day, month, year] = date.split("-");
-        formattedValue = `${year}-${month}-${day}T${time}`;
+        formattedValue = `${year}-${month}-${day}T${time.padEnd(5, '0')}`;
     }
 
     const calculateFactor = (timeUnit: string | undefined) => {
@@ -55,7 +57,7 @@ const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask, action, task }) 
         }
     }
 
-    const simpleDateValidation = (dateData: string) => {
+    const simpleDateValidation = (dateData: Date | string) => {
         const today = new Date();
         const selectedDate = new Date(dateData);
         return selectedDate >= today || "Deadline must be a future datetime";
