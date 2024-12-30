@@ -59,7 +59,7 @@ function Home() {
 
       <section className="w-5/6 h-full absolute top-0 right-0">
         {currentOption === 1 && <Dashboard setCurrentOption={setCurrentOption} setShowUpdateForm={setShowUpdateForm} editedTask={editedTask} setEditedTask={setEditedTask} />}
-        {currentOption === 2 && <CalendarComponent />}
+        {currentOption === 2 && <CalendarComponent setShowUpdateForm={setShowUpdateForm} />}
         {currentOption === 3 && <Tasks setShowUpdateForm={setShowUpdateForm} editedTask={editedTask} setEditedTask={setEditedTask} />}
         {currentOption === 4 && <FocusTimer widget={false} />}
         {showUpdateForm.isShown && <PopUpForm setShowUpdateForm={setShowUpdateForm} task={showUpdateForm.task} setEditedTask={setEditedTask} />}
