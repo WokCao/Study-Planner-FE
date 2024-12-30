@@ -6,7 +6,6 @@ import { useMutation } from "@tanstack/react-query";
 import { fetcherGet } from "../clients/apiClientAny";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../hooks/useAuthStore";
-import { format } from "date-fns";
 import UpdateFormInterface from "../interface/UpdateFrom";
 
 interface TasksInterface {
@@ -130,10 +129,6 @@ const Tasks = ({
           delete task["estimatedTime"];
           task.estimatedTime = timeObject.timeValue;
           task.estimatedTimeUnit = timeObject.timeUnit;
-
-          const date = new Date(task.deadline);
-          const formattedDate = format(date, "dd-MM-yyyy H:m");
-          task.deadline = formattedDate;
         });
         setThisMonthsTasks(tasks);
         setThisMonthError("");
@@ -173,10 +168,6 @@ const Tasks = ({
           delete task["estimatedTime"];
           task.estimatedTime = timeObject.timeValue;
           task.estimatedTimeUnit = timeObject.timeUnit;
-
-          const date = new Date(task.deadline);
-          const formattedDate = format(date, "dd-MM-yyyy H:m");
-          task.deadline = formattedDate;
         });
 
         setOtherMonthsTasks(tasks);
@@ -201,7 +192,7 @@ const Tasks = ({
   };
 
   const handlePageClickOtherMonths = (event: { selected: number }) => {
-    mutationGetThisMonthTask.mutate(event.selected + 1);
+    mutationGetOtherMonthsTask.mutate(event.selected + 1);
     setOtherMonthsCurrentPage(event.selected);
     otherMonthsRef.current?.scrollIntoView({ behavior: "smooth" });
   };
