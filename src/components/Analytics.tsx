@@ -6,6 +6,8 @@ import { fetcherGet } from "../clients/apiClientAny";
 import useAuthStore from "../hooks/useAuthStore";
 import PieChart from "./elements/PieChart";
 import LineChart from "./elements/LineChart";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface IStatusChart {
     id: string;
@@ -41,6 +43,8 @@ function Analytics() {
     const [priorityChartData, setPriorityChartData] = useState<IStatusChart[]>([]);
     const [creationChartData, setCreationChartData] = useState<ICreationChart[]>([]);
     const [selectedYear, setSelectedYear] = useState(-1);
+    const [yearsToCompare, setYearsToCompare] = useState<number[]>([]);
+    const [selectedYearsToCompare, setSelectedYearsToCompare] = useState<number[]>([]);
 
     const separateByStatus = (data: Task[]) => {
         const toDo = [];
@@ -195,7 +199,10 @@ function Analytics() {
             if (data.statusCode === 200) {
                 const fullData = data.data.response;
                 const formatedData = formatCreationChartData(fullData, year);
-                setCreationChartData([formatedData]);
+                setCreationChartData((prev) => {
+                    const filtered = prev.filter((prevFormatedData) => prevFormatedData.id !== formatedData.id && selectedYearsToCompare.includes(Number(prevFormatedData.id)));
+                    return [...filtered, formatedData]
+                });
             } else {
 
             }
@@ -205,19 +212,69 @@ function Analytics() {
                 navigate("Login");
             }
         },
-    })
+    });
+
+    const validYears = () => {
+        const minYear = 2024;
+        const currentDate = new Date();
+        const maxYear = currentDate.getFullYear();
+
+        const prevYears = selectedYear - minYear;
+        const nextYears = maxYear - selectedYear;
+        const yearArray = [];
+
+        if (prevYears < 5) {
+            for (let i = minYear; i <= selectedYear; i++) {
+                yearArray.push(i);
+            }
+        } else {
+            for (let i = selectedYear - 5; i <= selectedYear; i++) {
+                yearArray.push(i);
+            }
+        }
+
+        if (nextYears < 5) {
+            for (let i = selectedYear + 1; i <= maxYear; i++) {
+                yearArray.push(i);
+            }
+        } else {
+            for (let i = selectedYear + 1; i <= selectedYear + 5; i++) {
+                yearArray.push(i);
+            }
+        }
+        setYearsToCompare(yearArray);
+    }
+
+    const handleAddYearToCompare = () => {
+        const distinctNumbers = selectedYearsToCompare.filter((value, index, self) => self.indexOf(value) === index);
+        for (let i = 0; i < distinctNumbers.length; i++) {
+            mutationGetTaskCreationByYear.mutate({ year: selectedYearsToCompare[i] });
+        }
+    }
+
+    const handleRemoveYearToCompare = (removedYear: number) => {
+        const updatedYears = selectedYearsToCompare.filter((year) => year !== removedYear);
+        setSelectedYearsToCompare(updatedYears);
+    }
 
     useEffect(() => {
         const currentDate = new Date();
         mutationGetTasks.mutate();
         setSelectedYear(currentDate.getFullYear());
+        setSelectedYearsToCompare([currentDate.getFullYear()]);
     }, []);
 
     useEffect(() => {
         if (selectedYear > 0) {
             mutationGetTaskCreationByYear.mutate({ year: selectedYear });
+            setSelectedYearsToCompare([selectedYear]);
+            validYears();
         }
     }, [selectedYear]);
+
+    useEffect(() => {
+        handleAddYearToCompare();
+    }, [selectedYearsToCompare]);
 
     return (
         <div className="h-full overflow-auto flex flex-col py-5 px-5">
@@ -226,10 +283,10 @@ function Analytics() {
                 <div className="w-full h-full scrollbar-none flex items-center">
                     <div className="relative w-full h-full">
                         <div className="absolute left-0 top-1/4 -translate-y-1/4 w-full border rounded-full border-white"></div>
-                        <div className="absolute left-0 top-0 w-full h-full overflow-x-scroll scrollbar-none flex">
+                        <div className="absolute left-0 top-0 w-full h-full overflow-x-scroll scrollbar-none flex space-x-[20%]">
                             {years.length > 0 && years.map((year, index) => (
-                                <div className={`relative flex flex-col justify-center items-center h-full left-[${20 * index}%]`} onClick={() => setSelectedYear(year)}>
-                                    <div className="w-3 h-3 bg-white border-2 border-violet-500 rounded-full cursor-pointer hover:bg-blue-500"></div>
+                                <div className={`relative flex flex-col justify-center items-center h-full`} onClick={() => setSelectedYear(year)} key={'timeline' + index}>
+                                    <div className={`w-5 h-5 bg-white border-2 border-violet-500 rounded-full cursor-pointer ${selectedYear === year ? 'bg-violet-500' : 'hover:bg-violet-500'}`}></div>
                                     <div className="text-violet-500 text-xs">{year}</div>
                                 </div>
                             ))}
@@ -253,13 +310,35 @@ function Analytics() {
                 )}
             </div>
 
-            <div className="h-4/5 w-3/4 flex justify-around flex-shrink-0">
+            <div className="h-4/5 w-full flex flex-shrink-0">
                 {creationChartData.length > 0 && (
-                    <div className="h-full w-full p-8 rounded-lg shadow-xl bg-white">
+                    <div className="h-full w-3/4 p-8 rounded-lg shadow-xl bg-white">
                         <h1 className="text-center font-bold text-xl">Task's creation</h1>
                         <LineChart data={creationChartData} />
                     </div>
                 )}
+
+                <div className="ms-5 w-1/4 p-4 bg-white border rounded-lg shadow-lg h-fit">
+                    <p className="text-lg font-semibold">Compare with:</p>
+                    <div className="flex flex-col w-full">
+                        {yearsToCompare.length > 0 && yearsToCompare.map((year) => (
+                            <div className="flex">
+                                <button
+                                    className={`px-4 py-2 my-1 w-3/4 rounded ${year === selectedYear || selectedYearsToCompare.includes(year) ? 'bg-purple-600 text-white' : 'bg-white text-black'} hover:bg-purple-600 hover:text-white transition border`}
+                                    disabled={year === selectedYear}
+                                    onClick={() => setSelectedYearsToCompare((prev) => [...prev, year])}>{year}</button>
+                                {year === selectedYear || !selectedYearsToCompare.includes(year) ? null : (
+                                    <div 
+                                    className="ms-auto hover:cursor-pointer text-slate-500 flex items-center hover:text-red-600"
+                                    onClick={() => handleRemoveYearToCompare(year)}>
+                                        <FontAwesomeIcon icon={faTrash} />
+                                        <span className="ms-2">Remove</span>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
         </div>
     )
