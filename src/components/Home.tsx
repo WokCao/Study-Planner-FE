@@ -8,6 +8,7 @@ import FocusTimer from "./FocusTimer";
 import Task from "../interface/Task";
 import PopUpForm from "./PopUpForm";
 import UpdateFormInterface from "../interface/UpdateFrom";
+import Analytics from "./Analytics";
 
 interface MenuOptionsInterface {
   id: number;
@@ -62,6 +63,7 @@ function Home() {
         {currentOption === 2 && <CalendarComponent setShowUpdateForm={setShowUpdateForm} />}
         {currentOption === 3 && <Tasks setShowUpdateForm={setShowUpdateForm} editedTask={editedTask} setEditedTask={setEditedTask} />}
         {currentOption === 4 && <FocusTimer widget={false} />}
+        {currentOption === 5 && <Analytics />}
         {showUpdateForm.isShown && <PopUpForm setShowUpdateForm={setShowUpdateForm} task={showUpdateForm.task} setEditedTask={setEditedTask} />}
       </section>
     </div>

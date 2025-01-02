@@ -24,11 +24,14 @@ export default {
       }
     },
     screens: {
+      'mobile': '300px',
       'tablet': '640px',
       'laptop': '1200px',
       'desktop': '1680px',
     }
   },
-  plugins: [],
+  plugins: [
+    require('tailwind-scrollbar'),
+  ],
 }
 
