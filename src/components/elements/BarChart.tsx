@@ -13,11 +13,11 @@ function BarChart({ data }: IBarChart) {
     return (
         <ResponsiveBar
             data={data}
-            keys={['deadline']} // The key for the data values
-            indexBy="month" // The key for the x-axis
+            keys={['deadline']}
+            indexBy="month"
             margin={{ top: 50, right: 50, bottom: 50, left: 60 }}
-            padding={0.3} // Padding between bars
-            colors={{ scheme: 'nivo' }} // Color scheme
+            padding={0.3}
+            colors={{ scheme: 'nivo' }}
             axisTop={null}
             axisRight={null}
             axisBottom={{
@@ -35,7 +35,7 @@ function BarChart({ data }: IBarChart) {
                 legend: 'Deadline(s)',
                 legendPosition: 'middle',
                 legendOffset: -40,
-                tickValues: Array.from({ length: maxDeadlines + 1 }, (_, i) => i)
+                tickValues: Array.from({ length: maxDeadlines + 1 }, (_, i) => i).filter((value) => value % 5 === 0)
             }}
             labelSkipWidth={12}
             labelSkipHeight={12}
