@@ -45,52 +45,6 @@ function PieChart({ data }: IPieChart) {
                     ]
                 ]
             }}
-            defs={[
-                {
-                    id: 'dots',
-                    type: 'patternDots',
-                    background: 'inherit',
-                    color: 'rgba(255, 255, 255, 0.3)',
-                    size: 4,
-                    padding: 1,
-                    stagger: true
-                },
-                {
-                    id: 'lines',
-                    type: 'patternLines',
-                    background: 'inherit',
-                    color: 'rgba(255, 255, 255, 0.3)',
-                    rotation: -45,
-                    lineWidth: 6,
-                    spacing: 10
-                }
-            ]}
-            fill={[
-                {
-                    match: {
-                        id: 'Todo'
-                    },
-                    id: 'dots'
-                },
-                {
-                    match: {
-                        id: 'In progress'
-                    },
-                    id: 'lines'
-                },
-                {
-                    match: {
-                        id: 'Completed'
-                    },
-                    id: 'dots'
-                },
-                {
-                    match: {
-                        id: 'Expired'
-                    },
-                    id: 'lines'
-                }
-            ]}
             legends={[
                 {
                     anchor: 'bottom',
