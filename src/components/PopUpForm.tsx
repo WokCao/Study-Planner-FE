@@ -11,6 +11,7 @@ import AddTask from "../interface/AddTask";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../hooks/useAuthStore";
 import { fetcherGet } from "../clients/apiClientAny";
+import Swal from "sweetalert2";
 
 interface AddTaskResponse {
     data: any;
@@ -59,6 +60,17 @@ const PopUpForm = ({ setShowUpdateForm, task, setEditedTask }: PopUpFormInterfac
         },
         onError: (error, { setTaskError }) => {
             if (error.message.startsWith('Unauthorized')) {
+                Swal.fire({
+                    title: "Login session expired",
+                    text: "You'll be redirected to the Login page.",
+                    icon: "info",
+                    showClass: {
+                        popup: `block`
+                    },
+                    hideClass: {
+                        popup: `hidden`
+                    }
+                });
                 navigate('Login');
             } else {
                 setTaskError(error.message);
@@ -85,9 +97,20 @@ const PopUpForm = ({ setShowUpdateForm, task, setEditedTask }: PopUpFormInterfac
         },
         onError: (error) => {
             if (error.message.startsWith('Unauthorized')) {
+                Swal.fire({
+                    title: "Login session expired",
+                    text: "You'll be redirected to the Login page.",
+                    icon: "info",
+                    showClass: {
+                        popup: `block`
+                    },
+                    hideClass: {
+                        popup: `hidden`
+                    }
+                });
                 navigate('Login');
             } else {
-                alert(error.message);
+                console.log(error.message);
             }
         }
     })
@@ -113,7 +136,17 @@ const PopUpForm = ({ setShowUpdateForm, task, setEditedTask }: PopUpFormInterfac
         if (id) {
             mutationDeleteTask.mutate({ id });
         } else {
-            alert("Task doesn't exist");
+            Swal.fire({
+                title: "Error",
+                text: "Task doesn't exist",
+                icon: "error",
+                showClass: {
+                    popup: `block`
+                },
+                hideClass: {
+                    popup: `hidden`
+                }
+            });
         }
     }
 

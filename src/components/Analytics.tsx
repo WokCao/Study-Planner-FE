@@ -10,6 +10,7 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BarChart from "./elements/BarChart";
 import BarChartExt from "./elements/BarChartExt";
+import Swal from "sweetalert2";
 
 interface IStatusChart {
     id: string;
@@ -231,6 +232,17 @@ function Analytics() {
         },
         onError: (error) => {
             if (error.message.startsWith("Unauthorized")) {
+                Swal.fire({
+                    title: "Login session expired",
+                    text: "You'll be redirected to the Login page.",
+                    icon: "info",
+                    showClass: {
+                        popup: `block`
+                    },
+                    hideClass: {
+                        popup: `hidden`
+                    }
+                });
                 navigate("Login");
             }
         },
@@ -254,6 +266,17 @@ function Analytics() {
         },
         onError: (error) => {
             if (error.message.startsWith("Unauthorized")) {
+                Swal.fire({
+                    title: "Login session expired",
+                    text: "You'll be redirected to the Login page.",
+                    icon: "info",
+                    showClass: {
+                        popup: `block`
+                    },
+                    hideClass: {
+                        popup: `hidden`
+                    }
+                });
                 navigate("Login");
             }
         },
@@ -284,6 +307,17 @@ function Analytics() {
         },
         onError: (error) => {
             if (error.message.startsWith("Unauthorized")) {
+                Swal.fire({
+                    title: "Login session expired",
+                    text: "You'll be redirected to the Login page.",
+                    icon: "info",
+                    showClass: {
+                        popup: `block`
+                    },
+                    hideClass: {
+                        popup: `hidden`
+                    }
+                });
                 navigate("Login");
             }
         },
@@ -314,6 +348,17 @@ function Analytics() {
         },
         onError: (error) => {
             if (error.message.startsWith("Unauthorized")) {
+                Swal.fire({
+                    title: "Login session expired",
+                    text: "You'll be redirected to the Login page.",
+                    icon: "info",
+                    showClass: {
+                        popup: `block`
+                    },
+                    hideClass: {
+                        popup: `hidden`
+                    }
+                });
                 navigate("Login");
             }
         },

@@ -12,6 +12,7 @@ import useAuthStore from "../hooks/useAuthStore";
 import { useNavigate } from "react-router-dom";
 import { UseFormReset } from "react-hook-form";
 import UpdateFormInterface from "../interface/UpdateFrom";
+import Swal from "sweetalert2";
 
 interface DashboardInterface {
     setCurrentOption: React.Dispatch<React.SetStateAction<number>>;
@@ -73,6 +74,17 @@ function Dashboard({ setCurrentOption, setShowUpdateForm, editedTask, setEditedT
         },
         onError: (error, { setTaskError }) => {
             if (error.message.startsWith('Unauthorized')) {
+                Swal.fire({
+                    title: "Login session expired",
+                    text: "You'll be redirected to the Login page.",
+                    icon: "info",
+                    showClass: {
+                        popup: `block`
+                    },
+                    hideClass: {
+                        popup: `hidden`
+                    }
+                });
                 navigate('Login');
             } else {
                 setTaskError(error.message);
@@ -140,6 +152,17 @@ function Dashboard({ setCurrentOption, setShowUpdateForm, editedTask, setEditedT
         },
         onError: (error) => {
             if (error.message.startsWith('Unauthorized')) {
+                Swal.fire({
+                    title: "Login session expired",
+                    text: "You'll be redirected to the Login page.",
+                    icon: "info",
+                    showClass: {
+                        popup: `block`
+                    },
+                    hideClass: {
+                        popup: `hidden`
+                    }
+                });
                 navigate('Login');
             } else {
                 setLoadTaskError(error.message);

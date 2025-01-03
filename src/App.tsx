@@ -4,11 +4,12 @@ import { Outlet, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout";
 import FormLayout from "./components/FormLayout";
 
-import Home from "./components/Home";
-import Login from "./components/Login";
-import Register from "./components/Register";
-import Profile from "./components/Profile";
-import ProtectedRoute from "./components/ProtectedRoute";
+import Home from './components/Home';
+import Login from './components/Login';
+import Register from './components/Register';
+import Profile from './components/Profile';
+import ProtectedRoute from './components/ProtectedRoute';
+import ForgotPassword from './components/ForgotPassword';
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Analytics from "./components/analytics/Analytics";
@@ -29,22 +30,21 @@ export default function App() {
             }
           />
         </Route>
-        <Route
-          path="/login"
-          element={
-            <FormLayout>
-              <Login />
-            </FormLayout>
-          }
-        />
-        <Route
-          path="/register"
-          element={
-            <FormLayout>
-              <Register />
-            </FormLayout>
-          }
-        />
+        <Route path="/login" element={
+          <FormLayout>
+            <Login />
+          </FormLayout>
+        } />
+        <Route path="/register" element={
+          <FormLayout>
+            <Register />
+          </FormLayout>
+        } />
+        <Route path="/forgot" element={
+          <FormLayout>
+            <ForgotPassword />
+          </FormLayout>
+        } />
         <Route element={<ProtectedRoute />}>
           <Route
             path="/profile"

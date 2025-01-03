@@ -7,6 +7,7 @@ import { fetcherGet } from "../clients/apiClientAny";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../hooks/useAuthStore";
 import UpdateFormInterface from "../interface/UpdateFrom";
+import Swal from "sweetalert2";
 
 interface TasksInterface {
   setShowUpdateForm: React.Dispatch<React.SetStateAction<UpdateFormInterface>>;
@@ -101,6 +102,17 @@ const Tasks = ({
     },
     onError: (error) => {
       if (error.message.startsWith("Unauthorized")) {
+        Swal.fire({
+            title: "Login session expired",
+            text: "You'll be redirected to the Login page.",
+            icon: "info",
+            showClass: {
+                popup: `block`
+            },
+            hideClass: {
+                popup: `hidden`
+            }
+        });
         navigate("Login");
       }
     },
@@ -138,6 +150,17 @@ const Tasks = ({
     },
     onError: (error) => {
       if (error.message.startsWith("Unauthorized")) {
+        Swal.fire({
+            title: "Login session expired",
+            text: "You'll be redirected to the Login page.",
+            icon: "info",
+            showClass: {
+                popup: `block`
+            },
+            hideClass: {
+                popup: `hidden`
+            }
+        });
         navigate("Login");
       } else {
         setThisMonthError(error.message);
@@ -178,6 +201,17 @@ const Tasks = ({
     },
     onError: (error) => {
       if (error.message.startsWith("Unauthorized")) {
+        Swal.fire({
+            title: "Login session expired",
+            text: "You'll be redirected to the Login page.",
+            icon: "info",
+            showClass: {
+                popup: `block`
+            },
+            hideClass: {
+                popup: `hidden`
+            }
+        });
         navigate("Login");
       } else {
         setOtherMonthsError(error.message);

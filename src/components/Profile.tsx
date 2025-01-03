@@ -89,6 +89,17 @@ function Profile() {
     },
     onError: (error) => {
       if (error.message.startsWith('Unauthorized')) {
+        Swal.fire({
+            title: "Login session expired",
+            text: "You'll be redirected to the Login page.",
+            icon: "info",
+            showClass: {
+                popup: `block`
+            },
+            hideClass: {
+                popup: `hidden`
+            }
+        });
         navigate('/Login');
       }
     }
@@ -201,7 +212,7 @@ function Profile() {
   return (
     <div className='flex flex-col items-center w-100'>
       <div className='flex flex-col w-1/3'>
-        <h1 className='text-2xl text-violet-500 font-bold ms-2 mb-3'>My Profile</h1>
+        <h1 className='text-2xl text-violet-500 font-bold ms-2 mb-3 mt-2'>My Profile</h1>
         <div className='flex bg-white border rounded-md p-5 w-100'>
           <div>
             <input
