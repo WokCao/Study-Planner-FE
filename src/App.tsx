@@ -1,16 +1,17 @@
-import './App.css';
-import { Outlet, Route, Routes } from 'react-router-dom';
+import "./App.css";
+import { Outlet, Route, Routes } from "react-router-dom";
 
-import Layout from './components/Layout';
-import FormLayout from './components/FormLayout';
+import Layout from "./components/Layout";
+import FormLayout from "./components/FormLayout";
 
-import Home from './components/Home';
-import Login from './components/Login';
-import Register from './components/Register';
-import Profile from './components/Profile';
-import ProtectedRoute from './components/ProtectedRoute';
+import Home from "./components/Home";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import Profile from "./components/Profile";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Analytics from "./components/analytics/Analytics";
 
 const queryClient = new QueryClient();
 
@@ -19,29 +20,49 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <Routes>
         <Route element={<ProtectedRoute />}>
-            <Route path="/" element={
-            <Layout>
+          <Route
+            path="/"
+            element={
+              <Layout>
                 <Home />
-            </Layout>
-            } />
+              </Layout>
+            }
+          />
         </Route>
-        <Route path="/login" element={
-          <FormLayout>
-            <Login />
-          </FormLayout>
-        } />
-        <Route path="/register" element={
-          <FormLayout>
-            <Register />
-          </FormLayout>
-        } />
+        <Route
+          path="/login"
+          element={
+            <FormLayout>
+              <Login />
+            </FormLayout>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <FormLayout>
+              <Register />
+            </FormLayout>
+          }
+        />
         <Route element={<ProtectedRoute />}>
-            <Route path="/profile" element={
-            <Layout>
+          <Route
+            path="/profile"
+            element={
+              <Layout>
                 <Profile />
-            </Layout>
-            } />
-            </Route>
+              </Layout>
+            }
+          />
+        </Route>
+        <Route
+          path="/analytics"
+          element={
+            <FormLayout>
+              <Analytics />
+            </FormLayout>
+          }
+        />
       </Routes>
       <Outlet />
     </QueryClientProvider>
