@@ -11,6 +11,7 @@ import AddTask from "../interface/AddTask";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../hooks/useAuthStore";
 import { fetcherGet } from "../clients/apiClientAny";
+import Swal from "sweetalert2";
 
 interface AddTaskResponse {
     data: any;
@@ -87,7 +88,7 @@ const PopUpForm = ({ setShowUpdateForm, task, setEditedTask }: PopUpFormInterfac
             if (error.message.startsWith('Unauthorized')) {
                 navigate('Login');
             } else {
-                alert(error.message);
+                console.log(error.message);
             }
         }
     })
@@ -113,7 +114,17 @@ const PopUpForm = ({ setShowUpdateForm, task, setEditedTask }: PopUpFormInterfac
         if (id) {
             mutationDeleteTask.mutate({ id });
         } else {
-            alert("Task doesn't exist");
+            Swal.fire({
+                title: "Error",
+                text: "Task doesn't exist",
+                icon: "error",
+                showClass: {
+                    popup: `block`
+                },
+                hideClass: {
+                    popup: `hidden`
+                }
+            });
         }
     }
 

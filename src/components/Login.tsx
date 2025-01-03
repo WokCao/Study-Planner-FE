@@ -16,6 +16,7 @@ import ButtonPrimary from './elements/ButtonPrimary';
 
 import { useGoogleLogin } from '@react-oauth/google';
 import ButtonLink from './elements/ButtonLink';
+import Swal from 'sweetalert2';
 
 interface LoginResponse {
 	data: {
@@ -101,7 +102,17 @@ function Login() {
 		},
 		onError: () => {
 			setGoogleFetching(false);
-			alert('Please try again!');
+			Swal.fire({
+                title: "Error",
+                text: "Please try again!",
+                icon: "error",
+                showClass: {
+                    popup: `block`
+                },
+                hideClass: {
+                    popup: `hidden`
+                }
+            });
 		}
 	})
 

@@ -12,6 +12,7 @@ import FormInput from './elements/FormInput';
 import ButtonPrimary from './elements/ButtonPrimary';
 import ButtonLink from './elements/ButtonLink';
 import { useGoogleLogin } from '@react-oauth/google';
+import Swal from 'sweetalert2';
 
 interface RegisterResponse {
 	data: UserRegister;
@@ -39,7 +40,17 @@ function Register() {
 				setFetching(false);
 				if (!data) return;
 				if (data.statusCode === 201) {
-					alert("Account created. You'll now be redirected to the Login page.");
+					Swal.fire({
+                        title: "Account created",
+                        text: "You'll now be redirected to the Login page.",
+                        icon: "success",
+                        showClass: {
+                            popup: `block`
+                        },
+                        hideClass: {
+                            popup: `hidden`
+                        }
+                    });
 					navigate('/login');
 				}
 				else {
@@ -72,7 +83,17 @@ function Register() {
 			}).then((data) => {
 				if (!data) return;
 				if (data.statusCode === 201) {
-					alert("Account created. You'll now be redirected to the Login page.");
+                    Swal.fire({
+                        title: "Account created",
+                        text: "You'll now be redirected to the Login page.",
+                        icon: "success",
+                        showClass: {
+                            popup: `block`
+                        },
+                        hideClass: {
+                            popup: `hidden`
+                        }
+                    });
 					navigate('/login');
 				}
 			}).catch((error) => {
@@ -84,7 +105,17 @@ function Register() {
 		},
 		onError: (error: any) => {
 			console.error(error);
-			alert('Please try again!');
+			Swal.fire({
+                title: "Error",
+                text: "Please try again!",
+                icon: "error",
+                showClass: {
+                    popup: `block`
+                },
+                hideClass: {
+                    popup: `hidden`
+                }
+            });
 		}
 	})
 
