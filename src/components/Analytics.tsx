@@ -9,6 +9,7 @@ import LineChart from "./elements/LineChart";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BarChart from "./elements/BarChart";
+import BarChartExt from "./elements/BarChartExt";
 
 interface IStatusChart {
     id: string;
@@ -24,6 +25,12 @@ interface ICreationChart {
         x: string;
         y: number;
     }[];
+}
+
+interface ITotalTime {
+    month: number;
+    priority: string;
+    totalcompletiontime: string;
 }
 
 const months = ["January", "February", "March", "April", "May", "June",
@@ -44,6 +51,7 @@ function Analytics() {
     const [priorityChartData, setPriorityChartData] = useState<IStatusChart[]>([]);
     const [creationChartData, setCreationChartData] = useState<ICreationChart[]>([]);
     const [deadlineChartData, setDeadlineChartData] = useState<{ month: string, deadline: number }[]>([]);
+    const [totalTimeChartData, setTotalTimeChartData] = useState<{ High: number, Low: number, Medium: number, month: string }[]>([]);
     const [selectedYear, setSelectedYear] = useState(-1);
     const [yearsToCompare, setYearsToCompare] = useState<number[]>([]);
     const [selectedYearsToCompare, setSelectedYearsToCompare] = useState<number[]>([]);
@@ -175,6 +183,33 @@ function Analytics() {
     }
 
     /**
+     * Format data by total time with priority
+     */
+    const formatTotalTimeChartData = (fullData: ITotalTime[]) =>{
+        const updatedData = fullData.reduce((acc: any[], { month, priority, totalcompletiontime }: ITotalTime) => {
+            const monthName = months[month - 1];
+            const monthIndex = acc.findIndex((item) => item.month === monthName);
+            const timeInHours = (Number(totalcompletiontime) / 3600).toPrecision(2);
+
+            if (monthIndex === -1) {
+                acc.push({ month: monthName, [priority]: timeInHours });
+            } else {
+                acc[monthIndex][priority] = (acc[monthIndex][priority] || 0) + timeInHours;
+            }
+            return acc;
+        }, []);
+
+        updatedData.forEach((data) => {
+            ["High", "Medium", "Low"].forEach((priority) => {
+                if (data[priority] === undefined) {
+                    data[priority] = 0;
+                }
+            });
+        });
+        setTotalTimeChartData(updatedData);
+    }
+
+    /**
      * Call API to get all tasks and classify by status and priority level
      */
     const mutationGetTasks = useMutation({
@@ -190,6 +225,29 @@ function Analytics() {
                 const fullData = data.data.response.data;
                 separateByStatus(fullData);
                 separateByPriority(fullData);
+            } else {
+
+            }
+        },
+        onError: (error) => {
+            if (error.message.startsWith("Unauthorized")) {
+                navigate("Login");
+            }
+        },
+    });
+
+    const mutationGetTotalTime = useMutation({
+        mutationFn: async (year: number) =>
+            await fetcherGet(`/focus-session/all/${year}`, {
+                method: "GET",
+                headers: { Authorization: "Bearer " + token },
+            }),
+        onSuccess: (data) => {
+            if (!data) return;
+
+            if (data.statusCode === 200) {
+                const fullData: ITotalTime[] = data.data.response;
+                formatTotalTimeChartData(fullData);
             } else {
 
             }
@@ -318,6 +376,7 @@ function Analytics() {
         if (selectedYear > 0) {
             mutationGetTaskCreationByYear.mutate({ year: selectedYear });
             mutationGetTaskDeadlineByYear.mutate({ year: selectedYear });
+            mutationGetTotalTime.mutate(selectedYear);
             setSelectedYearsToCompare([selectedYear]);
             validYears();
         }
@@ -365,6 +424,15 @@ function Analytics() {
                 )}
             </div>
 
+            <div className="h-4/5 w-full mb-10 p-8 rounded-lg shadow-xl bg-white">
+                <h1 className="text-center font-bold text-xl">Total Spent Time</h1>
+                <div className="h-full w-full overflow-x-hidden">
+                    {totalTimeChartData.length > 0 && (
+                        <BarChartExt data={totalTimeChartData} />
+                    )}
+                </div>
+            </div>
+
             <div className="h-4/5 w-full flex flex-shrink-0 mb-10">
                 {creationChartData.length > 0 && (
                     <div className="h-full w-3/4 p-8 rounded-lg shadow-xl bg-white">
@@ -388,7 +456,7 @@ function Analytics() {
 
                                 {year === selectedYear || !selectedYearsToCompare.includes(year) ? null : (
                                     <div
-                                        className="ms-auto hover:cursor-pointer text-slate-500 flex items-center hover:text-red-600"
+                                        className="flex-grow hover:cursor-pointer text-slate-500 flex justify-center items-center hover:text-red-600"
                                         onClick={() => handleRemoveYearToCompare(year)}>
                                         <FontAwesomeIcon icon={faTrash} />
                                         <span className="ms-2 mobile:hidden laptop:block">Remove</span>
@@ -402,7 +470,7 @@ function Analytics() {
 
             <div className="h-4/5 w-full mb-10 p-8 rounded-lg shadow-xl bg-white">
                 <h1 className="text-center font-bold text-xl">Task's deadline</h1>
-                <div className="h-full w-full">
+                <div className="h-full w-full overflow-x-hidden">
                     {deadlineChartData.length > 0 && (
                         <BarChart data={deadlineChartData} />
                     )}

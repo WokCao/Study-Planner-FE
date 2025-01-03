@@ -1,23 +1,24 @@
 import { ResponsiveBar } from '@nivo/bar';
 
-interface IBarChart {
+interface IBarChartExt {
     data: {
-        month: string,
-        deadline: number
+        High: number;
+        Low: number;
+        Medium: number;
+        month: string;
     }[]
 }
 
-function BarChart({ data }: IBarChart) {
-    const maxDeadlines = Math.max(...data.map((d) => d.deadline));
-
+function BarChartExt({ data }: IBarChartExt) {
     return (
         <ResponsiveBar
             data={data}
-            keys={['deadline']}
+            keys={["High", "Medium", "Low"]}
             indexBy="month"
-            margin={{ top: 50, right: 50, bottom: 50, left: 60 }}
+            margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
             padding={0.3}
-            colors={{ scheme: 'nivo' }}
+            layout="vertical"
+            colors={{ scheme: 'pastel2' }}
             axisTop={null}
             axisRight={null}
             axisBottom={{
@@ -32,10 +33,9 @@ function BarChart({ data }: IBarChart) {
                 tickSize: 5,
                 tickPadding: 5,
                 tickRotation: 0,
-                legend: 'Deadline(s)',
+                legend: 'Hour',
                 legendPosition: 'middle',
                 legendOffset: -40,
-                tickValues: Array.from({ length: maxDeadlines + 1 }, (_, i) => i).filter((value) => value % 5 === 0)
             }}
             labelSkipWidth={12}
             labelSkipHeight={12}
@@ -61,4 +61,4 @@ function BarChart({ data }: IBarChart) {
     )
 }
 
-export default BarChart;
+export default BarChartExt;
