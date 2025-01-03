@@ -60,6 +60,17 @@ const PopUpForm = ({ setShowUpdateForm, task, setEditedTask }: PopUpFormInterfac
         },
         onError: (error, { setTaskError }) => {
             if (error.message.startsWith('Unauthorized')) {
+                Swal.fire({
+                    title: "Login session expired",
+                    text: "You'll be redirected to the Login page.",
+                    icon: "info",
+                    showClass: {
+                        popup: `block`
+                    },
+                    hideClass: {
+                        popup: `hidden`
+                    }
+                });
                 navigate('Login');
             } else {
                 setTaskError(error.message);
@@ -86,6 +97,17 @@ const PopUpForm = ({ setShowUpdateForm, task, setEditedTask }: PopUpFormInterfac
         },
         onError: (error) => {
             if (error.message.startsWith('Unauthorized')) {
+                Swal.fire({
+                    title: "Login session expired",
+                    text: "You'll be redirected to the Login page.",
+                    icon: "info",
+                    showClass: {
+                        popup: `block`
+                    },
+                    hideClass: {
+                        popup: `hidden`
+                    }
+                });
                 navigate('Login');
             } else {
                 console.log(error.message);
