@@ -12,7 +12,6 @@ import UserLogin from '../interface/UserLogin';
 import FormTitle from './elements/FormTitle';
 import FormInput from './elements/FormInput';
 import ButtonPrimary from './elements/ButtonPrimary';
-// import ButtonLink from './elements/ButtonLink';
 
 import { useGoogleLogin } from '@react-oauth/google';
 import ButtonLink from './elements/ButtonLink';
@@ -135,6 +134,9 @@ function Login() {
 						errors={errors}
 						error={errorPassword}
 					/>
+                    <div className="mt-3 mb-1 w-full text-right text-xs">
+						<Link className="underline" to="/forgot">Forgot password?</Link>
+					</div>
 					<div className="mt-5 w-2/3 flex flex-col justify-center items-center gap-x-2">
 						{fetching
 							? <ClipLoader size={30} color={"black"} loading={true} />

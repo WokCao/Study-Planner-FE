@@ -9,6 +9,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Profile from './components/Profile';
 import ProtectedRoute from './components/ProtectedRoute';
+import ForgotPassword from './components/ForgotPassword';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -33,6 +34,11 @@ export default function App() {
         <Route path="/register" element={
           <FormLayout>
             <Register />
+          </FormLayout>
+        } />
+        <Route path="/forgot" element={
+          <FormLayout>
+            <ForgotPassword />
           </FormLayout>
         } />
         <Route element={<ProtectedRoute />}>

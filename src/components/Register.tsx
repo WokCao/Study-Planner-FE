@@ -42,7 +42,7 @@ function Register() {
 				if (data.statusCode === 201) {
 					Swal.fire({
                         title: "Account created",
-                        text: "You'll now be redirected to the Login page.",
+                        text: "Please check your email inbox to activate your account before logging in.",
                         icon: "success",
                         showClass: {
                             popup: `block`
@@ -85,7 +85,7 @@ function Register() {
 				if (data.statusCode === 201) {
                     Swal.fire({
                         title: "Account created",
-                        text: "You'll now be redirected to the Login page.",
+                        text: "Please check your email inbox to activate your account before logging in.",
                         icon: "success",
                         showClass: {
                             popup: `block`
