@@ -212,8 +212,8 @@ function Dashboard({ setCurrentOption, setShowUpdateForm, editedTask, setEditedT
     }, [editedTask]);
 
     return (
-        <div className="relative p-4 flex items-start h-full overflow-y-auto overflow-x-hidden gap-4 scroll-smooth">
-            <div className="w-9/12 space-y-4 mb-32">
+        <div className="relative p-4 flex items-start h-full overflow-y-auto overflow-x-hidden gap-4 scroll-smooth mobile:flex-col mobile:!p-2 laptop:flex-row">
+            <div className="mobile:w-full laptop:w-9/12 space-y-4 mb-32 mobile:!mb-5">
                 <div className="p-4 bg-white rounded-3xl">
                     <section className="bg-gradient-to-b from-purple-500 to-violet-300 p-4 rounded-3xl text-white">
                         <h1 className="font-bold text-4xl mb-3">Good {currentTime}!</h1>
@@ -247,7 +247,9 @@ function Dashboard({ setCurrentOption, setShowUpdateForm, editedTask, setEditedT
                     </div>}
             </div>
 
-            <FocusTimer widget={true} />
+            <div className="h-full w-full">
+                <FocusTimer widget={true} />
+            </div>
         </div>
     )
 }

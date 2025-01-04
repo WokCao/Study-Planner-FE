@@ -15,13 +15,13 @@ const SingleTask = ({ task, setShowUpdateForm }: { task: Task, setShowUpdateForm
     }
 
     return (
-        <div className="px-16 py-4 bg-white rounded-3xl flex items-center hover:cursor-pointer hover:shadow-xl" onClick={() => setShowUpdateForm({ isShown: true, task: task })}>
-            <section className="flex flex-col w-10/12">
+        <div className="mobile:px-2 tablet:px-4 laptop:px-10 py-4 bg-white rounded-3xl flex items-center hover:cursor-pointer hover:shadow-xl" onClick={() => setShowUpdateForm({ isShown: true, task: task })}>
+            <section className="flex flex-col mobile:w-5/12 tablet:w-10/12">
                 <p className="text-xl mb-2 font-semibold">{task.name}</p>
-                <div className="flex">
-                    <p className="w-1/4 truncate me-3">Priority: {task.priorityLevel || 'None'}</p>
-                    <p className="w-1/4 truncate me-3">Status: {task.status || 'None'}</p>
-                    <p className="truncate">Estimated time: {task.estimatedTime} {task.estimatedTimeUnit}</p>
+                <div className="flex mobile:flex-col laptopSm:flex-row">
+                    <p className="mobile:w-full tablet:w-1/3 truncate tablet:me-3">Priority: {task.priorityLevel || 'None'}</p>
+                    <p className="mobile:w-full tablet:w-1/3 truncate tablet:me-3">Status: {task.status || 'None'}</p>
+                    <p className="mobile:w-full truncate">Estimated time: {task.estimatedTime} {task.estimatedTimeUnit}</p>
                 </div>
             </section>
             <section className="ms-auto flex items-center">

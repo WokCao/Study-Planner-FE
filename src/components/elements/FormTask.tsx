@@ -80,7 +80,7 @@ const FormTask: React.FC<FormTaskInterface> = ({ handleAddTask, action, task }) 
     return (
         <div>
             <FormTitle title={action?.startsWith('Update') ? 'Update task' : 'Add a new task'} description={action?.startsWith('Update') ? 'Change values of the desired fields' : 'Fill in the required fields to add a task'} />
-            <div className="p-6 pt-0 mt-7">
+            <div className="tablet:p-6 mobile:p-1 pt-0 mt-7">
                 <form className="flex flex-col"
                     onSubmit={handleSubmit(onSubmit)}
                     onKeyDown={(e) => {

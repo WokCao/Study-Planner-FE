@@ -42,7 +42,7 @@ const FormInput: React.FC<FormInputProps> = ({ label, type, register, errors, er
 
 	return (
 		<>
-			<div className={`group relative border-b w-80 mt-4 px-3 pb-1.5 pt-2.5 ${(errors[field] || error) ? "border-red-600" : "border-violet-900"}`}>
+			<div className={`group relative border-b mobile:w-full tablet:w-80 mt-4 px-3 pb-1.5 pt-2.5 ${(errors[field] || error) ? "border-red-600" : "border-violet-900"}`}>
 				<div className="flex justify-between">
 					<label className="text-xs font-medium text-muted-foreground capitalize">{label}</label>
 				</div>

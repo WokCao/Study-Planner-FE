@@ -293,7 +293,7 @@ function FocusTimer({ widget }: FocusTimerInterface) {
         <>
             {widget
                 ?
-                <div className="relative flex items-start w-3/12 h-full overflow-y-auto overflow-x-hidden gap-4 scroll-smooth">
+                <div className="relative flex items-start mobile:!w-full w-3/12 h-full overflow-y-auto overflow-x-hidden gap-4 scroll-smooth">
                     <div className="p-4 bg-white rounded-3xl w-full">
                         <section className="bg-gradient-to-b from-purple-500 to-violet-300 p-4 rounded-3xl text-white">
                             <h3 className="font-bold text-2xl mb-1">Focus Timer</h3>
