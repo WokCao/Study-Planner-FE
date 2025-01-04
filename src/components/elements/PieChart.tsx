@@ -53,12 +53,12 @@ function PieChart({ data }: IPieChart) {
                     translateX: 0,
                     translateY: 56,
                     itemsSpacing: 0,
-                    itemWidth: 100,
+                    itemWidth: 80,
                     itemHeight: 18,
                     itemTextColor: '#999',
                     itemDirection: 'left-to-right',
                     itemOpacity: 1,
-                    symbolSize: 18,
+                    symbolSize: 10,
                     symbolShape: 'circle',
                     effects: [
                         {

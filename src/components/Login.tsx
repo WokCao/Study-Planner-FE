@@ -74,10 +74,15 @@ function Login() {
 		setErrorPassword('');
 		mutation.mutate(formData);
 	};
+	
+	const handleEnterEvent = (event: React.KeyboardEvent<HTMLFormElement>) => {
+		if (event.key === 'Enter') {
+			handleSubmit(onSubmit);
+		}
+	}
 
 	const handleGoogleLogin = useGoogleLogin({
 		onSuccess: (response: any) => {
-			console.log(response)
 			setGoogleFetching(true);
 			const token = response.access_token;
 
@@ -119,7 +124,7 @@ function Login() {
 		<>
 			<FormTitle title='Login' description='Welcome back, enter your credentials to continue.' />
 			<div className="p-6 pt-0">
-				<form className="flex flex-col justify-center items-center" onSubmit={handleSubmit(onSubmit)}>
+				<form className="flex flex-col justify-center items-center" onKeyDown={handleEnterEvent} onSubmit={handleSubmit(onSubmit)}>
 					<FormInput
 						label='email'
 						type='text'

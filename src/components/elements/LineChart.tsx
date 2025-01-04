@@ -1,4 +1,5 @@
 import { ResponsiveLine } from '@nivo/line'
+import { useState, useEffect } from 'react';
 
 interface ICreationChart {
     id: string;
@@ -13,10 +14,43 @@ interface ILineChart {
     data: ICreationChart[]
 }
 
+const months = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
+
 function LineChart({ data }: ILineChart) {
+    const [updatedData, setUpdatedData] = useState<ILineChart['data']>(data);
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 1200) {
+                const convertToNumber = data.map((singleData) => {
+                    const convertInner = singleData.data.map((innerSingleData) => {
+                        const index = months.indexOf(innerSingleData.x);
+                        return {
+                            x: `${index + 1}`,
+                            y: innerSingleData.y
+                        }
+                    })
+                    return {
+                        ...singleData,
+                        data: convertInner
+                    }
+                })
+
+                setUpdatedData(convertToNumber);
+            } else {
+                setUpdatedData(data);
+            }
+        };
+        handleResize();
+
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [data]);
     return (
         <ResponsiveLine
-            data={data}
+            data={updatedData}
             margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
             xScale={{ type: 'point' }}
             yScale={{

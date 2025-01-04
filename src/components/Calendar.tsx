@@ -230,6 +230,52 @@ const CalendarComponent: React.FC<ICalendar> = ({ setShowUpdateForm }) => {
         return { timeValue, timeUnit };
     };
 
+    /**
+     * Call API to create a focus session of the selected task
+     */
+    const mutationCreateFocusSession = useMutation({
+        mutationFn: async (taskId: number) =>
+            await fetcherGet('/focus-session', {
+                method: 'POST',
+                body: JSON.stringify({
+                    taskId,
+                    status: 'Idle'
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token,
+                },
+            }),
+        onSuccess(data: any) {
+            if (data.statusCode === 201) {
+                Swal.fire({
+                    title: 'Success',
+                    text: 'Task has been assigned to Focus Timer.',
+                    icon: 'success',
+                    showClass: {
+                        popup: `block`
+                    },
+                    hideClass: {
+                        popup: `hidden`
+                    }
+                });
+            }
+        },
+        onError(error: any) {
+            Swal.fire({
+                title: 'Failed',
+                text: error.message,
+                icon: 'error',
+                showClass: {
+                    popup: `block`
+                },
+                hideClass: {
+                    popup: `hidden`
+                }
+            });
+        }
+    })
+
     // View info of an event
     const handleClickEvent = ({ event }: { event: CalendarEvent }) => {
         const taskIndex = tasksData.map(e => e.taskId).indexOf(event.id);
@@ -289,6 +335,9 @@ const CalendarComponent: React.FC<ICalendar> = ({ setShowUpdateForm }) => {
 						<label class="swal2-input-label" for="swal-input2">Set break duration (minutes)</label>
 						<input id="swal-input2" class="swal2-input" type="number" placeholder="5">
 					`,
+                    customClass: {
+                        htmlContainer: '!flex !flex-col'
+                    },
                     focusConfirm: false,
                     showCancelButton: true,
                     showClass: {
@@ -338,17 +387,7 @@ const CalendarComponent: React.FC<ICalendar> = ({ setShowUpdateForm }) => {
                     }
 
                     setDuration({ time: duration, break: breakDuration });
-                    Swal.fire({
-                        title: 'Success',
-                        text: 'Task has been assigned to Focus Timer.',
-                        icon: 'success',
-                        showClass: {
-                            popup: `block`
-                        },
-                        hideClass: {
-                            popup: `hidden`
-                        }
-                    });
+                    mutationCreateFocusSession.mutate(task.taskId);
                 }
             }
         });
@@ -627,6 +666,12 @@ const CalendarComponent: React.FC<ICalendar> = ({ setShowUpdateForm }) => {
             return;
         }
 
+        Swal.fire({
+            title: "Loading",
+            text: "Analyzing your schedule. Please wait.",
+            icon: "info",
+        });
+
         // Call API to get tasks based on selected date
         if (startDateOfInterval && endDateOfInterval) {
             mutationGetTaskWithInterval.mutate({
@@ -698,7 +743,7 @@ const CalendarComponent: React.FC<ICalendar> = ({ setShowUpdateForm }) => {
                         .replace("Warnings:", "")
                         .trim()
                         .split("\n")
-                        .map((item) => item.trim())
+                        .map((item) => item.trim().replace("- ", ""))
                 );
             } else if (section.startsWith("Suggestions:")) {
                 suggestions.push(
@@ -706,7 +751,7 @@ const CalendarComponent: React.FC<ICalendar> = ({ setShowUpdateForm }) => {
                         .replace("Suggestions:", "")
                         .trim()
                         .split("\n")
-                        .map((item) => item.trim())
+                        .map((item) => item.trim().replace("- ", ""))
                 );
             }
         });
@@ -747,67 +792,69 @@ const CalendarComponent: React.FC<ICalendar> = ({ setShowUpdateForm }) => {
         <div className="h-full flex flex-col overflow-y-auto">
             <div className="flex justify-between items-center p-4 bg-gray-100 border-b">
                 <div className="flex items-center space-x-4">
-                    <span className="text-xl font-bold">
+                    <span className="laptop:text-xl font-bold mobile:text-lg">
                         {formatCurrentDate(currentDate)}
                     </span>
                 </div>
-                <div className="flex space-x-2">
-                    <button
-                        className="px-4 py-2 bg-purple-400 text-white rounded hover:bg-purple-600 transition"
-                        onClick={() => {
-                            calendarRef.current?.getInstance()?.today();
-                            updateCurrentDate('today');
-                        }}
-                    >
-                        Today
-                    </button>
-                    <button
-                        className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition"
-                        onClick={() => {
-                            calendarRef.current?.getInstance()?.prev();
-                            updateCurrentDate('prev');
-                        }}
-                    >
-                        Previous
-                    </button>
-                    <button
-                        className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition"
-                        onClick={() => {
-                            calendarRef.current?.getInstance()?.next();
-                            updateCurrentDate('next');
-                        }}
-                    >
-                        Next
-                    </button>
-                </div>
-                <div className="flex space-x-2">
-                    <button
-                        className={`px-4 py-2 ${calendarRef.current?.getInstance()?.getViewName() === 'day' ? 'bg-purple-600' : 'bg-purple-300'} text-white rounded hover:bg-purple-600 transition`}
-                        onClick={() => {
-                            calendarRef.current?.getInstance()?.changeView("day");
-                            updateCurrentDate('day');
-                        }}
-                    >
-                        Day
-                    </button>
-                    <button
-                        className={`px-4 py-2 ${calendarRef.current?.getInstance()?.getViewName() === 'week' ? 'bg-purple-600' : 'bg-purple-300'} text-white rounded hover:bg-purple-600 transition`}
-                        onClick={() => {
-                            calendarRef.current?.getInstance()?.changeView("week");
-                            updateCurrentDate('week');
-                        }}
-                    >
-                        Week
-                    </button>
-                    <button
-                        className={`px-4 py-2 ${calendarRef.current?.getInstance()?.getViewName() === 'month' ? 'bg-purple-600' : 'bg-purple-300'} text-white rounded hover:bg-purple-600 transition`}
-                        onClick={() => {
-                            calendarRef.current?.getInstance()?.changeView("month");
-                            updateCurrentDate('month');
-                        }}
-                    >
-                        Month
-                    </button>
+                <div className="flex laptop:w-2/3 laptop:flex-row laptop:items-center laptop:justify-between laptop:space-y-0 mobile:flex-col mobile:items-end mobile:space-y-2">
+                    <div className="flex space-x-2">
+                        <button
+                            className="laptop:px-4 laptop:py-2 laptop:text-lg laptop:h-auto mobile:px-1 mobile:py-0 mobile:text-sm mobile:h-5 mobile:ms-2 bg-purple-400 text-white rounded hover:bg-purple-600 transition"
+                            onClick={() => {
+                                calendarRef.current?.getInstance()?.today();
+                                updateCurrentDate('today');
+                            }}
+                        >
+                            Today
+                        </button>
+                        <button
+                            className="laptop:px-4 laptop:py-2 laptop:text-lg laptop:h-auto mobile:px-1 mobile:py-0 mobile:text-sm mobile:h-5 mobile:ms-2 bg-gray-300 rounded hover:bg-gray-400 transition"
+                            onClick={() => {
+                                calendarRef.current?.getInstance()?.prev();
+                                updateCurrentDate('prev');
+                            }}
+                        >
+                            Previous
+                        </button>
+                        <button
+                            className="laptop:px-4 laptop:py-2 laptop:text-lg laptop:h-auto mobile:px-1 mobile:py-0 mobile:text-sm mobile:h-5 mobile:ms-2 bg-gray-300 rounded hover:bg-gray-400 transition"
+                            onClick={() => {
+                                calendarRef.current?.getInstance()?.next();
+                                updateCurrentDate('next');
+                            }}
+                        >
+                            Next
+                        </button>
+                    </div>
+                    <div className="flex space-x-2">
+                        <button
+                            className={`laptop:px-4 laptop:py-2 laptop:text-lg laptop:h-auto mobile:px-1 mobile:py-0 mobile:text-sm mobile:h-5 mobile:ms-2 ${calendarRef.current?.getInstance()?.getViewName() === 'day' ? 'bg-purple-600' : 'bg-purple-300'} text-white rounded hover:bg-purple-600 transition`}
+                            onClick={() => {
+                                calendarRef.current?.getInstance()?.changeView("day");
+                                updateCurrentDate('day');
+                            }}
+                        >
+                            Day
+                        </button>
+                        <button
+                            className={`laptop:px-4 laptop:py-2 laptop:text-lg laptop:h-auto mobile:px-1 mobile:py-0 mobile:text-sm mobile:h-5 mobile:ms-2 ${calendarRef.current?.getInstance()?.getViewName() === 'week' ? 'bg-purple-600' : 'bg-purple-300'} text-white rounded hover:bg-purple-600 transition`}
+                            onClick={() => {
+                                calendarRef.current?.getInstance()?.changeView("week");
+                                updateCurrentDate('week');
+                            }}
+                        >
+                            Week
+                        </button>
+                        <button
+                            className={`laptop:px-4 laptop:py-2 laptop:text-lg laptop:h-auto mobile:px-1 mobile:py-0 mobile:text-sm mobile:h-5 mobile:ms-2 ${calendarRef.current?.getInstance()?.getViewName() === 'month' ? 'bg-purple-600' : 'bg-purple-300'} text-white rounded hover:bg-purple-600 transition`}
+                            onClick={() => {
+                                calendarRef.current?.getInstance()?.changeView("month");
+                                updateCurrentDate('month');
+                            }}
+                        >
+                            Month
+                        </button>
+                    </div>
                 </div>
             </div>
             <div className="flex-grow">
@@ -832,7 +879,7 @@ const CalendarComponent: React.FC<ICalendar> = ({ setShowUpdateForm }) => {
                 {feedback.suggestions.length > 0 && feedback.warnings.length > 0 && <AIAnalysis feedback={feedback} showAnalysis={showAnalysis} setFeedback={setFeedback} setShowAnalysis={setShowAnalysis} />}
 
                 {selectedDate &&
-                    <span className={`ms-auto ${isValidDate ? 'text-green-500' : 'text-red-500'}`}>
+                    <span className={`ms-auto text-center laptop:text-lg mobile:text-sm ${isValidDate ? 'text-green-500' : 'text-red-500'}`}>
                         Interval: {selectedDate}
                     </span>}
 
