@@ -230,6 +230,9 @@ const CalendarComponent: React.FC<ICalendar> = ({ setShowUpdateForm }) => {
         return { timeValue, timeUnit };
     };
 
+    /**
+     * Call API to create a focus session of the selected task
+     */
     const mutationCreateFocusSession = useMutation({
         mutationFn: async (taskId: number) =>
             await fetcherGet('/focus-session', {
