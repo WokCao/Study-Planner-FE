@@ -12,7 +12,7 @@ const months = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"];
 
 function BarChart({ data }: IBarChart) {
-    const [updatedData, setUpdatedData] = useState<IBarChart['data']>([]);
+    const [updatedData, setUpdatedData] = useState<IBarChart['data']>(data);
     const maxDeadlines = Math.max(...data.map((d) => d.deadline));
 
     useEffect(() => {
@@ -37,7 +37,7 @@ function BarChart({ data }: IBarChart) {
         return () => {
             window.removeEventListener('resize', handleResize);
         };
-    }, []);
+    }, [data]);
 
     return (
         <ResponsiveBar
