@@ -90,7 +90,7 @@ function TimeAndButton({ hasCircle, startBreak, endBreak }: TimeAndButtonInterfa
             await fetcherGet(`/focus-session/${allData.taskId}`, {
                 method: 'PUT',
                 body: JSON.stringify({
-                    completionTime: allData.completionTime,
+                    completionTime: allData.completionTime * 60,
                     status: allData.status
                 }),
                 headers: {
