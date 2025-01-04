@@ -133,13 +133,16 @@ function Profile() {
     const { value: formValues } = await Swal.fire({
       title: "Change Password",
       html: `
-				<label class="swal2-input-label" for="swal-input1">Old Password</label>
-				<input id="swal-input1" class="swal2-input" type="password">
-				<label class="swal2-input-label" for="swal-input2">New Password</label>
-				<input id="swal-input2" class="swal2-input" type="password">
-				<label class="swal2-input-label" for="swal-input3">Confirm New Password</label>
-				<input id="swal-input3" class="swal2-input" type="password">
-			`,
+            <label class="swal2-input-label" for="swal-input1">Old Password</label>
+            <input id="swal-input1" class="swal2-input" type="password">
+            <label class="swal2-input-label" for="swal-input2">New Password</label>
+            <input id="swal-input2" class="swal2-input" type="password">
+            <label class="swal2-input-label" for="swal-input3">Confirm New Password</label>
+            <input id="swal-input3" class="swal2-input" type="password">
+        `,
+        customClass: {
+            htmlContainer: '!flex !flex-col'
+        },
       focusConfirm: false,
       showCancelButton: true,
       showClass: {

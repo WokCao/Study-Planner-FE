@@ -335,6 +335,9 @@ const CalendarComponent: React.FC<ICalendar> = ({ setShowUpdateForm }) => {
 						<label class="swal2-input-label" for="swal-input2">Set break duration (minutes)</label>
 						<input id="swal-input2" class="swal2-input" type="number" placeholder="5">
 					`,
+                    customClass: {
+                        htmlContainer: '!flex !flex-col'
+                    },
                     focusConfirm: false,
                     showCancelButton: true,
                     showClass: {
