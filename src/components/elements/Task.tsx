@@ -19,8 +19,8 @@ const SingleTask = ({ task, setShowUpdateForm }: { task: Task, setShowUpdateForm
             <section className="flex flex-col mobile:w-5/12 tablet:w-10/12">
                 <p className="text-xl mb-2 font-semibold">{task.name}</p>
                 <div className="flex mobile:flex-col laptopSm:flex-row">
-                    <p className="mobile:w-full tablet:w-1/3 truncate tablet:me-3">Priority: {task.priorityLevel || 'None'}</p>
-                    <p className="mobile:w-full tablet:w-1/3 truncate tablet:me-3">Status: {task.status || 'None'}</p>
+                    <p className="mobile:w-full tablet:w-2/3 truncate tablet:me-3">Priority: {task.priorityLevel || 'None'}</p>
+                    <p className="mobile:w-full tablet:w-2/3 truncate tablet:me-3">Status: {task.status || 'None'}</p>
                     <p className="mobile:w-full truncate">Estimated time: {task.estimatedTime} {task.estimatedTimeUnit}</p>
                 </div>
             </section>
