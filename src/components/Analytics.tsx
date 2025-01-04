@@ -284,22 +284,25 @@ function Analytics() {
     /**
      * Call API to get number of task created base on month of a year
      */
-    const mutationGetTaskCreationByYear = useMutation<any, Error, { year: number }>({
+    const mutationGetTaskCreationByYear = useMutation<any, Error, { year: number, signal: number }>({
         mutationFn: async (data) =>
             await fetcherGet(`/tasks/task-creations-by-year/${data.year}`, {
                 method: "GET",
                 headers: { Authorization: "Bearer " + token },
             }),
-        onSuccess: (data, { year }) => {
+        onSuccess: (data, { year, signal }) => {
             if (!data) return;
-
             if (data.statusCode === 200) {
                 const fullData = data.data.response;
                 const formatedData = formatCreationChartData(fullData, year);
-                setCreationChartData((prev) => {
-                    const filtered = prev.filter((prevFormatedData) => prevFormatedData.id !== formatedData.id && selectedYearsToCompare.includes(Number(prevFormatedData.id)));
-                    return [...filtered, formatedData]
-                });
+                if (signal === 0) {
+                    setCreationChartData([formatedData]);
+                } else {
+                    setCreationChartData((prev) => {
+                        const filtered = prev.filter((prevFormatedData) => prevFormatedData.id !== formatedData.id && selectedYearsToCompare.includes(Number(prevFormatedData.id)));
+                        return [...filtered, formatedData]
+                    });
+                }
             } else {
 
             }
@@ -400,7 +403,7 @@ function Analytics() {
     const handleAddYearToCompare = () => {
         const distinctNumbers = selectedYearsToCompare.filter((value, index, self) => self.indexOf(value) === index);
         for (let i = 0; i < distinctNumbers.length; i++) {
-            mutationGetTaskCreationByYear.mutate({ year: selectedYearsToCompare[i] });
+            mutationGetTaskCreationByYear.mutate({ year: selectedYearsToCompare[i], signal: 1 });
         }
     }
 
@@ -418,7 +421,7 @@ function Analytics() {
 
     useEffect(() => {
         if (selectedYear > 0) {
-            mutationGetTaskCreationByYear.mutate({ year: selectedYear });
+            mutationGetTaskCreationByYear.mutate({ year: selectedYear, signal: 0 });
             mutationGetTaskDeadlineByYear.mutate({ year: selectedYear });
             mutationGetTotalTime.mutate(selectedYear);
             setSelectedYearsToCompare([selectedYear]);

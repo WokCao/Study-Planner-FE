@@ -18,7 +18,7 @@ const months = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"];
 
 function LineChart({ data }: ILineChart) {
-    const [updatedData, setUpdatedData] = useState<ILineChart['data']>([]);
+    const [updatedData, setUpdatedData] = useState<ILineChart['data']>(data);
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth < 1200) {
@@ -42,12 +42,12 @@ function LineChart({ data }: ILineChart) {
             }
         };
         handleResize();
-        
+
         window.addEventListener('resize', handleResize);
         return () => {
             window.removeEventListener('resize', handleResize);
         };
-    }, []);
+    }, [data]);
     return (
         <ResponsiveLine
             data={updatedData}
