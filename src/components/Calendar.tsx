@@ -666,6 +666,12 @@ const CalendarComponent: React.FC<ICalendar> = ({ setShowUpdateForm }) => {
             return;
         }
 
+        Swal.fire({
+            title: "Loading",
+            text: "Analyzing your schedule. Please wait.",
+            icon: "info",
+        });
+
         // Call API to get tasks based on selected date
         if (startDateOfInterval && endDateOfInterval) {
             mutationGetTaskWithInterval.mutate({
@@ -737,7 +743,7 @@ const CalendarComponent: React.FC<ICalendar> = ({ setShowUpdateForm }) => {
                         .replace("Warnings:", "")
                         .trim()
                         .split("\n")
-                        .map((item) => item.trim())
+                        .map((item) => item.trim().replace("- ", ""))
                 );
             } else if (section.startsWith("Suggestions:")) {
                 suggestions.push(
@@ -745,7 +751,7 @@ const CalendarComponent: React.FC<ICalendar> = ({ setShowUpdateForm }) => {
                         .replace("Suggestions:", "")
                         .trim()
                         .split("\n")
-                        .map((item) => item.trim())
+                        .map((item) => item.trim().replace("- ", ""))
                 );
             }
         });
