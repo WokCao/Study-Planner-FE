@@ -9,6 +9,7 @@ import Task from "../interface/Task";
 import PopUpForm from "./PopUpForm";
 import UpdateFormInterface from "../interface/UpdateFrom";
 import Analytics from "./Analytics";
+import { useMenuContext } from "../hooks/useMenuStore";
 
 interface MenuOptionsInterface {
   id: number;
@@ -23,6 +24,8 @@ function Home() {
   const [editedTask, setEditedTask] = useState<Task | number | undefined>(undefined);
   const [showUpdateForm, setShowUpdateForm] = useState<UpdateFormInterface>({ isShown: false, task: undefined });
 
+  const { isMenuShown, setIsMenuShown } = useMenuContext();
+
   useEffect(() => {
     setDataTop(mockUpDataTop);
     setDataBottom(mockUpDataBottom);
@@ -30,7 +33,7 @@ function Home() {
 
   return (
     <div className="h-full relative">
-      <section className="bg-white w-1/6 py-3 h-full flex flex-col justify-between absolute top-0 left-0 overflow-auto">
+      <section className={`bg-white w-1/6 py-3 h-full flex-col justify-between absolute top-0 left-0 overflow-auto mobile:hidden tablet:flex ${isMenuShown ? '!flex !w-4/5 !z-40' : ''}`}>
         <div>
           {dataTop?.map((option: MenuOptionsInterface) => (
             <MenuOption
@@ -58,7 +61,12 @@ function Home() {
         </div>
       </section>
 
-      <section className="w-5/6 h-full absolute top-0 right-0">
+      <section
+        className={`${isMenuShown ? 'absolute top-0 right-0 h-full w-1/5 bg-slate-500 opacity-70 z-40' : ''}`}
+        onClick={() => setIsMenuShown(false)}>
+      </section>
+
+      <section className="mobile:w-full tablet:w-5/6 h-full absolute top-0 right-0">
         {currentOption === 1 && <Dashboard setCurrentOption={setCurrentOption} setShowUpdateForm={setShowUpdateForm} editedTask={editedTask} setEditedTask={setEditedTask} />}
         {currentOption === 2 && <CalendarComponent setShowUpdateForm={setShowUpdateForm} />}
         {currentOption === 3 && <Tasks setShowUpdateForm={setShowUpdateForm} editedTask={editedTask} setEditedTask={setEditedTask} />}
