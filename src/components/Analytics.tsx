@@ -256,7 +256,6 @@ function Analytics() {
             }),
         onSuccess: (data) => {
             if (!data) return;
-
             if (data.statusCode === 200) {
                 const fullData: ITotalTime[] = data.data.response;
                 formatTotalTimeChartData(fullData);
@@ -432,7 +431,7 @@ function Analytics() {
     }, [selectedYearsToCompare]);
 
     return (
-        <div className="h-full overflow-auto flex flex-col py-5 px-5">
+        <div className="h-full overflow-auto flex flex-col py-5 mobile:px-2 laptopSm:px-5">
             <div className="mb-10 flex items-center px-5">
                 <p className="text-3xl font-bold me-10">Analytics</p>
                 <div className="w-full h-full scrollbar-none flex items-center">
@@ -453,16 +452,16 @@ function Analytics() {
                 </div>
             </div>
 
-            <div className="h-3/5 w-full flex justify-between flex-shrink-0 mb-10">
+            <div className="mobile:h-full laptopSm:h-3/5 w-full flex mobile:flex-col laptopSm:flex-row justify-between laptopSm:flex-shrink-0 mb-10">
                 {statusChartData.length > 0 && (
-                    <div className="h-full w-[48%] p-2 rounded-lg shadow-xl bg-white">
+                    <div className="mobile:h-1/2 laptopSm:h-full mobile:w-full laptopSm:w-[48%] mobile:p-1 laptopSm:p-2 rounded-lg shadow-xl bg-white mobile:mb-5 laptopSm:mb-0">
                         <h1 className="text-center font-bold text-xl">Task's status</h1>
                         <PieChart data={statusChartData} />
                     </div>
                 )}
 
                 {priorityChartData.length > 0 && (
-                    <div className="h-full w-[48%] p-2 rounded-lg shadow-xl bg-white">
+                    <div className="mobile:h-1/2 laptopSm:h-full mobile:w-full laptopSm:w-[48%] p-2 rounded-lg shadow-xl bg-white">
                         <h1 className="text-center font-bold text-xl">Task's priority</h1>
                         <PieChart data={priorityChartData} />
                     </div>
@@ -478,17 +477,17 @@ function Analytics() {
                 </div>
             </div>
 
-            <div className="h-4/5 w-full flex flex-shrink-0 mb-10">
+            <div className="mobile:h-full laptopSm:h-4/5 w-full flex mobile:flex-col laptopSm:flex-row laptopSm:flex-shrink-0 mb-10">
                 {creationChartData.length > 0 && (
-                    <div className="h-full w-3/4 p-8 rounded-lg shadow-xl bg-white">
+                    <div className="mobile:h-3/4 laptopSm:h-full mobile:w-full laptopSm:w-3/4 mobile:px-1 mobile:py-8 laptopSm:px-8 rounded-lg shadow-xl bg-white">
                         <h1 className="text-center font-bold text-xl">Task's creation</h1>
                         <LineChart data={creationChartData} />
                     </div>
                 )}
 
-                <div className="ms-5 w-1/4 p-4 bg-white border rounded-lg shadow-lg h-fit">
+                <div className="mobile:ms-0 laptopSm:ms-5 mobile:mt-1 laptopSm:mt-0 mobile:w-full laptopSm:w-1/4 mobile:py-1 laptopSm:py-4 px-4 bg-white border rounded-lg shadow-lg mobile:h-1/4 laptopSm:h-full mobile:flex mobile:flex-col">
                     <p className="text-lg font-semibold">Compare with:</p>
-                    <div className="flex flex-col w-full">
+                    <div className="flex flex-col w-full mobile:h-full overflow-y-auto">
                         {yearsToCompare.length > 0 && yearsToCompare.map((year, index) => (
                             <div
                                 className="flex my-1"
@@ -513,7 +512,7 @@ function Analytics() {
                 </div>
             </div>
 
-            <div className="h-4/5 w-full mb-10 p-8 rounded-lg shadow-xl bg-white">
+            <div className="h-4/5 w-full mb-10 mobile:px-2 mobile:py-4 laptopSm:!p-8 rounded-lg shadow-xl bg-white">
                 <h1 className="text-center font-bold text-xl">Task's deadline</h1>
                 <div className="h-full w-full overflow-x-hidden">
                     {deadlineChartData.length > 0 && (
