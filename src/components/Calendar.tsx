@@ -230,6 +230,49 @@ const CalendarComponent: React.FC<ICalendar> = ({ setShowUpdateForm }) => {
         return { timeValue, timeUnit };
     };
 
+    const mutationCreateFocusSession = useMutation({
+        mutationFn: async (taskId: number) =>
+            await fetcherGet('/focus-session', {
+                method: 'POST',
+                body: JSON.stringify({
+                    taskId,
+                    status: 'Idle'
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token,
+                },
+            }),
+        onSuccess(data: any) {
+            if (data.statusCode === 201) {
+                Swal.fire({
+                    title: 'Success',
+                    text: 'Task has been assigned to Focus Timer.',
+                    icon: 'success',
+                    showClass: {
+                        popup: `block`
+                    },
+                    hideClass: {
+                        popup: `hidden`
+                    }
+                });
+            }
+        },
+        onError(error: any) {
+            Swal.fire({
+                title: 'Failed',
+                text: error.message,
+                icon: 'error',
+                showClass: {
+                    popup: `block`
+                },
+                hideClass: {
+                    popup: `hidden`
+                }
+            });
+        }
+    })
+
     // View info of an event
     const handleClickEvent = ({ event }: { event: CalendarEvent }) => {
         const taskIndex = tasksData.map(e => e.taskId).indexOf(event.id);
@@ -338,17 +381,7 @@ const CalendarComponent: React.FC<ICalendar> = ({ setShowUpdateForm }) => {
                     }
 
                     setDuration({ time: duration, break: breakDuration });
-                    Swal.fire({
-                        title: 'Success',
-                        text: 'Task has been assigned to Focus Timer.',
-                        icon: 'success',
-                        showClass: {
-                            popup: `block`
-                        },
-                        hideClass: {
-                            popup: `hidden`
-                        }
-                    });
+                    mutationCreateFocusSession.mutate(task.taskId);
                 }
             }
         });
