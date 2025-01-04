@@ -247,7 +247,7 @@ function Dashboard({ setCurrentOption, setShowUpdateForm, editedTask, setEditedT
                     </div>}
             </div>
 
-            <div className="h-full w-full">
+            <div className="h-full mobile:w-full laptop:w-3/12">
                 <FocusTimer widget={true} />
             </div>
         </div>
