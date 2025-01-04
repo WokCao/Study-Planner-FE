@@ -83,7 +83,6 @@ function Login() {
 
 	const handleGoogleLogin = useGoogleLogin({
 		onSuccess: (response: any) => {
-			console.log(response)
 			setGoogleFetching(true);
 			const token = response.access_token;
 
