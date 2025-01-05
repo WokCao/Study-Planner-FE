@@ -82,7 +82,7 @@ function ForgotPassword() {
 					</div>
 				</form>
 
-                <div className="mt-5 w-2/3 text-center text-sm">
+                <div className="mt-2 w-full text-center text-sm">
                     <Link className="underline" to="/Login">Back to Login</Link>
                 </div>
 			</div>
