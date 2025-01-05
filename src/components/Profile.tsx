@@ -125,6 +125,17 @@ function Profile() {
     });
 
     if (fullname) {
+        Swal.fire({
+            title: "Loading",
+            text: "Please wait",
+            icon: "info",
+            showClass: {
+                popup: `block`
+            },
+            hideClass: {
+                popup: `hidden`
+            }
+        });
       mutationFullname.mutate(fullname);
     }
   }
@@ -170,12 +181,12 @@ function Profile() {
           title: "Failure",
           text: "Please enter all fields!",
           icon: "error",
-          showClass: {
-            popup: `block`
-					},
-					hideClass: {
-						popup: `hidden`
-					}
+            showClass: {
+                popup: `block`
+		    },
+		    hideClass: {
+			    popup: `hidden`
+			}
         });
       }
 
@@ -184,14 +195,26 @@ function Profile() {
           title: "Failure",
           text: "Passwords do not match.",
           icon: "error",
-					showClass: {
-            popup: `block`
-					},
-					hideClass: {
-						popup: `hidden`
-					}
+			showClass: {
+                popup: `block`
+		    },
+			hideClass: {
+				popup: `hidden`
+			}
         });
       }
+
+      Swal.fire({
+        title: "Loading",
+        text: "Please wait",
+        icon: "info",
+        showClass: {
+            popup: `block`
+        },
+        hideClass: {
+            popup: `hidden`
+        }
+      });
 
       mutationPassword.mutate({ oldPass, newPass });
     }

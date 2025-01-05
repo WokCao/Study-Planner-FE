@@ -183,7 +183,6 @@ const CalendarComponent: React.FC<ICalendar> = ({ setShowUpdateForm }) => {
             title: "Updating your schedule",
             icon: "info",
             showConfirmButton: false,
-            timer: 1500,
             showClass: {
                 popup: `block`
             },
@@ -385,6 +384,18 @@ const CalendarComponent: React.FC<ICalendar> = ({ setShowUpdateForm }) => {
                             }
                         });
                     }
+
+                    Swal.fire({
+                        title: "Loading",
+                        text: "Please wait",
+                        icon: "info",
+                        showClass: {
+                            popup: `block`
+                        },
+                        hideClass: {
+                            popup: `hidden`
+                        }
+                    });
 
                     setDuration({ time: duration, break: breakDuration });
                     mutationCreateFocusSession.mutate(task.taskId);

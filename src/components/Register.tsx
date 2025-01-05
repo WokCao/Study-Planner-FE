@@ -77,6 +77,18 @@ function Register() {
 		onSuccess: (response: any) => {
 			const token = response.access_token;
 
+            Swal.fire({
+                title: "Loading",
+                text: "Please wait",
+                icon: "info",
+                showClass: {
+                    popup: `block`
+                },
+                hideClass: {
+                    popup: `hidden`
+                }
+            });
+
 			fetcher('/auth/createGoogleAccount', { token }, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' }

@@ -10,8 +10,6 @@ import FormInput from './elements/FormInput';
 import ButtonPrimary from './elements/ButtonPrimary';
 import Swal from 'sweetalert2';
 import { Link, useNavigate } from 'react-router-dom';
-import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 interface ForgotPasswordData {
 	email: string;
@@ -84,10 +82,9 @@ function ForgotPassword() {
 					</div>
 				</form>
 
-				<Link to="/Login" className='flex items-center mt-3 hover:text-violet-400'>
-					<FontAwesomeIcon icon={faChevronLeft} className='me-2' />
-					<span>Back to Login page</span>
-				</Link>
+                <div className="mt-5 w-2/3 text-center text-sm">
+                    <Link className="underline" to="/Login">Back to Login</Link>
+                </div>
 			</div>
 		</>
 	);

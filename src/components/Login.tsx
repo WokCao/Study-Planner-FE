@@ -86,6 +86,18 @@ function Login() {
 			setGoogleFetching(true);
 			const token = response.access_token;
 
+            Swal.fire({
+                title: "Loading",
+                text: "Please wait",
+                icon: "info",
+                showClass: {
+                    popup: `block`
+                },
+                hideClass: {
+                    popup: `hidden`
+                }
+            });
+
 			fetcher('/auth/googleInfo', { token }, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' }
