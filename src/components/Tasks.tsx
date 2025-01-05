@@ -27,6 +27,9 @@ const Tasks = ({
   const otherMonthsRef = useRef<HTMLParagraphElement>(null);
   const [numberOfTasks, setNumberOfTasks] = useState(0);
 
+  const [filteredThisMonthTasks, setFilteredThisMonthTasks] = useState<Task[]>([]);
+  const [filteredOtherMonthsTasks, setFilteredOtherMonthsTasks] = useState<Task[]>([]);
+
   // Task list of this month/other months
   const [thisMonthTasks, setThisMonthsTasks] = useState<Task[]>([]);
   const [otherMonthsTasks, setOtherMonthsTasks] = useState<Task[]>([]);
@@ -273,9 +276,6 @@ const Tasks = ({
       });
   };
 
-  const filteredThisMonthTasks = applyFiltersAndSorting(thisMonthTasks);
-  const filteredOtherMonthsTasks = applyFiltersAndSorting(otherMonthsTasks);
-
   useEffect(() => {
     // call API here to get tasks (total tasks, total this month tasks, total other months tasks, 1 page of this month tasks + other months tasks)
     mutationGetTask.mutate();
@@ -286,6 +286,16 @@ const Tasks = ({
       setEditedTask(undefined);
     }
   }, [editedTask]);
+
+  useEffect(() => {
+    const filter = applyFiltersAndSorting(thisMonthTasks);
+    setFilteredThisMonthTasks(filter);
+  }, [thisMonthTasks]);
+
+  useEffect(() => {
+    const filter = applyFiltersAndSorting(otherMonthsTasks);
+    setFilteredOtherMonthsTasks(filter);
+  }, [otherMonthsTasks]);
 
   return (
     <div className="p-4 flex flex-col h-full overflow-y-auto overflow-x-hidden gap-4 scroll-smooth">
