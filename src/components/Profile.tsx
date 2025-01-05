@@ -214,7 +214,7 @@ function Profile() {
 
   return (
     <div className='flex flex-col items-center w-100'>
-      <div className='flex flex-col w-1/3'>
+      <div className='flex flex-col laptop:w-1/3 mobile:w-5/6'>
         <h1 className='text-2xl text-violet-500 font-bold ms-2 mb-3 mt-2'>My Profile</h1>
         <div className='flex bg-white border rounded-md p-5 w-100'>
           <div>
