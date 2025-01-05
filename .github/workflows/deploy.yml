@@ -21,7 +21,7 @@ jobs:
         uses: bahmutov/npm-install@v1
 
       - name: Build project
-       env:
+        env:
           DEV: ${{ secrets.DEV }}
           VITE_REACT_APP_API_LOCAL: ${{ secrets.VITE_REACT_APP_API_LOCAL }}
           VITE_REACT_APP_API: ${{ secrets.VITE_REACT_APP_API }}
