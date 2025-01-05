@@ -6,6 +6,7 @@ on:
       - main
 
 jobs:
+  environment: github-pages
   build:
     name: Build
     runs-on: ubuntu-latest
