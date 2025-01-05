@@ -6,7 +6,7 @@ import "./index.css";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const clientId = import.meta.env.VITE_REACT_APP_GOOGLE_CLIENT_ID;
-console.log(import.meta.env);
+console.log(clientId);
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter basename='/Study-Planner-FE/'>
