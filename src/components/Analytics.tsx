@@ -48,6 +48,8 @@ for (let year = startYear; year <= currentYear; year++) {
 function Analytics() {
     const token = useAuthStore((state) => state.token);
     const navigate = useNavigate();
+    const [statusValuesEqualZero, setStatusValuesEqualZero] = useState(true);
+    const [priorityValuesEqualZero, setPriorityValuesEqualZero] = useState(true);
     const [statusChartData, setStatusChartData] = useState<IStatusChart[]>([]);
     const [priorityChartData, setPriorityChartData] = useState<IStatusChart[]>([]);
     const [creationChartData, setCreationChartData] = useState<ICreationChart[]>([]);
@@ -87,6 +89,9 @@ function Analytics() {
                 default: break;
             }
         })
+
+        if (toDo.length === 0 && inProgress.length === 0 && completed.length === 0 && expired.length === 0) setStatusValuesEqualZero(true);
+        else setStatusValuesEqualZero(false);
 
         const formatData = [
             {
@@ -143,6 +148,9 @@ function Analytics() {
             }
         })
 
+        if (high.length === 0 && medium.length === 0 && low.length === 0) setPriorityValuesEqualZero(true);
+        else setPriorityValuesEqualZero(false);
+
         const formatData = [
             {
                 id: 'High',
@@ -186,7 +194,7 @@ function Analytics() {
     /**
      * Format data by total time with priority
      */
-    const formatTotalTimeChartData = (fullData: ITotalTime[]) =>{
+    const formatTotalTimeChartData = (fullData: ITotalTime[]) => {
         const updatedData = fullData.reduce((acc: any[], { month, priority, totalcompletiontime }: ITotalTime) => {
             const monthName = months[month - 1];
             const monthIndex = acc.findIndex((item) => item.month === monthName);
@@ -459,14 +467,26 @@ function Analytics() {
                 {statusChartData.length > 0 && (
                     <div className="mobile:h-1/2 laptopSm:h-full mobile:w-full laptopSm:w-[48%] mobile:p-1 laptopSm:p-2 rounded-lg shadow-xl bg-white mobile:mb-5 laptopSm:mb-0">
                         <h1 className="text-center font-bold text-xl">Task's status</h1>
-                        <PieChart data={statusChartData} />
+                        {statusValuesEqualZero ? (
+                            <div className="flex justify-center items-center h-full">
+                                <p className="text-gray-500 text-lg">No data</p>
+                            </div>
+                        ) : (
+                            <PieChart data={statusChartData} />
+                        )}
                     </div>
                 )}
 
                 {priorityChartData.length > 0 && (
                     <div className="mobile:h-1/2 laptopSm:h-full mobile:w-full laptopSm:w-[48%] p-2 rounded-lg shadow-xl bg-white">
                         <h1 className="text-center font-bold text-xl">Task's priority</h1>
-                        <PieChart data={priorityChartData} />
+                        {priorityValuesEqualZero ? (
+                            <div className="flex justify-center items-center h-full">
+                                <p className="text-gray-500 text-lg">No data</p>
+                            </div>
+                        ) : (
+                            <PieChart data={priorityChartData} />
+                        )}
                     </div>
                 )}
             </div>
@@ -474,8 +494,12 @@ function Analytics() {
             <div className="h-4/5 w-full mb-10 p-8 rounded-lg shadow-xl bg-white">
                 <h1 className="text-center font-bold text-xl">Total Spent Time</h1>
                 <div className="h-full w-full overflow-x-hidden">
-                    {totalTimeChartData.length > 0 && (
+                    {totalTimeChartData.length > 0 ? (
                         <BarChartExt data={totalTimeChartData} />
+                    ) : (
+                        <div className="flex justify-center items-center h-full">
+                            <p className="text-gray-500 text-lg">No data</p>
+                        </div>
                     )}
                 </div>
             </div>

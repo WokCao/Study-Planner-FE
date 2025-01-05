@@ -12,8 +12,8 @@ function Logout() {
   const token = useAuthStore((state) => state.token);
 
   const mutation = useMutation({
-    mutationFn: async () => await fetcherGet('/auth/logout', {
-      method: 'POST',
+    mutationFn: async () => await fetcherGet('/users/logout', {
+      method: 'GET',
       headers: { 'Authorization': `Bearer ${token}` }
     }),
     onSuccess: () => {
