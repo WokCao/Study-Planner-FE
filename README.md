@@ -1,3 +1,7 @@
+<p align="center">
+  <a href="https://github.com/WokCao/Study-Planner-FE" target="blank"><img src="/public/gem.ico" width="120" alt="StudyGem Logo" /></a>
+</p>
+
 # StudyGem (FE)
 
 StudyGem is a dynamic web application designed to empower users with advanced tools for task management, scheduling, and personal productivity. By combining intuitive features with cutting-edge AI insights, StudyGem offers a seamless and efficient way to stay on top of your goals, whether for work, study, or personal growth.
@@ -6,7 +10,7 @@ Here are instructions for deploying the Front-end:
 
 ## 1. Finish back-end deployment
 
-Before proceeding, make sure you have finished setting up the database and deploying the back-end.
+Before proceeding, make sure you have finished setting up the database and deploying the Back-end.
 
 ## 2. Download the source code
 
