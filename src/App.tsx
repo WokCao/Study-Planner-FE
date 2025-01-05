@@ -12,7 +12,6 @@ import ProtectedRoute from './components/ProtectedRoute';
 import ForgotPassword from './components/ForgotPassword';
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Analytics from "./components/analytics/Analytics";
 
 const queryClient = new QueryClient();
 
@@ -55,14 +54,6 @@ export default function App() {
             }
           />
         </Route>
-        <Route
-          path="/analytics"
-          element={
-            <FormLayout>
-              <Analytics />
-            </FormLayout>
-          }
-        />
       </Routes>
       <Outlet />
     </QueryClientProvider>
