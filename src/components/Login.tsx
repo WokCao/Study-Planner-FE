@@ -37,7 +37,7 @@ function Login() {
 	const [errorEmail, setErrorEmail] = useState('');
 	const [errorPassword, setErrorPassword] = useState('');
 	const [fetching, setFetching] = useState(false);
-	const [, setGoogleFetching] = useState(false);
+	const [googleFetching, setGoogleFetching] = useState(false);
 
 	const setToken = useAuthStore((state) => state.setToken);
 	const setData = useUserStore((state) => state.setData);
@@ -86,18 +86,6 @@ function Login() {
 			setGoogleFetching(true);
 			const token = response.access_token;
 
-            Swal.fire({
-                title: "Loading",
-                text: "Please wait",
-                icon: "info",
-                showClass: {
-                    popup: `block`
-                },
-                hideClass: {
-                    popup: `hidden`
-                }
-            });
-
 			fetcher('/auth/googleInfo', { token }, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' }
@@ -113,7 +101,19 @@ function Login() {
 					setErrorEmail(error.message);
 				} else if (message.includes("password")) {
 					setErrorPassword(error.message);
-				}
+				} else {
+                    Swal.fire({
+                        title: "Error",
+                        text: "Please try again!",
+                        icon: "error",
+                        showClass: {
+                            popup: `block`
+                        },
+                        hideClass: {
+                            popup: `hidden`
+                        }
+                    });
+                }
 			}).finally(() => setGoogleFetching(false));
 		},
 		onError: () => {
@@ -155,7 +155,7 @@ function Login() {
 						<Link className="underline" to="/forgot">Forgot password?</Link>
 					</div>
 					<div className="mt-5 w-2/3 flex flex-col justify-center items-center gap-x-2">
-						{fetching
+						{fetching || googleFetching
 							? <ClipLoader size={30} color={"black"} loading={true} />
 							: <>
 								<ButtonPrimary label="Log in" type="submit" />

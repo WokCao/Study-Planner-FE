@@ -28,6 +28,7 @@ function Register() {
 	const [errorPassword, setErrorPassword] = useState('');
 
 	const [fetching, setFetching] = useState(false);
+    const [googleFetching, setGoogleFetching] = useState(false);
 	const navigate = useNavigate();
 
 	const mutation = useMutation<RegisterResponse, Error, UserRegister>(
@@ -75,19 +76,8 @@ function Register() {
 
 	const handleGoogleSignup = useGoogleLogin({
 		onSuccess: (response: any) => {
+            setGoogleFetching(true);
 			const token = response.access_token;
-
-            Swal.fire({
-                title: "Loading",
-                text: "Please wait",
-                icon: "info",
-                showClass: {
-                    popup: `block`
-                },
-                hideClass: {
-                    popup: `hidden`
-                }
-            });
 
 			fetcher('/auth/createGoogleAccount', { token }, {
 				method: 'POST',
@@ -109,13 +99,15 @@ function Register() {
 					navigate('/login');
 				}
 			}).catch((error) => {
+                setGoogleFetching(false);
 				const message: string = error.message.toLowerCase();
 				if (message.includes("email")) {
 					setErrorEmail(error.message);
 				}
-			})
+			}).finally(() => setGoogleFetching(false));
 		},
 		onError: (error: any) => {
+            setGoogleFetching(false);
 			console.error(error);
 			Swal.fire({
                 title: "Error",
@@ -173,7 +165,7 @@ function Register() {
 						errorKey='confirmPassword'
 					/>
 					<div className="mt-5 w-2/3 flex flex-col justify-center items-center gap-x-2">
-						{fetching
+						{fetching || googleFetching
 							? <ClipLoader size={30} color={"black"} loading={true} />
 							: <>
 								<ButtonPrimary label="Sign up" type="submit" />
