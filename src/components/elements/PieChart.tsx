@@ -15,10 +15,10 @@ function PieChart({ data }: IPieChart) {
     return (
         <ResponsivePie
             data={data}
-            margin={{ top: 40, right: 60, bottom: 0, left: 60 }}
-            innerRadius={0.5}
-            padAngle={0.7}
-            cornerRadius={3}
+            margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
+            innerRadius={0.3}
+            padAngle={0.4}
+            cornerRadius={12}
             colors={({ data }) => data.color}
             activeOuterRadiusOffset={8}
             borderWidth={1}
@@ -51,7 +51,7 @@ function PieChart({ data }: IPieChart) {
                     direction: 'row',
                     justify: false,
                     translateX: 0,
-                    translateY: 56,
+                    translateY: 45,
                     itemsSpacing: 0,
                     itemWidth: 80,
                     itemHeight: 18,

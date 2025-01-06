@@ -478,7 +478,7 @@ function Analytics() {
                 )}
 
                 {priorityChartData.length > 0 && (
-                    <div className="mobile:h-1/2 laptopSm:h-full mobile:w-full laptopSm:w-[48%] p-2 rounded-lg shadow-xl bg-white">
+                    <div className="mobile:h-1/2 laptopSm:h-full mobile:w-full laptopSm:w-[48%] mobile:p-1 laptopSm:p-2 rounded-lg shadow-xl bg-white">
                         <h1 className="text-center font-bold text-xl">Task's priority</h1>
                         {priorityValuesEqualZero ? (
                             <div className="flex justify-center items-center h-full">

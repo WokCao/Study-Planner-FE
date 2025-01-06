@@ -87,9 +87,10 @@ function TimeAndButton({ hasCircle, startBreak, endBreak }: TimeAndButtonInterfa
      */
     const mutationUpdateFocusSession = useMutation<any, Error, { taskId: number, completionTime: number, status: string, title: string, text: string, icon: SweetAlertIcon | undefined }>({
         mutationFn: async (allData) =>
-            await fetcherGet(`/focus-session/${allData.taskId}`, {
+            await fetcherGet('/focus-session', {
                 method: 'PUT',
                 body: JSON.stringify({
+                    taskId: allData.taskId,
                     completionTime: allData.completionTime * 60,
                     status: allData.status
                 }),
