@@ -176,7 +176,7 @@ function TimeAndButton({ hasCircle, startBreak, endBreak }: TimeAndButtonInterfa
                                 // No break timer set
                                 const noBreak = !breakTime || (breakTime && breakTime === 0);
 
-                                mutationUpdateFocusSession.mutate({ taskId: task.id, completionTime: time || 0, title: 'success', status: 'Completed', text: "Task marked as Completed." + (noBreak ? " Focus session ended." : ""), icon: 'success'  })
+                                mutationUpdateFocusSession.mutate({ taskId: task.id, completionTime: time || 0, title: 'Success', status: 'Completed', text: "Task marked as Completed." + (noBreak ? " Focus session ended." : ""), icon: 'success'  })
 
                                 // No break timer set
                                 if (noBreak) return clearData();

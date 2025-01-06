@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Task from "../interface/Task";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -6,11 +6,13 @@ import { fetcherGet } from "../clients/apiClientAny";
 import useAuthStore from "../hooks/useAuthStore";
 import PieChart from "./elements/PieChart";
 import LineChart from "./elements/LineChart";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faCommentDots, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BarChart from "./elements/BarChart";
 import BarChartExt from "./elements/BarChartExt";
 import Swal from "sweetalert2";
+import ButtonAI from "./elements/ButtonAI";
+import AIAnalysisAnalytics from "./AIAnalysisAnalytics";
 
 interface IStatusChart {
     id: string;
@@ -58,6 +60,18 @@ function Analytics() {
     const [selectedYear, setSelectedYear] = useState(-1);
     const [yearsToCompare, setYearsToCompare] = useState<number[]>([]);
     const [selectedYearsToCompare, setSelectedYearsToCompare] = useState<number[]>([]);
+
+    const [showAnalysis, setShowAnalysis] = useState(false);
+    const feedbackRef = useRef<HTMLDivElement | null>(null);
+    const [feedback, setFeedback] = useState<{
+        strengths: string[];
+        improvements: string[];
+        quotes: string[];
+    }>({
+        strengths: [],
+        improvements: [],
+        quotes: [],
+    });
 
     /**
      * Format data by status
@@ -420,6 +434,105 @@ function Analytics() {
         setSelectedYearsToCompare(updatedYears);
     }
 
+    const mutationAnalyzeProgress = useMutation<any, Error, { year: number }>({
+        mutationFn: async ({ year }) =>
+            await fetcherGet('/focus-session/analyze/' + year, {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token,
+                },
+            }),
+        onSuccess: (data: any) => {
+            if (data.statusCode === 200) {
+                const feedback = data.data;
+                if (feedback) handleLLMFeedback(feedback);
+
+                // Scroll to feedback after analyzing
+                if (feedbackRef.current) {
+                    feedbackRef.current.scrollIntoView({ behavior: "smooth" });
+                }
+            }
+        },
+        onError: (error) => {
+            if (error.message.startsWith('Unauthorized')) {
+                Swal.fire({
+                    title: "Login session expired",
+                    text: "You'll be redirected to the Login page.",
+                    icon: "info",
+                    showClass: {
+                        popup: `block`
+                    },
+                    hideClass: {
+                        popup: `hidden`
+                    }
+                });
+                navigate('/Login');
+                return;
+            }
+
+            console.error("Error sending data to LLM:", error);
+
+            Swal.fire({
+                title: "Analysis Failed",
+                text: `Unable to analyze your schedule: ${error.message || "An unknown error occurred."}`,
+                icon: "error",
+            });
+        }
+    });
+
+    // Handle user clicking on "Analyze Progress"
+    const analyzeProgress = () => {
+        // Call API to get tasks based on selected date
+        mutationAnalyzeProgress.mutate({ year: selectedYear });
+    };
+
+    // Handle feedback from LLM
+    const handleLLMFeedback = (feedbackString: string) => {
+        const strengths: string[] = [];
+        const improvements: string[] = [];
+        const quotes: string[] = [];
+
+        // Split feedback into sections
+        const sections = feedbackString.split("\n\n");
+        sections.forEach((section) => {
+            if (section.startsWith("Strengths:")) {
+                strengths.push(
+                    ...section
+                        .replace("Strengths:", "")
+                        .trim()
+                        .split("\n")
+                        .map((item) => item.trim().replace("- ", ""))
+                );
+            } else if (section.startsWith("Improvements:")) {
+                improvements.push(
+                    ...section
+                        .replace("Improvements:", "")
+                        .trim()
+                        .split("\n")
+                        .map((item) => item.trim().replace("- ", ""))
+                );
+            } else if (section.startsWith("Quotes:")) {
+                quotes.push(
+                    ...section
+                        .replace("Quotes:", "")
+                        .trim()
+                        .split("\n")
+                        .map((item) => item.trim().replace("- ", ""))
+                );
+            }
+        });
+
+        // Update state
+        setFeedback({ strengths, improvements, quotes });
+
+        Swal.fire({
+            title: "Analysis Complete",
+            text: "Your progress has been analyzed. Please review the analysis below.",
+            icon: "success",
+        });
+    };
+
     useEffect(() => {
         const currentDate = new Date();
         mutationGetTasks.mutate();
@@ -546,6 +659,20 @@ function Analytics() {
                         <BarChart data={deadlineChartData} />
                     )}
                 </div>
+            </div>
+
+            <div className="py-1 px-3 bg-white flex items-center justify-around">
+                <ButtonAI AnalyzeSchedule={analyzeProgress} />
+
+                {feedback.strengths.length > 0 && feedback.improvements.length > 0 && feedback.quotes.length > 0
+                &&
+                <AIAnalysisAnalytics feedback={feedback} showAnalysis={showAnalysis} setFeedback={setFeedback} setShowAnalysis={setShowAnalysis} />}
+
+                <span
+                    className="ms-auto hover:cursor-pointer hover:text-indigo-700 rounded-full shadow-lg p-2"
+                    onClick={() => setShowAnalysis(true)}>
+                    <FontAwesomeIcon icon={faCommentDots} className="w-7 h-7" />
+                </span>
             </div>
         </div>
     )

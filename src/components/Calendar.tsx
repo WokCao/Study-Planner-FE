@@ -8,7 +8,6 @@ import { fetcherGet } from "../clients/apiClientAny";
 import { useMutation } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 
-import OpenAI from "openai";
 import ButtonAI from "./elements/ButtonAI";
 import AIAnalysis from "./AIAnalysis";
 import { faCommentDots } from "@fortawesome/free-solid-svg-icons";
@@ -50,11 +49,6 @@ const CalendarComponent: React.FC<ICalendar> = ({ setShowUpdateForm }) => {
     }>({
         warnings: [],
         suggestions: [],
-    });
-
-    const openai = new OpenAI({
-        apiKey: import.meta.env.VITE_OPENAI_API,
-        dangerouslyAllowBrowser: true,
     });
 
     const mutationGetTasks = useMutation({
@@ -645,16 +639,59 @@ const CalendarComponent: React.FC<ICalendar> = ({ setShowUpdateForm }) => {
 
             // Send the collected schedule data to the LLM API
             sendToLLM(scheduleData);
-
-            // Scroll to feedback after analyzing
-            if (feedbackRef.current) {
-                feedbackRef.current.scrollIntoView({ behavior: "smooth" });
-            }
         },
         onError: (error) => {
             Swal.fire({
                 title: "Failure",
                 text: "Couldn't get task in interval: " + error.message,
+                icon: "error",
+            });
+        }
+    });
+
+    const mutationAnalyzeSchedule = useMutation<any, Error, { data: Task[] }>({
+        mutationFn: async ({ data }) =>
+            await fetcherGet('/tasks/analyze', {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token,
+                },
+            }),
+        onSuccess: (data: any) => {
+            if (data.statusCode === 200) {
+                const feedback = data.data;
+                if (feedback) handleLLMFeedback(feedback);
+
+                // Scroll to feedback after analyzing
+                if (feedbackRef.current) {
+                    feedbackRef.current.scrollIntoView({ behavior: "smooth" });
+                }
+            }
+        },
+        onError: (error) => {
+            if (error.message.startsWith('Unauthorized')) {
+                Swal.fire({
+                    title: "Login session expired",
+                    text: "You'll be redirected to the Login page.",
+                    icon: "info",
+                    showClass: {
+                        popup: `block`
+                    },
+                    hideClass: {
+                        popup: `hidden`
+                    }
+                });
+                navigate('/Login');
+                return;
+            }
+
+            console.error("Error sending data to LLM:", error);
+
+            Swal.fire({
+                title: "Analysis Failed",
+                text: `Unable to analyze your schedule: ${error.message || "An unknown error occurred."}`,
                 icon: "error",
             });
         }
@@ -694,54 +731,12 @@ const CalendarComponent: React.FC<ICalendar> = ({ setShowUpdateForm }) => {
 
     // Send data to LLM for analysis
     const sendToLLM = async (data: Task[]) => {
-        try {
-            const response = await openai.chat.completions.create({
-                model: import.meta.env.VITE_OPENAI_MODEL || "gpt-4o-mini", // Use dynamic model name from environment variables
-                messages: [
-                    {
-                        role: "system",
-                        content: `
-							You are a helpful assistant that analyzes study schedules.
-							Provide warnings about overly tight schedules and suggestions for better prioritization and balance.
-							Always format your response as:
-							Warnings:
-							- Item 1
-							- Item 2
-
-							Suggestions:
-							- Item 1
-							- Item 2
-						`,
-                    },
-                    {
-                        role: "user",
-                        content: `Analyze my schedule and provide feedback. Here is the data in JSON format:\n\n${JSON.stringify(
-                            data
-                        )}`,
-                    },
-                ],
-            });
-
-            if (!response) {
-                throw new Error("No response from the LLM API.");
-            }
-
-            const feedback = response.choices[0]?.message?.content;
-            console.log(feedback);
-            if (feedback) handleLLMFeedback(feedback);
-        } catch (error: any) {
-            console.error("Error sending data to LLM:", error);
-
-            Swal.fire({
-                title: "Analysis Failed",
-                text: `Unable to analyze your schedule: ${error.message || "An unknown error occurred."}`,
-                icon: "error",
-            });
-        }
+        mutationAnalyzeSchedule.mutate({ data });
     };
 
     // Handle feedback from LLM
     const handleLLMFeedback = (feedbackString: string) => {
+        console.log(feedbackString)
         const warnings: string[] = [];
         const suggestions: string[] = [];
 
