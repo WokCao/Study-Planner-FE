@@ -83,6 +83,17 @@ function Profile() {
       if (data.statusCode === 200) {
         const response = data.data;
         setAvatar(response);
+        Swal.fire({
+            title: "Success",
+            text: "Your profile picture has been changed.",
+            icon: "success",
+            showClass: {
+                popup: `block`
+            },
+            hideClass: {
+                popup: `hidden`
+            }
+          });
       } else {
         throw new Error(data.message);
       }
@@ -227,6 +238,17 @@ function Profile() {
       if (imageFile) {
         const maxFileSize = 1024 * 1024 * 5; // Max size 5MB
         if (imageFile.size <= maxFileSize) {
+            Swal.fire({
+                title: "Loading",
+                text: "Please wait",
+                icon: "info",
+                showClass: {
+                    popup: `block`
+                },
+                hideClass: {
+                    popup: `hidden`
+                }
+              });
           const formData = new FormData();
           formData.append('file', imageFile);
           mutationAvatar.mutate({ formData });
@@ -250,7 +272,7 @@ function Profile() {
             />
 
             <label htmlFor="fileInput">
-              <img className='h-24 mr-3 opacity-50 cursor-pointer hover:opacity-70' alt='Avatar' src={avatarUrl || './user.png'} />
+              <img className='h-24 mr-3 cursor-pointer' alt='Avatar' src={avatarUrl || './user.png'} />
             </label>
           </div>
           <div className='flex flex-col'>

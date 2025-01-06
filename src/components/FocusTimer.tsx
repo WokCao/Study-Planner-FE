@@ -159,6 +159,18 @@ function TimeAndButton({ hasCircle, startBreak, endBreak }: TimeAndButtonInterfa
                     }
                 }).then(async (result) => {
                     if (result.isConfirmed && task) {
+                        Swal.fire({
+                            title: "Loading",
+                            text: "Please wait",
+                            icon: "info",
+                            showClass: {
+                                popup: `block`
+                            },
+                            hideClass: {
+                                popup: `hidden`
+                            }
+                        });
+
                         mutationUpdateTask.mutate({
                             addTask: { status: 'Completed' }, taskId: task.id, successUpdate: () => {
                                 // No break timer set
