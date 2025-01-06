@@ -290,12 +290,12 @@ const Tasks = ({
   useEffect(() => {
     const filter = applyFiltersAndSorting(thisMonthTasks);
     setFilteredThisMonthTasks(filter);
-  }, [thisMonthTasks]);
+  }, [thisMonthTasks, searchQuery, priorityFilter, statusFilter, sortKey, sortDirection]);
 
   useEffect(() => {
     const filter = applyFiltersAndSorting(otherMonthsTasks);
     setFilteredOtherMonthsTasks(filter);
-  }, [otherMonthsTasks]);
+  }, [otherMonthsTasks, searchQuery, priorityFilter, statusFilter, sortKey, sortDirection]);
 
   return (
     <div className="p-4 flex flex-col h-full overflow-y-auto overflow-x-hidden gap-4 scroll-smooth">
