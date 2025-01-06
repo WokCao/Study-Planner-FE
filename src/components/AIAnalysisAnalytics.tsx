@@ -37,8 +37,8 @@ const AIAnalysis = ({ feedback, showAnalysis, setFeedback, setShowAnalysis }: IA
 
             <div className="h-full overflow-y-auto">
                 {feedback.strengths.length > 0 && (
-                    <div className="mt-6 p-4 border-l-4 border-red-500 bg-red-50 rounded-md">
-                        <h3 className="text-lg font-bold text-red-700">✅ Strengths</h3>
+                    <div className="mt-6 p-4 border-l-4 border-green-500 bg-green-50 rounded-md">
+                        <h3 className="text-lg font-bold text-green-700">✅ Strengths</h3>
                         <ul className="mt-2 list-disc list-inside text-green-600">
                             {feedback.strengths.map((strength, idx) => (
                                 <li key={idx} className="leading-relaxed">
@@ -51,7 +51,7 @@ const AIAnalysis = ({ feedback, showAnalysis, setFeedback, setShowAnalysis }: IA
 
                 {feedback.improvements.length > 0 && (
                     <div className="mt-6 p-4 border-l-4 border-blue-500 bg-blue-50 rounded-md">
-                        <h3 className="text-lg font-bold text-blue-700">💡 Improvements</h3>
+                        <h3 className="text-lg font-bold text-blue-700">💡 Need Improvements</h3>
                         <ul className="mt-2 list-disc list-inside text-blue-600">
                             {feedback.improvements.map((improvement, idx) => (
                                 <li key={idx} className="leading-relaxed">
@@ -63,8 +63,8 @@ const AIAnalysis = ({ feedback, showAnalysis, setFeedback, setShowAnalysis }: IA
                 )}
 
                 {feedback.quotes.length > 0 && (
-                    <div className="mt-6 p-4 border-l-4 border-blue-500 bg-blue-50 rounded-md">
-                        <h3 className="text-lg font-bold text-blue-700">😊 Quotes</h3>
+                    <div className="mt-6 p-4 border-l-4 border-violet-500 bg-violet-50 rounded-md">
+                        <h3 className="text-lg font-bold text-violet-700">😊 Motivational Quotes</h3>
                         <ul className="mt-2 list-disc list-inside text-violet-600">
                             {feedback.quotes.map((quote, idx) => (
                                 <li key={idx} className="leading-relaxed">

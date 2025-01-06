@@ -736,7 +736,6 @@ const CalendarComponent: React.FC<ICalendar> = ({ setShowUpdateForm }) => {
 
     // Handle feedback from LLM
     const handleLLMFeedback = (feedbackString: string) => {
-        console.log(feedbackString)
         const warnings: string[] = [];
         const suggestions: string[] = [];
 
@@ -764,8 +763,6 @@ const CalendarComponent: React.FC<ICalendar> = ({ setShowUpdateForm }) => {
 
         // Update state
         setFeedback({ warnings, suggestions });
-        console.log(warnings);
-        console.log(suggestions);
 
         Swal.fire({
             title: "Analysis Complete",

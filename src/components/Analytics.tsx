@@ -436,7 +436,7 @@ function Analytics() {
 
     const mutationAnalyzeProgress = useMutation<any, Error, { year: number }>({
         mutationFn: async ({ year }) =>
-            await fetcherGet('/focus-session/analyze/' + year, {
+            await fetcherGet('/focus-session/feedback/' + year, {
                 method: 'GET',
                 headers: {
                     "Content-Type": "application/json",
@@ -475,7 +475,7 @@ function Analytics() {
 
             Swal.fire({
                 title: "Analysis Failed",
-                text: `Unable to analyze your schedule: ${error.message || "An unknown error occurred."}`,
+                text: `Unable to analyze your progress: ${error.message || "An unknown error occurred."}`,
                 icon: "error",
             });
         }
@@ -483,6 +483,12 @@ function Analytics() {
 
     // Handle user clicking on "Analyze Progress"
     const analyzeProgress = () => {
+        Swal.fire({
+            title: "Loading",
+            text: "Analyzing your progress. Please wait.",
+            icon: "info",
+        });
+
         // Call API to get tasks based on selected date
         mutationAnalyzeProgress.mutate({ year: selectedYear });
     };
@@ -504,18 +510,18 @@ function Analytics() {
                         .split("\n")
                         .map((item) => item.trim().replace("- ", ""))
                 );
-            } else if (section.startsWith("Improvements:")) {
+            } else if (section.startsWith("Need improvements:")) {
                 improvements.push(
                     ...section
-                        .replace("Improvements:", "")
+                        .replace("Need improvements:", "")
                         .trim()
                         .split("\n")
                         .map((item) => item.trim().replace("- ", ""))
                 );
-            } else if (section.startsWith("Quotes:")) {
+            } else if (section.startsWith("Motivational quotes:")) {
                 quotes.push(
                     ...section
-                        .replace("Quotes:", "")
+                        .replace("Motivational quotes:", "")
                         .trim()
                         .split("\n")
                         .map((item) => item.trim().replace("- ", ""))
@@ -652,7 +658,7 @@ function Analytics() {
                 </div>
             </div>
 
-            <div className="h-4/5 w-full mb-10 mobile:px-2 mobile:py-4 laptopSm:!p-8 rounded-lg shadow-xl bg-white">
+            <div className="h-4/5 w-full mb-5 mobile:px-2 mobile:py-4 laptopSm:!p-8 rounded-lg shadow-xl bg-white">
                 <h1 className="text-center font-bold text-xl">Task's deadline</h1>
                 <div className="h-full w-full overflow-x-hidden">
                     {deadlineChartData.length > 0 && (
@@ -661,7 +667,7 @@ function Analytics() {
                 </div>
             </div>
 
-            <div className="py-1 px-3 bg-white flex items-center justify-around">
+            <div className="py-1 px-3 flex items-center justify-around">
                 <ButtonAI AnalyzeSchedule={analyzeProgress} />
 
                 {feedback.strengths.length > 0 && feedback.improvements.length > 0 && feedback.quotes.length > 0
@@ -669,7 +675,7 @@ function Analytics() {
                 <AIAnalysisAnalytics feedback={feedback} showAnalysis={showAnalysis} setFeedback={setFeedback} setShowAnalysis={setShowAnalysis} />}
 
                 <span
-                    className="ms-auto hover:cursor-pointer hover:text-indigo-700 rounded-full shadow-lg p-2"
+                    className="ms-auto bg-white hover:cursor-pointer hover:text-indigo-700 rounded-full shadow-lg p-2"
                     onClick={() => setShowAnalysis(true)}>
                     <FontAwesomeIcon icon={faCommentDots} className="w-7 h-7" />
                 </span>
