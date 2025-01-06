@@ -27,8 +27,6 @@ DEV=true
 VITE_REACT_APP_API_LOCAL=[Link to your locally hosted Back-end's API, e.g. http://localhost:3000/api/v1]
 VITE_REACT_APP_API=[Link to your publically hosted Back-end's API, e.g. https://api.study-gem.com/api/v1]
 VITE_REACT_APP_GOOGLE_CLIENT_ID=[Your Google Client ID for Google OAuth, e.g. 1234-abcd.apps.googleusercontent.com]
-VITE_OPENAI_API=[Your OpenAI API Key]
-VITE_OPENAI_MODEL=[Your OpenAI Model, e.g. gpt-4o-mini]
 ```
 
 ## 4. Start the application
